@@ -1,5 +1,5 @@
 # Engine
-GameEngine stack built from Open-Source or free components.
+GameEngine stack for Windows, built from Open-Source or free components.
 
 ## Main components
 <table>
