@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<GUILayout version="4">
+	<Window type="DefaultWindow" name="Root" >
+		<Property name="Area" value="{{0,0},{0,0},{1,0},{1,0}}" />
+        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+        <Property name="InheritsAlpha" value="False" />
+
+		<!-- Status bar -->
+		<Window type="TaharezLook/StaticImage" name="StatusBar" >
+			<Property name="Area" value="{{0,0},{0,0},{1,0},{0,24}}" />
+			<Property name="FrameEnabled" value="False" />
+			<Property name="Image" value="TaharezLook/StatusBarBackground" />
+			<Property name="VertFormatting" value="Stretch" />
+			<Property name="HorzFormatting" value="Tiled" />
+			<Property name="BackgroundEnabled" value="False" />
+			
+			<!-- TPS / FPS -->
+			<Window type="TaharezLook/Label" name="StatusBar.FPSDescription" >
+				<Property name="Text" value="FPS:" />
+				<Property name="Area" value="{{0,5},{0,0},{0,41},{0,16}}" />
+				<Property name="HorzFormatting" value="LeftAligned" />
+				<Property name="Font" value="DejaVuSerif-10-Bold" />
+				<Property name="NormalTextColour" value="FF242424" />
+			</Window>
+			<Window type="TaharezLook/Label" name="StatusBar.FPSValue" >
+				<Property name="Text" value="0" />
+				<Property name="Area" value="{{0,41},{0,0},{0,75},{0,16}}" />
+				<Property name="HorzFormatting" value="LeftAligned" />			
+			</Window>
+			
+			<!-- RTT -->
+			<Window type="TaharezLook/Label" name="StatusBar.RTTDescription" >
+				<Property name="Text" value="RTT:" />
+				<Property name="Area" value="{{0,77},{0,0},{0,114},{0,16}}" />
+				<Property name="HorzFormatting" value="LeftAligned" />
+				<Property name="Font" value="DejaVuSerif-10-Bold" />
+				<Property name="NormalTextColour" value="FF242424" />
+			</Window>
+			<Window type="TaharezLook/Label" name="StatusBar.RTTValue" >
+				<Property name="Text" value="0" />
+				<Property name="Area" value="{{0,114},{0,0},{0,150},{0,16}}" />
+				<Property name="HorzFormatting" value="LeftAligned" />				
+			</Window>
+			
+			<!-- OnlinePlayers -->
+			<Window type="TaharezLook/Label" name="StatusBar.PlayersDescription" >
+				<Property name="Text" value="PLAYERS:" />
+				<Property name="Area" value="{{0,150},{0,0},{0,230},{0,16}}" />
+				<Property name="HorzFormatting" value="LeftAligned" />
+				<Property name="Font" value="DejaVuSerif-10-Bold" />
+				<Property name="NormalTextColour" value="FF242424" />				
+			</Window>
+			<Window type="TaharezLook/Button" name="StatusBar.PlayersValue" >
+				<Property name="Text" value="0" />
+				<Property name="Area" value="{{0,230},{0,0},{0,280},{0,16}}" />				
+			</Window>
+			
+			<!-- Mood -->
+			<Window type="TaharezLook/Label" name="StatusBar.MoodDescription" >
+				<Property name="Text" value="MOOD:" />
+				<Property name="Area" value="{{0,290},{0,0},{0,350},{0,16}}" />
+				<Property name="HorzFormatting" value="LeftAligned" />
+				<Property name="Font" value="DejaVuSerif-10-Bold" />
+				<Property name="NormalTextColour" value="FF242424" />				
+			</Window>
+			<Window type="TaharezLook/ImageButton" name="StatusBar.MoodHappy" >
+				<Property name="Area" value="{{0,350},{0,0},{0,366},{0,16}}" />
+				<Property name="NormalImage" value="TaharezLook/MoodHappy" />
+				<Property name="HoverImage" value="TaharezLook/MoodHappyHover" />
+			</Window>
+			<Window type="TaharezLook/ImageButton" name="StatusBar.MoodNeutral" >
+				<Property name="Area" value="{{0,366},{0,0},{0,382},{0,16}}" />
+				<Property name="NormalImage" value="TaharezLook/MoodNeutral" />
+				<Property name="HoverImage" value="TaharezLook/MoodNeutralHover" />				
+			</Window>
+			<Window type="TaharezLook/ImageButton" name="StatusBar.MoodSad" >
+				<Property name="Area" value="{{0,382},{0,0},{0,398},{0,16}}" />
+				<Property name="NormalImage" value="TaharezLook/MoodSad" />
+				<Property name="HoverImage" value="TaharezLook/MoodSadHover" />
+			</Window>
+			<Window type="TaharezLook/ImageButton" name="StatusBar.MoodAngry" >
+				<Property name="Area" value="{{0,398},{0,0},{0,414},{0,16}}" />
+				<Property name="NormalImage" value="TaharezLook/MoodAngry" />
+				<Property name="HoverImage" value="TaharezLook/MoodAngryHover" />
+			</Window>
+			
+			<!-- Safety -->
+			<Window type="TaharezLook/Label" name="StatusBar.SafetyDescription" >
+				<Property name="Text" value="SAFETY:" />
+				<Property name="Area" value="{{0,420},{0,0},{0,490},{0,16}}" />
+				<Property name="HorzFormatting" value="LeftAligned" />
+				<Property name="Font" value="DejaVuSerif-10-Bold" />
+				<Property name="NormalTextColour" value="FF242424" />
+			</Window>
+			<Window type="TaharezLook/Button" name="StatusBar.SafetyValue" >
+				<Property name="Text" value="On" />
+				<Property name="Area" value="{{0,490},{0,0},{0,540},{0,16}}" />
+			</Window>
+			
+			<!-- MeridianTime -->
+			<Window type="TaharezLook/Label" name="StatusBar.MTimeDescription" >
+				<Property name="Text" value="MTIME:" />
+				<Property name="Area" value="{{0,545},{0,0},{0,615},{0,16}}" />
+				<Property name="HorzFormatting" value="LeftAligned" />
+				<Property name="Font" value="DejaVuSerif-10-Bold" />
+				<Property name="NormalTextColour" value="FF242424" />
+			</Window>
+			<Window type="TaharezLook/Label" name="StatusBar.MTimeValue" >
+				<Property name="Text" value="00:00" />
+				<Property name="Area" value="{{0,615},{0,0},{0,665},{0,16}}" />
+				<Property name="HorzFormatting" value="LeftAligned" />				
+			</Window>
+			
+			<!-- RoomName -->
+			<Window type="TaharezLook/Label" name="StatusBar.RoomDescription" >
+				<Property name="Text" value="ROOM:" />
+				<Property name="Area" value="{{0,665},{0,0},{0,720},{0,16}}" />
+				<Property name="HorzFormatting" value="LeftAligned" />
+				<Property name="Font" value="DejaVuSerif-10-Bold" />
+				<Property name="NormalTextColour" value="FF242424" />
+			</Window>
+			<Window type="TaharezLook/Label" name="StatusBar.RoomValue" >
+				<Property name="Text" value="-" />
+				<Property name="Area" value="{{0,720},{0,0},{1,0},{0,16}}" />
+				<Property name="HorzFormatting" value="LeftAligned" />				
+			</Window>
+		</Window>
+		
+		<!-- OnlinePlayers -->
+		<Window type="TaharezLook/FrameWindow" name="OnlinePlayers" >
+			<Property name="Text" value="Players" />
+			<Property name="TitlebarEnabled" value="True" />
+			<Property name="TitlebarFont" value="DejaVuSerif-10-Bold" />
+			<Property name="Area" value="{{0,0},{0,0},{1,0},{1,0}}" />
+			<Property name="MaxSize" value="{{1,0},{1,0}}" />
+			<Property name="Size" value="{{0,256},{0,512}}" />
+			<Property name="Position" value="{{0.5,-128},{0.5,-256}}" />
+			
+			<!-- List -->
+			<Window type="TaharezLook/ItemListbox" name="OnlinePlayers.List" >
+				<Property name="Area" value="{{0,0},{0,0},{1,0},{1,0}}" />
+				<Property name="MaxSize" value="{{1,0},{1,0}}" />
+				<Property name="Size" value="{{1,0},{1.0,0}}" />
+				<Property name="Position" value="{{0,0},{0,0}}" />
+			</Window>
+		</Window>
+			
+		<!-- Chat -->
+		<Window type="TaharezLook/FrameWindow" name="Chat" >
+			<Property name="Text" value="Chat" />
+			<Property name="TitlebarEnabled" value="True" />
+			<Property name="TitlebarFont" value="DejaVuSerif-10-Bold" />
+			<Property name="Area" value="{{0,0},{0,0},{1,0},{1,0}}" />
+			<Property name="MaxSize" value="{{1,0},{1,0}}" />
+			<Property name="Size" value="{{0.4,0},{0.3,0}}" />
+			<Property name="Position" value="{{0.0,0},{0.6,0}}" />
+			
+			<!-- Text -->
+			<Window type="TaharezLook/StaticText" name="Chat.Text" >
+				<Property name="Text" value="" />
+				<Property name="Font" value="DejaVuSerif-10" />
+				<Property name="VertScrollbar" value="True" />
+				<Property name="VertFormatting" value="TopAligned" />
+				<Property name="HorzFormatting" value="WordWrapLeftAligned" />
+				<Property name="Area" value="{{0,0},{0,0},{1,0},{1,0}}" />
+				<Property name="MaxSize" value="{{1,0},{1,0}}" />
+				<Property name="Size" value="{{1,0},{1.0,-25}}" />
+				<Property name="Position" value="{{0,0},{0,0}}" />
+			</Window>
+			
+			<!-- Input -->
+			<Window type="TaharezLook/Editbox" name="Chat.Input" >
+				<Property name="MaxTextLength" value="1073741823" />
+				<Property name="MaxSize" value="{{1,0},{1,0}}" />
+				<Property name="Area" value="{{0,0},{0,0},{1,0},{1,0}}" />
+				<Property name="MaxSize" value="{{1,0},{1,0}}" />
+				<Property name="Size" value="{{1,0},{0.0,25}}" />
+				<Property name="Position" value="{{0,0},{1.0,-25}}" />
+			</Window>
+		</Window>
+		
+		<!-- Avatar -->
+		<Window type="TaharezLook/StaticImage" name="Avatar" >
+			<Property name="Area" value="{{0,0},{0,0},{1,0},{1,0}}" />
+			<Property name="MaxSize" value="{{0,256},{0,130}}" />
+			<Property name="Size" value="{{0,256},{0,130}}" />
+			<Property name="Position" value="{{0,25},{0,25}}" />
+			<Property name="FrameEnabled" value="False" />
+			<!--<Property name="BackgroundEnabled" value="False" />-->
+			<Property name="Image" value="TaharezLook/AvatarBackground" />
+						
+			<!-- Head -->
+			<Window type="TaharezLook/StaticImage" name="Avatar.Head" >
+				<Property name="Area" value="{{0,15},{0,10},{0,75},{0,90}}" />
+				<Property name="FrameEnabled" value="False" />
+				<!--<Property name="BackgroundEnabled" value="False" />-->
+				<!--<Property name="Image" value="TaharezLook/StatusBarBackground" />-->
+			</Window>
+			
+			<!-- Enchantments -->
+			<!--<Window type="TaharezLook/GridLayout" name="Avatar.Enchantments" >
+				<Property name="Area" value="{{0,20},{0,9},{0,250},{0,128}}" />
+				<!--<Property name="FrameEnabled" value="False" />-->
+				<!--<Property name="BackgroundEnabled" value="False" />-->
+				<!--<Property name="Image" value="TaharezLook/StatusBarBackground" />-->
+			<!--</Window>-->
+		</Window>
+		
+	</Window>
+</GUILayout>

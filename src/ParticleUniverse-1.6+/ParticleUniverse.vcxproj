@@ -1,0 +1,390 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{837046F4-06E7-4DD3-BDF4-5522427D5FD5}</ProjectGuid>
+    <RootNamespace>ParticleUniverse</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\..\lib\x86\</OutDir>
+    <IntDir>..\..\obj\x86\$(TargetName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\..\lib\x64\</OutDir>
+    <IntDir>..\..\obj\x64\$(TargetName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\..\lib\x86\</OutDir>
+    <IntDir>..\..\obj\x86\$(TargetName)_d\</IntDir>
+    <TargetName>$(ProjectName)_d</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>$(ProjectName)_d</TargetName>
+    <TargetExt>.lib</TargetExt>
+    <OutDir>..\..\lib\x64\</OutDir>
+    <IntDir>..\..\obj\x64\$(TargetName)_d\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>
+      </SDLCheck>
+      <AdditionalIncludeDirectories>..\..\include;..\..\include\particleuniverse;..\..\include\Ogre;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AssemblerListingLocation>Debug</AssemblerListingLocation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>ParticleUniversePCH.h</PrecompiledHeaderFile>
+      <AdditionalOptions>-Zm153 %(AdditionalOptions)</AdditionalOptions>
+      <StringPooling>false</StringPooling>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <PreprocessorDefinitions>BOOST_THREAD_VERSION=4;BOOST_ALL_NO_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Lib>
+    <Lib>
+      <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>
+      </SDLCheck>
+      <AdditionalIncludeDirectories>..\..\include;..\..\include\particleuniverse;..\..\include\Ogre;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AssemblerListingLocation>Debug</AssemblerListingLocation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>ParticleUniversePCH.h</PrecompiledHeaderFile>
+      <AdditionalOptions>-Zm153 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>BOOST_THREAD_VERSION=4;BOOST_ALL_NO_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Lib>
+    <Lib>
+      <MinimumRequiredVersion>
+      </MinimumRequiredVersion>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>
+      </SDLCheck>
+      <AdditionalIncludeDirectories>..\..\include;..\..\include\particleuniverse;..\..\include\Ogre;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <AssemblerListingLocation>Release</AssemblerListingLocation>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <PrecompiledHeaderFile>ParticleUniversePCH.h</PrecompiledHeaderFile>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <StringPooling>true</StringPooling>
+      <PreprocessorDefinitions>BOOST_THREAD_VERSION=4;BOOST_ALL_NO_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
+    </Lib>
+    <Lib>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+      <TargetMachine>MachineX86</TargetMachine>
+      <SubSystem>
+      </SubSystem>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>
+      </SDLCheck>
+      <AdditionalIncludeDirectories>..\..\include;..\..\include\particleuniverse;..\..\include\Ogre;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <AssemblerListingLocation>Release</AssemblerListingLocation>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <PrecompiledHeaderFile>ParticleUniversePCH.h</PrecompiledHeaderFile>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <StringPooling>true</StringPooling>
+      <PreprocessorDefinitions>BOOST_THREAD_VERSION=4;BOOST_ALL_NO_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <MinimumRequiredVersion>
+      </MinimumRequiredVersion>
+    </Lib>
+    <Lib>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+      <TargetMachine>MachineX64</TargetMachine>
+      <SubSystem>
+      </SubSystem>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="ParticleUniverseAffector.cpp" />
+    <ClCompile Include="ParticleUniverseAffectorTokens.cpp" />
+    <ClCompile Include="ParticleUniverseAliasTokens.cpp" />
+    <ClCompile Include="ParticleUniverseAlignAffector.cpp" />
+    <ClCompile Include="ParticleUniverseAlignAffectorTokens.cpp" />
+    <ClCompile Include="ParticleUniverseAtlasImage.cpp" />
+    <ClCompile Include="ParticleUniverseAttachable.cpp" />
+    <ClCompile Include="ParticleUniverseAttachableTokens.cpp" />
+    <ClCompile Include="ParticleUniverseBaseCollider.cpp" />
+    <ClCompile Include="ParticleUniverseBaseColliderTokens.cpp" />
+    <ClCompile Include="ParticleUniverseBaseForceAffector.cpp" />
+    <ClCompile Include="ParticleUniverseBaseForceAffectorTokens.cpp" />
+    <ClCompile Include="ParticleUniverseBeamRenderer.cpp" />
+    <ClCompile Include="ParticleUniverseBeamRendererTokens.cpp" />
+    <ClCompile Include="ParticleUniverseBehaviourTokens.cpp" />
+    <ClCompile Include="ParticleUniverseBillboardRenderer.cpp" />
+    <ClCompile Include="ParticleUniverseBillboardRendererTokens.cpp" />
+    <ClCompile Include="ParticleUniverseBox.cpp" />
+    <ClCompile Include="ParticleUniverseBoxCollider.cpp" />
+    <ClCompile Include="ParticleUniverseBoxColliderExtern.cpp" />
+    <ClCompile Include="ParticleUniverseBoxColliderExternTokens.cpp" />
+    <ClCompile Include="ParticleUniverseBoxColliderTokens.cpp" />
+    <ClCompile Include="ParticleUniverseBoxEmitter.cpp" />
+    <ClCompile Include="ParticleUniverseBoxEmitterTokens.cpp" />
+    <ClCompile Include="ParticleUniverseBoxRenderer.cpp" />
+    <ClCompile Include="ParticleUniverseBoxRendererTokens.cpp" />
+    <ClCompile Include="ParticleUniverseBoxSet.cpp" />
+    <ClCompile Include="ParticleUniverseCameraDependency.cpp" />
+    <ClCompile Include="ParticleUniverseCameraDependencyTokens.cpp" />
+    <ClCompile Include="ParticleUniverseCircleEmitter.cpp" />
+    <ClCompile Include="ParticleUniverseCircleEmitterTokens.cpp" />
+    <ClCompile Include="ParticleUniverseCollisionAvoidanceAffector.cpp" />
+    <ClCompile Include="ParticleUniverseCollisionAvoidanceAffectorTokens.cpp" />
+    <ClCompile Include="ParticleUniverseColourAffector.cpp" />
+    <ClCompile Include="ParticleUniverseColourAffectorTokens.cpp" />
+    <ClCompile Include="ParticleUniverseDll.cpp" />
+    <ClCompile Include="ParticleUniverseDoAffectorEventHandler.cpp" />
+    <ClCompile Include="ParticleUniverseDoAffectorEventHandlerTokens.cpp" />
+    <ClCompile Include="ParticleUniverseDoEnableComponentEventHandler.cpp" />
+    <ClCompile Include="ParticleUniverseDoEnableComponentEventHandlerTokens.cpp" />
+    <ClCompile Include="ParticleUniverseDoExpireEventHandler.cpp" />
+    <ClCompile Include="ParticleUniverseDoExpireEventHandlerTokens.cpp" />
+    <ClCompile Include="ParticleUniverseDoFreezeEventHandler.cpp" />
+    <ClCompile Include="ParticleUniverseDoFreezeEventHandlerTokens.cpp" />
+    <ClCompile Include="ParticleUniverseDoPlacementParticleEventHandler.cpp" />
+    <ClCompile Include="ParticleUniverseDoPlacementParticleEventHandlerTokens.cpp" />
+    <ClCompile Include="ParticleUniverseDoScaleEventHandler.cpp" />
+    <ClCompile Include="ParticleUniverseDoScaleEventHandlerTokens.cpp" />
+    <ClCompile Include="ParticleUniverseDoStopSystemEventHandler.cpp" />
+    <ClCompile Include="ParticleUniverseDoStopSystemEventHandlerTokens.cpp" />
+    <ClCompile Include="ParticleUniverseDynamicAttribute.cpp" />
+    <ClCompile Include="ParticleUniverseDynamicAttributeTokens.cpp" />
+    <ClCompile Include="ParticleUniverseEmitter.cpp" />
+    <ClCompile Include="ParticleUniverseEmitterTokens.cpp" />
+    <ClCompile Include="ParticleUniverseEntityRenderer.cpp" />
+    <ClCompile Include="ParticleUniverseEntityRendererTokens.cpp" />
+    <ClCompile Include="ParticleUniverseEventHandlerTokens.cpp" />
+    <ClCompile Include="ParticleUniverseExtern.cpp" />
+    <ClCompile Include="ParticleUniverseExternTokens.cpp" />
+    <ClCompile Include="ParticleUniverseFlockCenteringAffector.cpp" />
+    <ClCompile Include="ParticleUniverseFlockCenteringAffectorTokens.cpp" />
+    <ClCompile Include="ParticleUniverseForceField.cpp" />
+    <ClCompile Include="ParticleUniverseForceFieldAffector.cpp" />
+    <ClCompile Include="ParticleUniverseForceFieldAffectorTokens.cpp" />
+    <ClCompile Include="ParticleUniverseGeometryRotator.cpp" />
+    <ClCompile Include="ParticleUniverseGeometryRotatorTokens.cpp" />
+    <ClCompile Include="ParticleUniverseGravityAffector.cpp" />
+    <ClCompile Include="ParticleUniverseGravityAffectorTokens.cpp" />
+    <ClCompile Include="ParticleUniverseGravityExtern.cpp" />
+    <ClCompile Include="ParticleUniverseGravityExternTokens.cpp" />
+    <ClCompile Include="ParticleUniverseInterParticleCollider.cpp" />
+    <ClCompile Include="ParticleUniverseInterParticleColliderTokens.cpp" />
+    <ClCompile Include="ParticleUniverseJetAffector.cpp" />
+    <ClCompile Include="ParticleUniverseJetAffectorTokens.cpp" />
+    <ClCompile Include="ParticleUniverseLightRenderer.cpp" />
+    <ClCompile Include="ParticleUniverseLightRendererTokens.cpp" />
+    <ClCompile Include="ParticleUniverseLineAffector.cpp" />
+    <ClCompile Include="ParticleUniverseLineAffectorTokens.cpp" />
+    <ClCompile Include="ParticleUniverseLinearForceAffector.cpp" />
+    <ClCompile Include="ParticleUniverseLinearForceAffectorTokens.cpp" />
+    <ClCompile Include="ParticleUniverseLineEmitter.cpp" />
+    <ClCompile Include="ParticleUniverseLineEmitterTokens.cpp" />
+    <ClCompile Include="ParticleUniverseMeshSurfaceEmitter.cpp" />
+    <ClCompile Include="ParticleUniverseMeshSurfaceEmitterTokens.cpp" />
+    <ClCompile Include="ParticleUniverseNoise.cpp" />
+    <ClCompile Include="ParticleUniverseObserver.cpp" />
+    <ClCompile Include="ParticleUniverseObserverTokens.cpp" />
+    <ClCompile Include="ParticleUniverseOnClearObserver.cpp" />
+    <ClCompile Include="ParticleUniverseOnClearObserverTokens.cpp" />
+    <ClCompile Include="ParticleUniverseOnCollisionObserver.cpp" />
+    <ClCompile Include="ParticleUniverseOnCollisionObserverTokens.cpp" />
+    <ClCompile Include="ParticleUniverseOnCountObserver.cpp" />
+    <ClCompile Include="ParticleUniverseOnCountObserverTokens.cpp" />
+    <ClCompile Include="ParticleUniverseOnEmissionObserver.cpp" />
+    <ClCompile Include="ParticleUniverseOnEmissionObserverTokens.cpp" />
+    <ClCompile Include="ParticleUniverseOnEventFlagObserver.cpp" />
+    <ClCompile Include="ParticleUniverseOnEventFlagObserverTokens.cpp" />
+    <ClCompile Include="ParticleUniverseOnExpireObserver.cpp" />
+    <ClCompile Include="ParticleUniverseOnExpireObserverTokens.cpp" />
+    <ClCompile Include="ParticleUniverseOnPositionObserver.cpp" />
+    <ClCompile Include="ParticleUniverseOnPositionObserverTokens.cpp" />
+    <ClCompile Include="ParticleUniverseOnQuotaObserver.cpp" />
+    <ClCompile Include="ParticleUniverseOnQuotaObserverTokens.cpp" />
+    <ClCompile Include="ParticleUniverseOnRandomObserver.cpp" />
+    <ClCompile Include="ParticleUniverseOnRandomObserverTokens.cpp" />
+    <ClCompile Include="ParticleUniverseOnTimeObserver.cpp" />
+    <ClCompile Include="ParticleUniverseOnTimeObserverTokens.cpp" />
+    <ClCompile Include="ParticleUniverseOnVelocityObserver.cpp" />
+    <ClCompile Include="ParticleUniverseOnVelocityObserverTokens.cpp" />
+    <ClCompile Include="ParticleUniverseParticle.cpp" />
+    <ClCompile Include="ParticleUniverseParticleFollower.cpp" />
+    <ClCompile Include="ParticleUniverseParticleFollowerTokens.cpp" />
+    <ClCompile Include="ParticleUniverseParticlePool.cpp" />
+    <ClCompile Include="ParticleUniversePathFollower.cpp" />
+    <ClCompile Include="ParticleUniversePathFollowerTokens.cpp" />
+    <ClCompile Include="ParticleUniversePCH.cpp" />
+    <ClCompile Include="ParticleUniversePhysXActorExtern.cpp" />
+    <ClCompile Include="ParticleUniversePhysXActorExternTokens.cpp" />
+    <ClCompile Include="ParticleUniversePhysXBridge.cpp" />
+    <ClCompile Include="ParticleUniversePhysXFluidExtern.cpp" />
+    <ClCompile Include="ParticleUniversePhysXFluidExternTokens.cpp" />
+    <ClCompile Include="ParticleUniversePlaneCollider.cpp" />
+    <ClCompile Include="ParticleUniversePlaneColliderTokens.cpp" />
+    <ClCompile Include="ParticleUniversePlugin.cpp" />
+    <ClCompile Include="ParticleUniversePointEmitter.cpp" />
+    <ClCompile Include="ParticleUniversePointEmitterTokens.cpp" />
+    <ClCompile Include="ParticleUniversePositionEmitter.cpp" />
+    <ClCompile Include="ParticleUniversePositionEmitterTokens.cpp" />
+    <ClCompile Include="ParticleUniversePrimitiveShapeSet.cpp" />
+    <ClCompile Include="ParticleUniverseRandomiser.cpp" />
+    <ClCompile Include="ParticleUniverseRandomiserTokens.cpp" />
+    <ClCompile Include="ParticleUniverseRenderer.cpp" />
+    <ClCompile Include="ParticleUniverseRendererTokens.cpp" />
+    <ClCompile Include="ParticleUniverseRibbonTrailRenderer.cpp" />
+    <ClCompile Include="ParticleUniverseRibbonTrailRendererTokens.cpp" />
+    <ClCompile Include="ParticleUniverseScaleAffector.cpp" />
+    <ClCompile Include="ParticleUniverseScaleAffectorTokens.cpp" />
+    <ClCompile Include="ParticleUniverseScaleVelocityAffector.cpp" />
+    <ClCompile Include="ParticleUniverseScaleVelocityAffectorTokens.cpp" />
+    <ClCompile Include="ParticleUniverseSceneDecoratorExtern.cpp" />
+    <ClCompile Include="ParticleUniverseSceneDecoratorExternTokens.cpp" />
+    <ClCompile Include="ParticleUniverseScriptDeserializer.cpp" />
+    <ClCompile Include="ParticleUniverseScriptSerializer.cpp" />
+    <ClCompile Include="ParticleUniverseSineForceAffector.cpp" />
+    <ClCompile Include="ParticleUniverseSineForceAffectorTokens.cpp" />
+    <ClCompile Include="ParticleUniverseSlaveBehaviour.cpp" />
+    <ClCompile Include="ParticleUniverseSlaveBehaviourTokens.cpp" />
+    <ClCompile Include="ParticleUniverseSlaveEmitter.cpp" />
+    <ClCompile Include="ParticleUniverseSlaveEmitterTokens.cpp" />
+    <ClCompile Include="ParticleUniverseSphere.cpp" />
+    <ClCompile Include="ParticleUniverseSphereCollider.cpp" />
+    <ClCompile Include="ParticleUniverseSphereColliderExtern.cpp" />
+    <ClCompile Include="ParticleUniverseSphereColliderExternTokens.cpp" />
+    <ClCompile Include="ParticleUniverseSphereColliderTokens.cpp" />
+    <ClCompile Include="ParticleUniverseSphereRenderer.cpp" />
+    <ClCompile Include="ParticleUniverseSphereRendererTokens.cpp" />
+    <ClCompile Include="ParticleUniverseSphereSet.cpp" />
+    <ClCompile Include="ParticleUniverseSphereSurfaceEmitter.cpp" />
+    <ClCompile Include="ParticleUniverseSphereSurfaceEmitterTokens.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

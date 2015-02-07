@@ -1,0 +1,321 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{5C80A647-A39A-40F5-A6B3-54A3F854BAFC}</ProjectGuid>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <Keyword>ManagedCProj</Keyword>
+    <RootNamespace>Meridian59MyGUITest</RootNamespace>
+    <ProjectName>TEST</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CLRSupport>false</CLRSupport>
+    <CharacterSet>MultiByte</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CLRSupport>false</CLRSupport>
+    <CharacterSet>MultiByte</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CLRSupport>true</CLRSupport>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CLRSupport>true</CLRSupport>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\..\TEST\x86\</OutDir>
+    <IntDir>..\..\obj\x86\$(TargetName)_d\</IntDir>
+    <TargetName>$(ProjectName)_d</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>$(ProjectName)_d</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\..\TEST\x64\</OutDir>
+    <IntDir>..\..\obj\x64\$(TargetName)_d\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\TEST\x86\</OutDir>
+    <IntDir>..\..\obj\x86\$(TargetName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\TEST\x64\</OutDir>
+    <IntDir>..\..\obj\x64\$(TargetName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;DEBUG;_WIN32;_DEBUG;_WINDOWS;CEGUI_STATIC;PCRE_STATIC;BOOST_ALL_NO_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalIncludeDirectories>..\..\include;..\..\include\dx9;..\..\include\OGRE;..\..\include\cegui;..\..\include\OIS;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsManaged>true</CompileAsManaged>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>cg.lib;ois_d.lib;boost_d.lib;ogremain_d.lib;ogreterrain_d.lib;ogreparticlefx_d.lib;ogrecg_d.lib;ogreoctree_d.lib;ogred3d9_d.lib;zlib_d.lib;zziplib_d.lib;freeimage_d.lib;freetype_d.lib;LibTIFF4_d.lib;LibJPEG_d.lib;LibOpenJPEG_d.lib;LibPNG_d.lib;LibRaw_d.lib;OpenEXR_d.lib;pcre_d.lib;d3d9.lib;d3dx9d.lib;dinput8.lib;dxerr.lib;dxguid.lib;CEGUIBase_d.lib;CEGUICommonDialogs_d.lib;CEGUICoreWindowRendererSet_d.lib;CEGUIOgreRenderer_d.lib;CEGUIRapidXMLParser_d.lib;CEGUISTBImageCodec_d.lib;dbghelp.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>..\..\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;DEBUG;_WIN32;_DEBUG;_WINDOWS;CEGUI_STATIC;PCRE_STATIC;BOOST_ALL_NO_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalIncludeDirectories>..\..\include;..\..\include\dx9;..\..\include\OGRE;..\..\include\cegui;..\..\include\OIS;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsManaged>true</CompileAsManaged>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>cg.lib;boost_d.lib;ogremain_d.lib;ogreterrain_d.lib;ogreparticlefx_d.lib;ogrecg_d.lib;ogreoctree_d.lib;ogred3d9_d.lib;ois_d.lib;zlib_d.lib;zziplib_d.lib;freeimage_d.lib;freetype_d.lib;LibTIFF4_d.lib;LibJPEG_d.lib;LibOpenJPEG_d.lib;LibPNG_d.lib;LibRaw_d.lib;OpenEXR_d.lib;pcre_d.lib;d3d9.lib;d3dx9d.lib;dinput8.lib;dxerr.lib;dxguid.lib;CEGUIBase_d.lib;CEGUICommonDialogs_d.lib;CEGUICoreWindowRendererSet_d.lib;CEGUIOgreRenderer_d.lib;CEGUIRapidXMLParser_d.lib;CEGUISTBImageCodec_d.lib;dbghelp.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>..\..\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;NDEBUG;CEGUI_STATIC;PCRE_STATIC;BOOST_ALL_NO_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalIncludeDirectories>..\..\include;..\..\include\dx9;..\..\include\OGRE;..\..\include\cegui;..\..\include\OIS;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StringPooling>true</StringPooling>
+      <EnableParallelCodeGeneration>false</EnableParallelCodeGeneration>
+      <Optimization>MaxSpeed</Optimization>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>cg.lib;boost.lib;ogremain.lib;ogreterrain.lib;ogreparticlefx.lib;ogrecg.lib;ogreoctree.lib;ogred3d9.lib;ois.lib;zlib.lib;zziplib.lib;freeimage.lib;freetype.lib;LibTIFF4.lib;LibJPEG.lib;LibOpenJPEG.lib;LibPNG.lib;LibRaw.lib;OpenEXR.lib;pcre.lib;d3d9.lib;d3dx9.lib;dinput8.lib;dxerr.lib;dxguid.lib;CEGUIBase.lib;CEGUICommonDialogs.lib;CEGUICoreWindowRendererSet.lib;CEGUIOgreRenderer.lib;CEGUIRapidXMLParser.lib;CEGUISTBImageCodec.lib;dbghelp.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>..\..\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+    </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;NDEBUG;CEGUI_STATIC;PCRE_STATIC;BOOST_ALL_NO_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <AdditionalIncludeDirectories>..\..\include;..\..\include\dx9;..\..\include\OGRE;..\..\include\cegui;..\..\include\OIS;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <StringPooling>true</StringPooling>
+      <EnableParallelCodeGeneration>false</EnableParallelCodeGeneration>
+      <Optimization>MaxSpeed</Optimization>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>cg.lib;boost.lib;ogremain.lib;ogreterrain.lib;ogreparticlefx.lib;ogrecg.lib;ogreoctree.lib;ogred3d9.lib;ois.lib;zlib.lib;zziplib.lib;freeimage.lib;freetype.lib;LibTIFF4.lib;LibJPEG.lib;LibOpenJPEG.lib;LibPNG.lib;LibRaw.lib;OpenEXR.lib;pcre.lib;d3d9.lib;d3dx9.lib;dinput8.lib;dxerr.lib;dxguid.lib;CEGUIBase.lib;CEGUICommonDialogs.lib;CEGUICoreWindowRendererSet.lib;CEGUIOgreRenderer.lib;CEGUIRapidXMLParser.lib;CEGUISTBImageCodec.lib;dbghelp.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>..\..\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+    </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="OISListeners.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="app.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="TEST.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="app.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\boost-1.55.0\boost.vcxproj">
+      <Project>{e09fc166-2921-4d6d-9e14-e6f89b46fd53}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\caelum-0.6.1\caelum.vcxproj">
+      <Project>{dba2aefb-1be9-47a4-a592-1ee6f382cadc}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\cegui-0.8.3\CEGUIBase.vcxproj">
+      <Project>{dabe5779-876d-4cf2-b2a6-2d985994d59f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\cegui-0.8.3\CEGUICommonDialogs.vcxproj">
+      <Project>{7e3a8e0f-d177-4298-bd0b-326172b3493c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\cegui-0.8.3\CEGUICoreWindowRendererSet.vcxproj">
+      <Project>{c94e0220-867f-4fa9-94df-7ac0ebe75eba}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\cegui-0.8.3\CEGUIOgreRenderer.vcxproj">
+      <Project>{3be3357b-8f3a-48b9-bbbd-de12081719ab}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\cegui-0.8.3\CEGUIRapidXMLParser.vcxproj">
+      <Project>{3f4bfce2-a56a-4e45-8494-35a3829d2465}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\cegui-0.8.3\CEGUISTBImageCodec.vcxproj">
+      <Project>{7419f1da-fe40-4168-9af9-417f34c608d4}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\freeimage-3.15.4\FreeImage.2012.vcxproj">
+      <Project>{b39ed2b3-d53a-4077-b957-930979a3577d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\freetype-2.5.2\freetype.2012.vcxproj">
+      <Project>{78b079bd-9fc7-4b9e-b4a6-96da0f00248b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\LibJPEG-8d\LibJPEG.2012.vcxproj">
+      <Project>{5e1d4e5f-e10c-4ba3-b663-f33014fd21d9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\LibOpenJPEG-1.5.0\LibOpenJPEG.2012.vcxproj">
+      <Project>{e3536c28-a7f1-4b53-8e52-7d2232f9e098}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\LibPNG-1.5.13\LibPNG.2012.vcxproj">
+      <Project>{7db10b50-ce00-4d7a-b322-6824f05d2fcb}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\LibRaw-0.14.7\LibRaw.2012.vcxproj">
+      <Project>{07f662c1-1323-42ab-b6af-fbfd34a7437a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\LibTIFF4-4.0.3\LibTIFF4.2012.vcxproj">
+      <Project>{ec085cbd-e9c3-477f-9a97-cb9d5da30e27}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ogre-1.9.0\Components\Terrain\OgreTerrain.vcxproj">
+      <Project>{0e6760ee-a9e5-4468-9225-c91b628c4100}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ogre-1.9.0\OgreMain\OgreMain.vcxproj">
+      <Project>{25347cbb-c21c-4f72-a582-3bb44f654d25}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ogre-1.9.0\PlugIns\CgProgramManager\Plugin_CgProgramManager.vcxproj">
+      <Project>{4255311c-0e3e-48f9-bbf9-10b33105e6e5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ogre-1.9.0\PlugIns\OctreeSceneManager\Plugin_OctreeSceneManager.vcxproj">
+      <Project>{59d9ed67-a692-4bbc-8a11-1bccac149d16}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ogre-1.9.0\PlugIns\ParticleFX\Plugin_ParticleFX.vcxproj">
+      <Project>{86e760be-c6d9-4e06-a3c9-8721ece1ce76}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ogre-1.9.0\RenderSystems\Direct3D9\RenderSystem_Direct3D9.vcxproj">
+      <Project>{0c84d990-915c-4fb7-b180-a2ed77b819f2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ois-1.4.0\OIS.2012.vcxproj">
+      <Project>{9cc704cb-4956-4479-bdec-57cbc03f700e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\OpenEXR-0.9.0\OpenEXR.2012.vcxproj">
+      <Project>{17a4874b-0606-4687-90b6-f91f8cb3b8af}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ParticleUniverse-1.6+\ParticleUniverse.vcxproj">
+      <Project>{837046f4-06e7-4dd3-bdf4-5522427d5fd5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ParticleUniverse-1.6+_2\ParticleUniverse2.vcxproj">
+      <Project>{3a47d901-ca98-425d-a4c4-222b132700f7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\pcre-8.34\pcre.2012.vcxproj">
+      <Project>{b9c29ab5-8688-410b-a99c-0d62adc05fac}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\zlib-1.2.8\zlib.2012.vcxproj">
+      <Project>{e2c146f9-f840-4c21-9ca9-e1dd9649ab7a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\zziplib-0.13.62\zziplib.2012.vcxproj">
+      <Project>{cb440073-2ed3-48ce-a1a1-b6eacb3a44bd}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

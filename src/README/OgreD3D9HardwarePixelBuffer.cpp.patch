@@ -1,0 +1,40 @@
+Index: OgreD3D9HardwarePixelBuffer.cpp
+===================================================================
+--- OgreD3D9HardwarePixelBuffer.cpp	(revision 105)
++++ OgreD3D9HardwarePixelBuffer.cpp	(working copy)
+@@ -565,7 +565,7 @@
+ 				if(D3DXLoadSurfaceFromSurface(
+ 					dstBufferResources->surface, NULL, &ddestRect, 
+ 					tmpsurface, NULL, &dsrcRect,
+-					D3DX_DEFAULT, 0) != D3D_OK)
++					D3DX_DEFAULT, D3DCOLOR(0x0000FFFF)) != D3D_OK)
+ 				{
+ 					tmpsurface->Release();
+ 					tmptex->Release();
+@@ -585,7 +585,7 @@
+ 		if(D3DXLoadSurfaceFromSurface(
+ 			dstBufferResources->surface, NULL, &ddestRect, 
+ 			srcBufferResources->surface, NULL, &dsrcRect,
+-			D3DX_DEFAULT, 0) != D3D_OK)
++			D3DX_DEFAULT, D3DCOLOR(0x0000FFFF)) != D3D_OK)
+ 		{
+ 			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "D3DXLoadSurfaceFromSurface failed",
+ 				"D3D9HardwarePixelBuffer::blit");
+@@ -677,7 +677,7 @@
+ 		if(D3DXLoadSurfaceFromMemory(dstBufferResources->surface, NULL, &destRect, 
+ 			converted.data, D3D9Mappings::_getPF(converted.format),
+ 			static_cast<UINT>(rowWidth),
+-			NULL, &srcRect, D3DX_DEFAULT, 0) != D3D_OK)
++			NULL, &srcRect, D3DX_DEFAULT, D3DCOLOR(0x0000FFFF)) != D3D_OK)
+ 		{
+ 			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "D3DXLoadSurfaceFromMemory failed",
+ 				"D3D9HardwarePixelBuffer::blitFromMemory");
+@@ -814,7 +814,7 @@
+ 			if(D3DXLoadSurfaceFromSurface(
+ 				surface, NULL, &destRect, 
+ 				srcBufferResources->surface, NULL, &srcRect,
+-				D3DX_DEFAULT, 0) != D3D_OK)
++				D3DX_DEFAULT, D3DCOLOR(0x0000FFFF)) != D3D_OK)
+ 			{
+ 				surface->Release();
+ 				tmp->Release();

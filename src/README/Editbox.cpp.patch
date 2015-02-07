@@ -1,0 +1,13 @@
+Index: Editbox.cpp
+===================================================================
+--- Editbox.cpp	(revision 105)
++++ Editbox.cpp	(working copy)
+@@ -662,7 +662,7 @@
+             break;
+ 
+         default:
+-            Window::onKeyDown(e);
++            //Window::onKeyDown(e); // will fireEvent twice
+             return;
+         }
+ 
