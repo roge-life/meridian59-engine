@@ -133,7 +133,7 @@ GameEngine stack for Windows, built from Open-Source or free components.
 
 ## Compiling
  * Requires Visual Studio 2013.
- * Use included <a href="https://github.com/cyberjunk/Engine/blob/master/src/Engine-190.sln">Engine-190.sln</a> solution file.
+ * Use included <a href="https://github.com/cyberjunk/Engine/blob/master/src/Engine.sln">Engine.sln</a> solution file.
  * Almost all libraries are statical linked.
  * All 32-Bit builds use the v120_xp toolset and are compatible with Windows XP.
  * Engine can also be built in 64-Bit.
