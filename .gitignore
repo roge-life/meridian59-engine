@@ -3,3 +3,4 @@
 *.pdb
 *.opensdf
 /obj
+/src/zlib-1.2.8/win32/zlib1.res
