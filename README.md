@@ -131,16 +131,15 @@ GameEngine stack for Windows, built from Open-Source or free components.
 </tr>
 </table>
 
-## Compiling
+## Notes
  * Requires Visual Studio 2013.
  * Use included <a href="https://github.com/cyberjunk/Engine/blob/master/src/Engine.sln">Engine.sln</a> solution file.
  * Almost all libraries are statical linked.
- * All 32-Bit builds use the v120_xp toolset and are compatible with Windows XP.
+ * All 32-Bit builds use the *v120_xp toolset* and are compatible with Windows XP.
  * Engine can also be built in 64-Bit.
- * Do not upgrade any projects/solutions when opening the solution the first time and being asked so. It's because of the older .NET4 and the older toolsets, which you probably want to keep for XP compatibility.
  * Release-builds have high optimizations, SSE2 enabled and no debuginfo. Debug-builds the opposite.
- * This package works with CLR (C++ CLI) enabled application (see TEST app).
- * You maybe have to set your Debugging *WorkFolder* to *$(OutDir)* (in project properties) to run the TEST app from VS directly. Otherwise try starting the TEST.exe directly in case of errors.
+ * This package works with CLR (C++/CLI) enabled applications (see TEST app).
+ * You have to set your debugging *WorkFolder* to *$(OutDir)* (in project properties) to run the TEST app from VS directly (by pressing the Play button).
  * The sources-structure (buildfiles, content) has been heavily adjusted from its original packages/downloads/checkouts. All dependencies have been ripped of any documentations and additional, unnecessary files.
  * The TEST application is an mini executable to test whether everything links in OK. It's the only executable project in the solution.
  * All solution projects can be built independently from each other (due to the fully statical linking), except for the TEST application, which depends on every single other one.
