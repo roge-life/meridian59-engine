@@ -13,9 +13,7 @@
 #include "OISListeners.h"
 
 #include "OgreD3D9RenderSystem.h"
-#include "OgreParticleFXPlugin.h"
 #include "OgreOctreePlugin.h"
-#include "OgreCgPlugin.h"
 
 #include "CEGUI\CEGUI.h"
 #include "CEGUI\RendererModules\Ogre\Renderer.h"
@@ -103,9 +101,7 @@ int main(array<::System::String ^> ^args)
     root->setRenderSystem(renderSystem);
     
 	// load plugins
-	root->installPlugin(new Ogre::ParticleFXPlugin());
 	root->installPlugin(new Ogre::OctreePlugin());
-	root->installPlugin(new Ogre::CgPlugin());
 	
 	// initialise the root
     root->initialise(false, WINDOWNAME);
