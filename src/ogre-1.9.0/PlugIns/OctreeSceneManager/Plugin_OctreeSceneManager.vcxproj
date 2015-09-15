@@ -268,7 +268,6 @@
     <ClCompile Include="src\OgreOctreeNode.cpp" />
     <ClCompile Include="src\OgreOctreePlugin.cpp" />
     <ClCompile Include="src\OgreOctreeSceneManager.cpp" />
-    <ClCompile Include="src\OgreOctreeSceneManagerDll.cpp" />
     <ClCompile Include="src\OgreOctreeSceneQuery.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
