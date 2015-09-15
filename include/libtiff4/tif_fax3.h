@@ -1,4 +1,4 @@
-/* $Id: tif_fax3.h,v 1.4 2012/10/07 15:54:03 drolon Exp $ */
+/* $Id: tif_fax3.h,v 1.9 2011-03-10 20:23:07 fwarmerdam Exp $ */
 
 /*
  * Copyright (c) 1990-1997 Sam Leffler
