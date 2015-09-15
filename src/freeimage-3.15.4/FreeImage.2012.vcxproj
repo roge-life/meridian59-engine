@@ -187,7 +187,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalIncludeDirectories>..\..\include;..\..\include\freeimage;..\..\include\freeimage\metadata;..\..\include\freeimage\freeimagetoolkit;..\..\include\freeimage\deprecationmanager;..\..\include\zlib;..\..\include\libraw\libraw;..\..\include\libtiff4;..\..\include\libpng;..\..\include\OpenEXR;..\..\include\OpenEXR\Imath;..\..\include\OpenEXR\IlmImf;..\..\include\OpenEXR\Half;..\..\include\OpenEXR\Iex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;OPJ_STATIC;FREEIMAGE_EXPORTS;_CRT_SECURE_NO_DEPRECATE;LIBRAW_NODLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
