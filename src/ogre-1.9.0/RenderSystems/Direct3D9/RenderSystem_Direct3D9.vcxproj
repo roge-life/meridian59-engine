@@ -288,7 +288,6 @@
     <ClCompile Include="src\OgreD3D9DeviceManager.cpp" />
     <ClCompile Include="src\OgreD3D9Driver.cpp" />
     <ClCompile Include="src\OgreD3D9DriverList.cpp" />
-    <ClCompile Include="src\OgreD3D9EngineDll.cpp" />
     <ClCompile Include="src\OgreD3D9GpuProgram.cpp" />
     <ClCompile Include="src\OgreD3D9GpuProgramManager.cpp" />
     <ClCompile Include="src\OgreD3D9HardwareBufferManager.cpp" />
