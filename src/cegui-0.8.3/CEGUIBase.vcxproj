@@ -463,7 +463,6 @@
     <ClCompile Include="src\AnimationInstance.cpp" />
     <ClCompile Include="src\AnimationManager.cpp" />
     <ClCompile Include="src\Animation_xmlHandler.cpp" />
-    <ClCompile Include="src\Base.cpp" />
     <ClCompile Include="src\BasicImage.cpp" />
     <ClCompile Include="src\BasicRenderedStringParser.cpp" />
     <ClCompile Include="src\BidiVisualMapping.cpp" />
@@ -483,7 +482,6 @@
     <ClCompile Include="src\DynamicModule.cpp" />
     <ClCompile Include="src\Element.cpp" />
     <ClCompile Include="src\Event.cpp" />
-    <ClCompile Include="src\EventArgs.cpp" />
     <ClCompile Include="src\EventSet.cpp" />
     <ClCompile Include="src\EventSignal.cpp" />
     <ClCompile Include="src\EventSignalSet.cpp" />
@@ -517,7 +515,6 @@
     <ClCompile Include="src\PropertyHelper.cpp" />
     <ClCompile Include="src\PropertySet.cpp" />
     <ClCompile Include="src\Quaternion.cpp" />
-    <ClCompile Include="src\Rect.cpp" />
     <ClCompile Include="src\RenderedString.cpp" />
     <ClCompile Include="src\RenderedStringComponent.cpp" />
     <ClCompile Include="src\RenderedStringImageComponent.cpp" />
@@ -541,7 +538,6 @@
     <ClCompile Include="src\TextUtils.cpp" />
     <ClCompile Include="src\Win32StringTranscoder.cpp" />
     <ClCompile Include="src\Window.cpp" />
-    <ClCompile Include="src\WindowFactory.cpp" />
     <ClCompile Include="src\WindowFactoryManager.cpp" />
     <ClCompile Include="src\WindowManager.cpp" />
     <ClCompile Include="src\WindowRenderer.cpp" />
