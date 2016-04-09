@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   CEGUIOpenGLGLXPBTextureTarget.cpp
     created:    Sat Jan 31 2009
     author:     Paul D Turner
 *************************************************************************/
@@ -158,8 +157,8 @@ void OpenGLGLXPBTextureTarget::initialisePBuffer()
 {
     int creation_attrs[] =
     {
-        GLX_PBUFFER_WIDTH, d_area.getWidth(),
-        GLX_PBUFFER_HEIGHT, d_area.getHeight(),
+        GLX_PBUFFER_WIDTH, static_cast<int>(d_area.getWidth()),
+        GLX_PBUFFER_HEIGHT, static_cast<int>(d_area.getHeight()),
         GLX_LARGEST_PBUFFER, True,
         GLX_PRESERVED_CONTENTS, True,
         None

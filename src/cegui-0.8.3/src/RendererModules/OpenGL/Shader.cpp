@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   OpenGL3Shader.cpp
     created:    Wed, 8th Feb 2012
     author:     Lukas E Meindl
 *************************************************************************/
@@ -25,12 +24,10 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  *   OTHER DEALINGS IN THE SOFTWARE.
  ***************************************************************************/
-#include <GL/glew.h>
-
+#include "CEGUI/RendererModules/OpenGL/GL.h"
 #include "CEGUI/RendererModules/OpenGL/Shader.h"
 #include "CEGUI/Logger.h"
 #include "CEGUI/Exceptions.h"
-
 
 #include <sstream>
 #include <iostream>
@@ -112,7 +109,7 @@ void OpenGL3Shader::bindFragDataLocation(const std::string &name)
 {
     if(d_program > 0)
     {
-        glBindFragDataLocation(d_program, 0, name.c_str() );
+        glBindFragDataLocation(d_program, 0, name.c_str());
         link();
     }
 }
@@ -200,15 +197,17 @@ void OpenGL3Shader::link()
     d_createdSucessfully = true;
     checkGLErrors();
 
-
-    glBindFragDataLocation(d_program, 0, "out0"); // GL_COLOR_ATTACHMENT0
-    glBindFragDataLocation(d_program, 1, "out1"); // GL_COLOR_ATTACHMENT1
-    glBindFragDataLocation(d_program, 2, "out2"); // ...
-    glBindFragDataLocation(d_program, 3, "out3");
-    glBindFragDataLocation(d_program, 4, "out4");
-    glBindFragDataLocation(d_program, 5, "out5");
-    glBindFragDataLocation(d_program, 6, "out6");
-    glBindFragDataLocation(d_program, 7, "out7");
+    if (OpenGLInfo::getSingleton().isUsingDesktopOpengl())
+    {
+        glBindFragDataLocation(d_program, 0, "out0"); // GL_COLOR_ATTACHMENT0
+        glBindFragDataLocation(d_program, 1, "out1"); // GL_COLOR_ATTACHMENT1
+        glBindFragDataLocation(d_program, 2, "out2"); // ...
+        glBindFragDataLocation(d_program, 3, "out3");
+        glBindFragDataLocation(d_program, 4, "out4");
+        glBindFragDataLocation(d_program, 5, "out5");
+        glBindFragDataLocation(d_program, 6, "out6");
+        glBindFragDataLocation(d_program, 7, "out7");
+    }
     checkGLErrors();
 }
 
@@ -227,7 +226,7 @@ void OpenGL3Shader::outputProgramLog(GLuint program)
         sstream << "OpenGL3Shader linking has failed.\n" << logBuffer;
         CEGUI_THROW(RendererException(sstream.str().c_str()));
     }
-};
+}
 
 //----------------------------------------------------------------------------//
 void OpenGL3Shader::outputShaderLog(GLuint shader)
@@ -244,7 +243,7 @@ void OpenGL3Shader::outputShaderLog(GLuint shader)
         ss << "OpenGL3Shader compilation has failed.\n" << logBuffer;
           CEGUI_THROW(RendererException(ss.str().c_str()));
     }
-};
+}
 
 //----------------------------------------------------------------------------//
 void getGLErrors(const char *location)

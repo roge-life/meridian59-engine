@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   CEGUIEditbox.h
     created:    13/4/2004
     author:     Paul D Turner
 
@@ -262,16 +261,6 @@ public:
         defined selection.
     */
     size_t getSelectionLength(void) const;
-	
-    /*!
-    \brief
-        Erase the currently selected text.
-
-    \param modify_text
-        when true, the actual text will be modified.  When false, everything is
-        done except erasing the characters.
-    */
-    void eraseSelectedText(bool modify_text = true);
 
     /*!
     \brief
@@ -474,6 +463,16 @@ public:
 
     //! Destructor for Editbox class.
     virtual ~Editbox(void);
+
+	/*!
+	\brief
+	Erase the currently selected text.
+
+	\param modify_text
+	when true, the actual text will be modified.  When false, everything is
+	done except erasing the characters.
+	*/
+	void eraseSelectedText(bool modify_text = true);
 
 protected:
     /*!

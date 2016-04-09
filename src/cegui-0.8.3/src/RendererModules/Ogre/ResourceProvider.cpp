@@ -1,5 +1,4 @@
 /************************************************************************
-    filename:   CEGUIOgreResourceProvider.cpp
     created:    8/7/2004
     author:     James '_mental_' O'Sullivan
 
@@ -30,8 +29,8 @@
 #include "CEGUI/RendererModules/Ogre/ResourceProvider.h"
 #include "CEGUI/Exceptions.h"
 
-#include <OgreResourceGroupManager.h>
 #include <OgreArchiveManager.h>
+#include <OgreResourceGroupManager.h>
 
 // Start of CEGUI namespace section
 namespace CEGUI

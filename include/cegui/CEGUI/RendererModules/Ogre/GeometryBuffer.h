@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   CEGUIOgreGeometryBuffer.h
     created:    Tue Feb 17 2009
     author:     Paul D Turner
 *************************************************************************/
@@ -40,6 +39,10 @@
 
 #include <utility>
 #include <vector>
+
+#ifdef CEGUI_USE_OGRE_HLMS
+#include <OgreRenderable.h>
+#endif
 
 // Ogre forward refs
 namespace Ogre
@@ -130,10 +133,17 @@ protected:
     mutable Ogre::Matrix4 d_matrix;
     //! true when d_matrix is valid and up to date
     mutable bool d_matrixValid;
+#ifdef CEGUI_USE_OGRE_HLMS
+    //! Render operation for this buffer.
+    mutable Ogre::v1::RenderOperation d_renderOp;
+    //! H/W buffer where the vertices are rendered from.
+    mutable Ogre::v1::HardwareVertexBufferSharedPtr d_hwBuffer;
+#else
     //! Render operation for this buffer.
     mutable Ogre::RenderOperation d_renderOp;
     //! H/W buffer where the vertices are rendered from.
     mutable Ogre::HardwareVertexBufferSharedPtr d_hwBuffer;
+#endif
     //! whether the h/w buffer is in sync with the added geometry
     mutable bool d_sync;
     //! type of container that tracks BatchInfos.

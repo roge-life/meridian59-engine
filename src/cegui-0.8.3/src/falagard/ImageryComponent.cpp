@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   CEGUIFalImageryComponent.cpp
     created:    Mon Jun 13 2005
     author:     Paul D Turner <paul@cegui.org.uk>
 *************************************************************************/
@@ -27,6 +26,7 @@
  ***************************************************************************/
 #include "CEGUI/falagard/ImageryComponent.h"
 #include "CEGUI/falagard/XMLEnumHelper.h"
+#include "CEGUI/falagard/XMLHandler.h"
 #include "CEGUI/Exceptions.h"
 #include "CEGUI/ImageManager.h"
 #include "CEGUI/Image.h"
@@ -73,6 +73,11 @@ namespace CEGUI
         return d_vertFormatting.get(wnd);
     }
 
+    VerticalFormatting ImageryComponent::getVerticalFormattingFromComponent() const
+    {
+        return d_vertFormatting.getValue();
+    }
+
     void ImageryComponent::setVerticalFormatting(VerticalFormatting fmt)
     {
         d_vertFormatting.set(fmt);
@@ -83,15 +88,30 @@ namespace CEGUI
         return d_horzFormatting.get(wnd);
     }
 
+    HorizontalFormatting ImageryComponent::getHorizontalFormattingFromComponent() const
+    {
+        return d_horzFormatting.getValue();
+    }
+
     void ImageryComponent::setHorizontalFormatting(HorizontalFormatting fmt)
     {
         d_horzFormatting.set(fmt);
     }
-    
+
+    const String& ImageryComponent::getHorizontalFormattingPropertySource() const
+    {
+        return d_horzFormatting.getPropertySource();
+    }
+
     void ImageryComponent::setHorizontalFormattingPropertySource(
                                                 const String& property_name)
     {
         d_horzFormatting.setPropertySource(property_name);
+    }
+
+    const String& ImageryComponent::getVerticalFormattingPropertySource() const
+    {
+        return d_vertFormatting.getPropertySource();
     }
 
     void ImageryComponent::setVerticalFormattingPropertySource(
@@ -235,18 +255,18 @@ namespace CEGUI
     void ImageryComponent::writeXMLToStream(XMLSerializer& xml_stream) const
     {
         // opening tag
-        xml_stream.openTag("ImageryComponent");
+        xml_stream.openTag(Falagard_xmlHandler::ImageryComponentElement);
         // write out area
         d_area.writeXMLToStream(xml_stream);
 
         // write image
         if (isImageFetchedFromProperty())
-            xml_stream.openTag("ImageProperty")
-                .attribute("name", d_imagePropertyName)
+            xml_stream.openTag(Falagard_xmlHandler::ImagePropertyElement)
+            .attribute(Falagard_xmlHandler::NameAttribute, d_imagePropertyName)
                 .closeTag();
         else
-            xml_stream.openTag("Image")
-                .attribute("name", d_image->getName())
+            xml_stream.openTag(Falagard_xmlHandler::ImageElement)
+                .attribute(Falagard_xmlHandler::NameAttribute, d_image->getName())
                 .closeTag();
 
         // get base class to write colours

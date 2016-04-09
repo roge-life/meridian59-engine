@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   CEGUIOpenGL3RenderTarget.cpp
     created:    Wed, 8th Feb 2012
     author:     Lukas E Meindl (based on code by Paul D Turner)
 *************************************************************************/
@@ -134,7 +133,7 @@ void OpenGLRenderTarget<T>::unprojectPoint(const GeometryBuffer& buff,
         static_cast<GLint>(d_area.getHeight())
     };
 
-    GLdouble in_x, in_y, in_z = 0.0;
+    GLdouble in_x = 0.0, in_y = 0.0, in_z = 0.0;
 
     glm::ivec4 viewPort = glm::ivec4(vp[0], vp[1], vp[2], vp[3]);
     const glm::mat4& projMatrix = d_matrix->d_matrix;
@@ -195,16 +194,28 @@ void OpenGLRenderTarget<T>::updateMatrix() const
 {
     const float w = d_area.getWidth();
     const float h = d_area.getHeight();
-    const float aspect = w / h;
-    const float midx = w * 0.5f;
-    const float midy = h * 0.5f;
+
+    // We need to check if width or height are zero and act accordingly to prevent running into issues
+    // with divisions by zero which would lead to undefined values, as well as faulty clipping planes
+    // This is mostly important for avoiding asserts
+    const bool widthAndHeightNotZero = ( w != 0.0f ) && ( h != 0.0f);
+
+    const float aspect = widthAndHeightNotZero ? w / h : 1.0f;
+    const float midx = widthAndHeightNotZero ? w * 0.5f : 0.5f;
+    const float midy = widthAndHeightNotZero ? h * 0.5f : 0.5f;
     d_viewDistance = midx / (aspect * d_yfov_tan);
 
     glm::vec3 eye = glm::vec3(midx, midy, float(-d_viewDistance));
     glm::vec3 center = glm::vec3(midx, midy, 1);
     glm::vec3 up = glm::vec3(0, -1, 0);
 
+    //Older glm versions use degrees as parameter here by default (Unless radians are forced via GLM_FORCE_RADIANS). Newer versions of glm exlusively use radians.
+#if (GLM_VERSION_MAJOR == 0 && GLM_VERSION_MINOR <= 9 && GLM_VERSION_PATCH < 6) && (!defined(GLM_FORCE_RADIANS))
     glm::mat4 projectionMatrix = glm::perspective(30.f, aspect, float(d_viewDistance * 0.5), float(d_viewDistance * 2.0));
+#else
+    glm::mat4 projectionMatrix = glm::perspective(glm::radians(30.f), aspect, float(d_viewDistance * 0.5), float(d_viewDistance * 2.0));
+#endif
+
     // Projection matrix abuse!
     glm::mat4 viewMatrix = glm::lookAt(eye, center, up);
   

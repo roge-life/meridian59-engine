@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   CEGUILayoutContainer.h
     created:    29/7/2010
     author:     Martin Preisler
 
@@ -109,8 +108,8 @@ public:
     virtual const CachedRectf& getClientChildContentArea() const;
 
     virtual void notifyScreenAreaChanged(bool recursive);
-	
-    size_t getIdxOfChild(Window* wnd) const;
+
+	size_t getIdxOfChild(Window* wnd) const;
 
 protected:
     /// @copydoc Window::getUnclippedInnerRect_impl

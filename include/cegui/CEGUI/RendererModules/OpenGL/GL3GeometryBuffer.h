@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   CEGUIOpenGLGeometryBuffer.h
     created:    Wed, 8th Feb 2012
     author:     Lukas E Meindl (based on code by Paul D Turner)
 *************************************************************************/
@@ -45,6 +44,8 @@ public:
     virtual ~OpenGL3GeometryBuffer();
 
     void initialiseOpenGLBuffers();
+    //! The functions first binds the vbo and then sets it up for rendering.
+    void configureVertexArray() const;
     void deinitialiseOpenGLBuffers();
     void updateOpenGLBuffers();
 

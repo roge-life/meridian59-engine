@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   CEGUIPropertyDefinition.h
     created:    Sun Jun 26 2005
     author:     Paul D Turner <paul@cegui.org.uk>
 *************************************************************************/
@@ -29,6 +28,7 @@
 #define _CEGUIFalPropertyDefinition_h_
 
 #include "CEGUI/falagard/FalagardPropertyBase.h"
+#include "CEGUI/falagard/XMLHandler.h"
 #include "CEGUI/Logger.h"
 
 namespace CEGUI
@@ -47,7 +47,7 @@ public:
         FalagardPropertyBase<T>(name, help, initialValue, origin,
                                 redrawOnWrite, layoutOnWrite,
                                 fireEvent, eventNamespace),
-        d_userStringName(name + "_fal_auto_prop__")
+                                d_userStringName(name + PropertyDefinitionBase::UserStringNameSuffix)
     {
     }
 
@@ -57,7 +57,7 @@ public:
     //------------------------------------------------------------------------//
     void initialisePropertyReceiver(PropertyReceiver* receiver) const
     {
-        setWindowUserString(static_cast<Window*>(receiver), this->d_default);
+        setWindowUserString(static_cast<Window*>(receiver), FalagardPropertyBase<T>::d_initialValue);
     }
 
     //------------------------------------------------------------------------//
@@ -68,7 +68,7 @@ public:
 
 protected:
     //------------------------------------------------------------------------//
-    typename Helper::safe_method_return_type 
+    typename Helper::safe_method_return_type
     getNative_impl(const PropertyReceiver* receiver) const
     {
         const Window* const wnd = static_cast<const Window*>(receiver);
@@ -95,9 +95,9 @@ protected:
             // to just return d_default, and while technically correct, it
             // would be very slow.
             const_cast<Window*>(wnd)->
-                setUserString(d_userStringName, TypedProperty<T>::d_default);
+                setUserString(d_userStringName, FalagardPropertyBase<T>::d_initialValue);
 
-            return Helper::fromString(TypedProperty<T>::d_default);
+            return Helper::fromString(FalagardPropertyBase<T>::d_initialValue);
         }
     }
 
@@ -117,8 +117,19 @@ protected:
     //------------------------------------------------------------------------//
     void writeDefinitionXMLElementType(XMLSerializer& xml_stream) const
     {
-        xml_stream.openTag("PropertyDefinition");
+        xml_stream.openTag(Falagard_xmlHandler::PropertyDefinitionElement);
+        writeDefinitionXMLAdditionalAttributes(xml_stream);
     }
+    //------------------------------------------------------------------------//
+    void writeDefinitionXMLAdditionalAttributes(XMLSerializer& xml_stream) const
+    {
+        if(FalagardPropertyBase<T>::d_dataType.compare(Falagard_xmlHandler::GenericDataType) != 0)
+            xml_stream.attribute(Falagard_xmlHandler::TypeAttribute, FalagardPropertyBase<T>::d_dataType);
+
+        if (!FalagardPropertyBase<T>::d_helpString.empty() && FalagardPropertyBase<T>::d_helpString.compare(CEGUI::Falagard_xmlHandler::PropertyDefinitionHelpDefaultValue) != 0)
+            xml_stream.attribute(Falagard_xmlHandler::HelpStringAttribute, FalagardPropertyBase<T>::d_helpString);
+    }
+
 
     //------------------------------------------------------------------------//
 

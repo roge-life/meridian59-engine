@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   CEGUIIrrlichtRenderTarget.cpp
     created:    Tue Mar 3 2009
     author:     Paul D Turner (parts based on original code by Thomas Suter)
 *************************************************************************/
@@ -40,8 +39,8 @@ IrrlichtRenderTarget<T>::IrrlichtRenderTarget(IrrlichtRenderer& owner,
     d_owner(owner),
     d_driver(driver),
     d_area(0, 0, 0, 0),
-    d_viewDistance(0),
     d_matrixValid(false),
+    d_viewDistance(0),
 #if IRRLICHT_VERSION_MAJOR > 1 || (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR >= 8)
     d_xViewDir(1.0f)
 #else

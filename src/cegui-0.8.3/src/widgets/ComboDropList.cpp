@@ -1,5 +1,4 @@
 /***********************************************************************
-	filename: 	CEGUIComboDropList.cpp
 	created:	13/6/2004
 	author:		Paul D Turner
 
@@ -84,8 +83,8 @@ void ComboDropList::initialiseComponents(void)
 	getHorzScrollbar()->setRestoreOldCapture(true);
 
     // ban these properties from being written
-    getVertScrollbar()->banPropertyFromXML("RestoreOldCapture");
-    getHorzScrollbar()->banPropertyFromXML("RestoreOldCapture");
+    getVertScrollbar()->banPropertyFromXMLRecursive(Window::RestoreOldCapturePropertyName);
+    getHorzScrollbar()->banPropertyFromXMLRecursive(Window::RestoreOldCapturePropertyName);
 }
 
 //----------------------------------------------------------------------------//

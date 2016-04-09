@@ -275,9 +275,6 @@
     <ProjectReference Include="..\LibTIFF4-4.0.3\LibTIFF4.2012.vcxproj">
       <Project>{ec085cbd-e9c3-477f-9a97-cb9d5da30e27}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\ogre-1.9.0\Components\Terrain\OgreTerrain.vcxproj">
-      <Project>{0e6760ee-a9e5-4468-9225-c91b628c4100}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\ogre-1.9.0\OgreMain\OgreMain.vcxproj">
       <Project>{25347cbb-c21c-4f72-a582-3bb44f654d25}</Project>
     </ProjectReference>

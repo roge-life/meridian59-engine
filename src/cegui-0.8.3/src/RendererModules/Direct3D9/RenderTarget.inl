@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   CEGUIDirect3D9RenderTarget.cpp
     created:    Tue Feb 10 2009
     author:     Paul D Turner
 *************************************************************************/
@@ -40,8 +39,8 @@ Direct3D9RenderTarget<T>::Direct3D9RenderTarget(Direct3D9Renderer& owner) :
     d_owner(owner),
     d_device(owner.getDevice()),
     d_area(0, 0, 0, 0),
-    d_viewDistance(0),
-    d_matrixValid(false)
+    d_matrixValid(false),
+    d_viewDistance(0)
 {
 }
 

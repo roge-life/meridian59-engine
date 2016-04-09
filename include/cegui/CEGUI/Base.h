@@ -1,5 +1,4 @@
 /***********************************************************************
-	filename: 	CEGUIBase.h
 	created:	20/2/2004
 	author:		Paul D Turner
 
@@ -33,13 +32,14 @@
 #ifndef _CEGUIBase_h_
 #define _CEGUIBase_h_
 
-#include <cassert>
-
 // bring in configuration options
 #include "CEGUI/Config.h"
 
 // add CEGUI version defines
 #include "CEGUI/Version.h"
+
+#include <cassert>
+#include <algorithm>
 
 /*************************************************************************
 	Dynamic Library import / export control conditional
@@ -89,11 +89,10 @@
 // fix to undefine _STLP_DEBUG if STLport is not actually being used
 // (resolves some unresolved externals concerning boost)
 #if defined(_STLP_DEBUG) && defined(_MSC_VER) && (_MSC_VER >= 1200)
-#	if !defined(_STLPORT_VERSION)
-#		undef _STLP_DEBUG
-#	endif
+#   if !defined(_STLPORT_VERSION)
+#       undef _STLP_DEBUG
+#   endif
 #endif
-
 
 // The following defines macros used within CEGUI for std::min/std::max
 // usage, and is done as a compatibility measure for VC6 with native STL.
@@ -101,7 +100,6 @@
 #    define ceguimin	std::_cpp_min
 #    define ceguimax	std::_cpp_max
 #else
-#	 include <algorithm>
 #    define ceguimin	std::min
 #    define ceguimax	std::max
 #endif
@@ -133,11 +131,14 @@
 #   define  CEGUI_FUNCTION_NAME CEGUI::String(__FUNCSIG__)
 #elif defined(__GNUC__)
 #   define  CEGUI_FUNCTION_NAME CEGUI::String(__PRETTY_FUNCTION__)
-#elif __STDC_VERSION__ >= 199901L
+#elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 #   define  CEGUI_FUNCTION_NAME CEGUI::String(__func__)
 #else
 #   define  CEGUI_FUNCTION_NAME CEGUI::String("[Function name unavailable]")
 #endif
+
+//! Prevent an "unused parameter/variable" warning.
+#define CEGUI_UNUSED(var) (static_cast<void>(var))
 
 /*************************************************************************
 	Documentation for the CEGUI namespace itself
@@ -160,10 +161,10 @@ typedef unsigned short	ushort;
 typedef unsigned int	uint;
 typedef unsigned char	uchar;
 
-typedef long long  int64;
-typedef int        int32;
-typedef short      int16;
-typedef char       int8;
+typedef long long    int64;
+typedef int          int32;
+typedef short        int16;
+typedef signed char  int8;
 
 typedef unsigned long long  uint64;
 typedef unsigned int        uint32;

@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   CEGUIOpenGLGeometryBuffer.cpp
     created:    Thu Jan 8 2009
     authors:    Paul D Turner <paul@cegui.org.uk>
                 Lukas E Meindl
@@ -26,7 +25,7 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  *   OTHER DEALINGS IN THE SOFTWARE.
  ***************************************************************************/
-#include <GL/glew.h>
+#include "CEGUI/RendererModules/OpenGL/GL.h"
 #include "CEGUI/RendererModules/OpenGL/GLGeometryBuffer.h"
 #include "CEGUI/RendererModules/OpenGL/GLRenderer.h"
 #include "CEGUI/RenderEffect.h"

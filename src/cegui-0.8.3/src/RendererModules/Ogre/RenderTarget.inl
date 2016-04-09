@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   CEGUIOgreRenderTarget.cpp
     created:    Tue Feb 17 2009
     author:     Paul D Turner
 *************************************************************************/
@@ -32,6 +31,7 @@
 
 #include <OgreRenderSystem.h>
 #include <OgreCamera.h>
+#include <OgreViewport.h>
 
 // Start of CEGUI namespace section
 namespace CEGUI
@@ -44,12 +44,18 @@ OgreRenderTarget<T>::OgreRenderTarget(OgreRenderer& owner,
     d_renderSystem(rs),
     d_area(0, 0, 0, 0),
     d_renderTarget(0),
+#ifdef CEGUI_USE_OGRE_COMPOSITOR2
+    d_renderTargetUpdated(false),
+#else
     d_viewport(0),
+#endif    
     d_matrix(Ogre::Matrix3::ZERO),
     d_matrixValid(false),
-    d_viewportValid(false),
     d_viewDistance(0),
-    d_ogreViewportDimensions(0, 0, 0, 0)
+    d_viewportValid(false)
+#ifndef CEGUI_USE_OGRE_COMPOSITOR2
+    , d_ogreViewportDimensions(0, 0, 0, 0)
+#endif
 {
 }
 
@@ -57,7 +63,9 @@ OgreRenderTarget<T>::OgreRenderTarget(OgreRenderer& owner,
 template <typename T>
 OgreRenderTarget<T>::~OgreRenderTarget()
 {
+#if !defined(CEGUI_USE_OGRE_COMPOSITOR2)
     delete d_viewport;
+#endif    
 }
 
 //----------------------------------------------------------------------------//
@@ -79,8 +87,10 @@ template <typename T>
 void OgreRenderTarget<T>::setArea(const Rectf& area)
 {
     d_area = area;
+#if !defined(CEGUI_USE_OGRE_COMPOSITOR2)
     setOgreViewportDimensions(area);
-
+#endif
+    
     d_matrixValid = false;
 
     RenderTargetEventArgs args(this);
@@ -88,6 +98,7 @@ void OgreRenderTarget<T>::setArea(const Rectf& area)
 }
 
 //----------------------------------------------------------------------------//
+#if !defined(CEGUI_USE_OGRE_COMPOSITOR2)
 template <typename T>
 void OgreRenderTarget<T>::setOgreViewportDimensions(const Rectf& area)
 {
@@ -98,8 +109,10 @@ void OgreRenderTarget<T>::setOgreViewportDimensions(const Rectf& area)
 
     d_viewportValid = false;
 }
+#endif
 
 //----------------------------------------------------------------------------//
+#if !defined(CEGUI_USE_OGRE_COMPOSITOR2)
 template <typename T>
 void OgreRenderTarget<T>::updateOgreViewportDimensions(
                                             const Ogre::RenderTarget* const rt)
@@ -113,6 +126,7 @@ void OgreRenderTarget<T>::updateOgreViewportDimensions(
             d_ogreViewportDimensions.getHeight() / rt->getHeight());
     }
 }
+#endif
 
 //----------------------------------------------------------------------------//
 template <typename T>
@@ -131,7 +145,10 @@ void OgreRenderTarget<T>::activate()
     if (!d_viewportValid)
         updateViewport();
 
+#if !defined(CEGUI_USE_OGRE_COMPOSITOR2)
     d_renderSystem._setViewport(d_viewport);
+#endif    
+
     d_owner.setProjectionMatrix(d_matrix);
     d_owner.setViewMatrix(Ogre::Matrix4::IDENTITY);
 }
@@ -242,13 +259,16 @@ void OgreRenderTarget<T>::updateMatrix() const
 template <typename T>
 void OgreRenderTarget<T>::updateViewport()
 {
+#if !defined(CEGUI_USE_OGRE_COMPOSITOR2)
     if (!d_viewport)
     {
-        d_viewport = new Ogre::Viewport(0, d_renderTarget, 0, 0, 1, 1, 0);
+        d_viewport = OGRE_NEW Ogre::Viewport(0, d_renderTarget, 0, 0, 1, 1, 0);
         updateOgreViewportDimensions(d_renderTarget);
     }
 
     d_viewport->_updateDimensions();
+#endif    
+
     d_viewportValid = true;
 }
 

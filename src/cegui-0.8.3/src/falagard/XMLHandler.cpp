@@ -1,10 +1,9 @@
 /***********************************************************************
-    filename:   CEGUIFalagard_xmlHandler.cpp
     created:    Fri Jun 17 2005
     author:     Paul D Turner <paul@cegui.org.uk>
 *************************************************************************/
 /***************************************************************************
- *   Copyright (C) 2004 - 2012 Paul D Turner & The CEGUI Development Team
+ *   Copyright (C) 2004 - 2015 Paul D Turner & The CEGUI Development Team
  *
  *   Permission is hereby granted, free of charge, to any person obtaining
  *   a copy of this software and associated documentation files (the
@@ -56,7 +55,7 @@ namespace CEGUI
 {
     // note: The assets' versions aren't usually the same as CEGUI version, they are versioned from version 1 onwards!
     const String Falagard_xmlHandler::NativeVersion("7");
-    
+
     ////////////////////////////////////////////////////////////////////////////////
     // element names
     const String Falagard_xmlHandler::FalagardElement("Falagard");
@@ -105,6 +104,7 @@ namespace CEGUI
     const String Falagard_xmlHandler::NamedAreaSourceElement("NamedAreaSource");
     const String Falagard_xmlHandler::EventActionElement("EventAction");
     // attribute names
+    const String Falagard_xmlHandler::VersionAttribute("version");
     const String Falagard_xmlHandler::TopLeftAttribute("topLeft");
     const String Falagard_xmlHandler::TopRightAttribute("topRight");
     const String Falagard_xmlHandler::BottomLeftAttribute("bottomLeft");
@@ -142,6 +142,79 @@ namespace CEGUI
     const String Falagard_xmlHandler::FireEventAttribute("fireEvent");
     const String Falagard_xmlHandler::ActionAttribute("action");
     const String Falagard_xmlHandler::ComponentAttribute("component");
+
+    // Default values
+    const String Falagard_xmlHandler::PropertyDefinitionHelpDefaultValue("Falagard custom property definition - "
+                                                                         "gets/sets a named user string.");
+    const String Falagard_xmlHandler::PropertyLinkDefinitionHelpDefaultValue("Falagard property link definition - links a "
+                                                                             "property on this window to properties "
+                                                                             "defined on one or more child windows, or "
+                                                                             "the parent window.");
+
+
+    //! Helper function for throwing exception strings. Adds introductory text andi s attempting to specify where the issue occured.
+    CEGUI::String getStartTextForException(const WidgetLookFeel* widgetLook)
+    {
+        CEGUI::String widgetLookInfo;
+        if (widgetLook != 0)
+        {
+            widgetLookInfo  = "Occurrence inside " + Falagard_xmlHandler::WidgetLookElement + " : \"" + widgetLook->getName() + "\".\n"; 
+        }
+        else
+        {
+            widgetLookInfo  = "Occurrence outside of any " + Falagard_xmlHandler::WidgetLookElement + " elements.\n"; 
+        }
+       
+        return "Exception occured while parsing a Look N' Feel file. " + widgetLookInfo + "Exception: ";
+        
+    }
+
+    //! Throws an exception message for a node added as a child of a node of same type
+    void throwExceptionChildOfSameNode(const WidgetLookFeel* widgetLook, const String& nodeType, const String& elementNameOrValue)
+    {
+        CEGUI_THROW(InvalidRequestException(
+            getStartTextForException(widgetLook) +
+            nodeType +  " nodes may not be children of other " + nodeType +
+            " nodes. This was not the case for a " + nodeType + " with name or value \"" +
+            elementNameOrValue + "\"."
+            ));
+    }
+
+    //! Throws an exception message for a node added as a child of a node of same type
+    void throwExceptionChildOfSameNode(const WidgetLookFeel* widgetLook, const String& nodeType)
+    {
+        CEGUI_THROW(InvalidRequestException(
+            getStartTextForException(widgetLook) +
+            nodeType +  " nodes may not be children of other " + nodeType +
+            " nodes. This was not the case for a " + nodeType + " node."
+            ));
+    }
+
+    //! Throws an exception message for a node which is not part of the required parent node
+    void throwExceptionNotChildOfNode(const WidgetLookFeel* widgetLook, const String& childNodeType, const String& childElementName, const String& parentNodeType)
+    {
+        CEGUI_THROW(InvalidRequestException(
+            getStartTextForException(widgetLook) +
+            childNodeType +  " nodes must be part of a " + parentNodeType +
+            " node. This was not the case for a " + childNodeType + " with name or value \"" +
+            childElementName + "\"."
+            ));
+    }
+
+    //! Throws an exception message for a node which is not part of the required parent node
+    void throwExceptionNotChildOfNode(const WidgetLookFeel* widgetLook, const String& childNodeType, const String& parentNodeType)
+    {
+        CEGUI_THROW(InvalidRequestException(
+            getStartTextForException(widgetLook) +
+            childNodeType +  " nodes must be part of a " + parentNodeType +
+            " node. This was not the case for a " + childNodeType + " node."
+            ));
+    }
+
+
+    // Specific attribute values
+    const String Falagard_xmlHandler::GenericDataType("Generic");
+    const String Falagard_xmlHandler::ParentIdentifier("__parent__");
 
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -362,8 +435,8 @@ namespace CEGUI
     void Falagard_xmlHandler::elementFalagardStart(const XMLAttributes& attributes)
     {
         Logger::getSingleton().logEvent("===== Falagard 'root' element: look and feel parsing begins =====");
-        
-        const String version = attributes.getValueAsString("version", "unknown");
+
+        const String version = attributes.getValueAsString(VersionAttribute, "unknown");
 
         if (version != NativeVersion)
         {
@@ -380,7 +453,11 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementWidgetLookStart(const XMLAttributes& attributes)
     {
-        assert(d_widgetlook == 0);
+        if (d_widgetlook != 0)
+        {
+            throwExceptionChildOfSameNode(d_widgetlook, WidgetLookElement, attributes.getValueAsString(NameAttribute));
+        }
+
         d_widgetlook = CEGUI_NEW_AO WidgetLookFeel(attributes.getValueAsString(NameAttribute),
                                                    attributes.getValueAsString(InheritsAttribute));
 
@@ -392,7 +469,11 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementChildStart(const XMLAttributes& attributes)
     {
-        assert(d_childcomponent == 0);
+        if (d_childcomponent != 0)
+        {
+            throwExceptionChildOfSameNode(d_widgetlook, ChildElement, attributes.getValueAsString(NameAttribute));
+        }
+
         d_childcomponent = CEGUI_NEW_AO WidgetComponent(
             attributes.getValueAsString(TypeAttribute),
             attributes.getValueAsString(LookAttribute),
@@ -401,7 +482,7 @@ namespace CEGUI
             attributes.getValueAsBool(AutoWindowAttribute, true));
 
         CEGUI_LOGINSANE("-----> Start of definition for child widget."
-            " Type: " + d_childcomponent->getBaseWidgetType() + 
+            " Type: " + d_childcomponent->getBaseWidgetType() +
             " Name: " + d_childcomponent->getWidgetName() +
             " Look: " + d_childcomponent->getWidgetLookName() +
             " Auto: " + (d_childcomponent->isAutoWindow() ? "Yes" : "No"));
@@ -412,7 +493,11 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementImagerySectionStart(const XMLAttributes& attributes)
     {
-        assert(d_imagerysection == 0);
+        if (d_imagerysection != 0)
+        {
+            throwExceptionChildOfSameNode(d_widgetlook, ImagerySectionElement, attributes.getValueAsString(NameAttribute));
+        }
+
         d_imagerysection = CEGUI_NEW_AO ImagerySection(attributes.getValueAsString(NameAttribute));
 
         CEGUI_LOGINSANE("-----> Start of definition for imagery section '" + d_imagerysection->getName() + "'.");
@@ -423,7 +508,11 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementStateImageryStart(const XMLAttributes& attributes)
     {
-        assert(d_stateimagery == 0);
+        if (d_stateimagery != 0)
+        {
+            throwExceptionChildOfSameNode(d_widgetlook, StateImageryElement, attributes.getValueAsString(NameAttribute));
+        }
+
         d_stateimagery = CEGUI_NEW_AO StateImagery(attributes.getValueAsString(NameAttribute));
         d_stateimagery->setClippedToDisplay(!attributes.getValueAsBool(ClippedAttribute, true));
 
@@ -435,7 +524,15 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementLayerStart(const XMLAttributes& attributes)
     {
-        assert(d_layer == 0);
+        if (d_layer != 0)
+        {
+            throwExceptionChildOfSameNode(d_widgetlook, LayerElement, CEGUI::String("Priority: ") + attributes.getValueAsString(PriorityAttribute, "0"));
+        }
+        if (d_stateimagery == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, LayerElement, CEGUI::String("Priority: ") + attributes.getValueAsString(PriorityAttribute, "0"), StateImageryElement);
+        }
+
         d_layer = CEGUI_NEW_AO LayerSpecification(attributes.getValueAsInteger(PriorityAttribute, 0));
 
         CEGUI_LOGINSANE("-------> Start of definition of new imagery layer, priority: " + attributes.getValueAsString(PriorityAttribute, "0"));
@@ -446,8 +543,21 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementSectionStart(const XMLAttributes& attributes)
     {
-        assert(d_section == 0);
-        assert(d_widgetlook != 0);
+        if (d_section != 0)
+        {
+            throwExceptionChildOfSameNode(d_widgetlook, SectionElement, attributes.getValueAsString(SectionNameAttribute));
+        }
+
+        if (d_widgetlook == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, SectionElement, attributes.getValueAsString(SectionNameAttribute), WidgetLookElement);
+        }
+
+        if (d_layer == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, SectionElement, d_section->getSectionName(), LayerElement);
+        }
+
         String owner(attributes.getValueAsString(LookAttribute));
         d_section =
             CEGUI_NEW_AO SectionSpecification(owner.empty() ? d_widgetlook->getName() : owner,
@@ -464,7 +574,16 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementImageryComponentStart(const XMLAttributes&)
     {
-        assert(d_imagerycomponent == 0);
+        if (d_imagerycomponent != 0)
+        {
+            throwExceptionChildOfSameNode(d_widgetlook, ImageryComponentElement);
+        }
+
+        if (d_imagerysection == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, ImageryComponentElement, ImagerySectionElement);
+        }
+
         d_imagerycomponent = CEGUI_NEW_AO ImageryComponent();
 
         CEGUI_LOGINSANE("-------> Image component definition...");
@@ -475,7 +594,16 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementTextComponentStart(const XMLAttributes&)
     {
-        assert(d_textcomponent == 0);
+        if (d_textcomponent != 0)
+        {
+            throwExceptionChildOfSameNode(d_widgetlook, TextComponentElement);
+        }
+
+        if (d_imagerysection == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, TextComponentElement, ImagerySectionElement);
+        }
+
         d_textcomponent = CEGUI_NEW_AO TextComponent();
 
         CEGUI_LOGINSANE("-------> Text component definition...");
@@ -486,7 +614,16 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementFrameComponentStart(const XMLAttributes&)
     {
-        assert(d_framecomponent == 0);
+        if (d_framecomponent != 0)
+        {
+            throwExceptionChildOfSameNode(d_widgetlook, FrameComponentElement);
+        }
+
+        if (d_imagerysection == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, FrameComponentElement, ImagerySectionElement);
+        }
+
         d_framecomponent = CEGUI_NEW_AO FrameComponent();
 
         CEGUI_LOGINSANE("-------> Frame component definition...");
@@ -497,7 +634,17 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementAreaStart(const XMLAttributes&)
     {
-        assert(d_area == 0);
+        if (d_area != 0)
+        {
+            throwExceptionChildOfSameNode(d_widgetlook, AreaElement);
+        }
+
+        if ((d_childcomponent == 0) && (d_imagerycomponent == 0) && (d_textcomponent == 0) && d_namedArea == 0 && d_framecomponent == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, AreaElement, ChildElement + " or " + ImageryComponentElement + " or " +
+                TextComponentElement + " or " + NamedAreaElement + " or " + FrameComponentElement);
+        }
+
         d_area = CEGUI_NEW_AO ComponentArea();
     }
 
@@ -547,7 +694,7 @@ namespace CEGUI
         {
             const FrameImageComponent what =
                 FalagardXMLHelper<FrameImageComponent>::fromString(
-                    attributes.getValueAsString(ComponentAttribute, "Background"));
+                    attributes.getValueAsString(ComponentAttribute, FalagardXMLHelper<FrameImageComponent>::Background));
             const VerticalFormatting fmt =
                 FalagardXMLHelper<VerticalFormatting>::fromString(
                     attributes.getValueAsString(TypeAttribute));
@@ -595,7 +742,7 @@ namespace CEGUI
         {
             const FrameImageComponent what =
                 FalagardXMLHelper<FrameImageComponent>::fromString(
-                    attributes.getValueAsString(ComponentAttribute, "Background"));
+                    attributes.getValueAsString(ComponentAttribute, FalagardXMLHelper<FrameImageComponent>::Background));
             const HorizontalFormatting fmt =
                 FalagardXMLHelper<HorizontalFormatting>::fromString(
                     attributes.getValueAsString(TypeAttribute));
@@ -639,7 +786,11 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementVertAlignmentStart(const XMLAttributes& attributes)
     {
-        assert(d_childcomponent != 0);
+        if (d_childcomponent == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, VertAlignmentElement, ChildElement);
+        }
+
         d_childcomponent->setVerticalWidgetAlignment(
             FalagardXMLHelper<VerticalAlignment>::fromString(
                 attributes.getValueAsString(TypeAttribute)));
@@ -650,7 +801,11 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementHorzAlignmentStart(const XMLAttributes& attributes)
     {
-        assert(d_childcomponent != 0);
+        if (d_childcomponent == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, HorzAlignmentElement, ChildElement);
+        }
+
         d_childcomponent->setHorizontalWidgetAlignment(
             FalagardXMLHelper<HorizontalAlignment>::fromString(
                 attributes.getValueAsString(TypeAttribute)));
@@ -661,7 +816,11 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementPropertyStart(const XMLAttributes& attributes)
     {
-        assert(d_widgetlook != 0);
+        if (d_widgetlook == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, PropertyElement, attributes.getValueAsString(NameAttribute), WidgetLookElement);
+        }
+
         PropertyInitialiser prop(attributes.getValueAsString(NameAttribute), attributes.getValueAsString(ValueAttribute));
 
         if (d_childcomponent)
@@ -784,7 +943,11 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementTextStart(const XMLAttributes& attributes)
     {
-        assert (d_textcomponent != 0);
+        if (d_textcomponent == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, TextElement, attributes.getValueAsString(NameAttribute), TextComponentElement);
+        }
+
         d_textcomponent->setText(attributes.getValueAsString(StringAttribute));
         d_textcomponent->setFont(attributes.getValueAsString(FontAttribute));
     }
@@ -823,7 +986,11 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementNamedAreaStart(const XMLAttributes& attributes)
     {
-        assert(d_namedArea == 0);
+        if (d_namedArea != 0)
+        {
+            throwExceptionChildOfSameNode(d_widgetlook, NamedAreaElement, attributes.getValueAsString(NameAttribute));
+        }
+
         d_namedArea = CEGUI_NEW_AO NamedArea(attributes.getValueAsString(NameAttribute));
 
         CEGUI_LOGINSANE("-----> Creating named area: " + d_namedArea->getName());
@@ -834,91 +1001,95 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementPropertyDefinitionStart(const XMLAttributes& attributes)
     {
-        assert(d_widgetlook);
+        if (d_widgetlook == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, PropertyDefinitionElement, attributes.getValueAsString(NameAttribute), WidgetLookElement);
+        }
+
+
         PropertyDefinitionBase* prop;
 
         const String name(attributes.getValueAsString(NameAttribute));
         const String init(attributes.getValueAsString(InitialValueAttribute));
         const String help(attributes.getValueAsString(HelpStringAttribute,
-                                "Falagard custom property definition - "
-                                "gets/sets a named user string."));
-        const String type(attributes.getValueAsString(TypeAttribute, "Generic"));
+                                                      PropertyDefinitionHelpDefaultValue));
+        const String type(attributes.getValueAsString(TypeAttribute, GenericDataType));
         bool redraw(attributes.getValueAsBool(RedrawOnWriteAttribute, false));
         bool layout(attributes.getValueAsBool(LayoutOnWriteAttribute, false));
-        const String eventName(attributes.getValueAsString(FireEventAttribute, ""));
+        const String eventName(attributes.getValueAsString(FireEventAttribute));
         typedef std::pair<float, float> Range;
 
-        if(type == "Colour")
+        if(type == PropertyHelper<Colour>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<Colour>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName() );
-        else if(type == "ColourRect")
+        else if(type == PropertyHelper<ColourRect>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<ColourRect>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "UBox")
+        else if(type == PropertyHelper<UBox>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<UBox>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "URect")
+        else if(type == PropertyHelper<URect>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<URect>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "USize")
+        else if(type == PropertyHelper<USize>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<USize>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "UDim")
+        else if(type == PropertyHelper<UDim>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<UDim>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "UVector2")
+        else if(type == PropertyHelper<UVector2>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<UVector2>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "Sizef")
+        else if(type == PropertyHelper<Sizef>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<Sizef>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "Vector2f")
+        else if(type == PropertyHelper<Vector2f>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<Vector2f>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "Vector3f")
+        else if(type == PropertyHelper<Vector3f>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<Vector3f>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "Rectf")
+        else if(type == PropertyHelper<Rectf>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<Rectf>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "Font")
+        else if(type == PropertyHelper<Font*>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<Font*>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "Image")
+        else if(type == PropertyHelper<Image*>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<Image*>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "Quaternion")
+        else if(type == PropertyHelper<Quaternion>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<Quaternion>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "AspectMode")
+        else if(type == PropertyHelper<AspectMode>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<AspectMode>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "HorizontalAlignment")
+        else if(type == PropertyHelper<HorizontalAlignment>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<HorizontalAlignment>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "VerticalAlignment")
+        else if(type == PropertyHelper<VerticalAlignment>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<VerticalAlignment>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "HorizontalTextFormatting")
+        else if(type == PropertyHelper<HorizontalTextFormatting>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<HorizontalTextFormatting>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "VerticalTextFormatting")
+        else if(type == PropertyHelper<VerticalTextFormatting>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<VerticalTextFormatting>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "WindowUpdateMode")
+        else if(type == PropertyHelper<WindowUpdateMode>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<WindowUpdateMode>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "bool")
+        else if(type == PropertyHelper<bool>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<bool>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "uint")
+        else if(type == PropertyHelper<uint>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<uint>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "unsigned long")
+        else if(type == PropertyHelper<unsigned long>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<unsigned long>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "int")
+        else if(type == PropertyHelper<int>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<int>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "float")
+        else if(type == PropertyHelper<float>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<float>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "double")
+        else if(type == PropertyHelper<double>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<double>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "TabControl::TabPanePosition")
+        else if(type == PropertyHelper<TabControl::TabPanePosition>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<TabControl::TabPanePosition>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "Spinner::TextInputMode")
+        else if(type == PropertyHelper<Spinner::TextInputMode>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<Spinner::TextInputMode>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "ItemListBase::SortMode")
+        else if(type == PropertyHelper<ItemListBase::SortMode>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<ItemListBase::SortMode>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "ListHeaderSegment::SortDirection")
+        else if(type == PropertyHelper<ListHeaderSegment::SortDirection>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<ListHeaderSegment::SortDirection>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "MultiColumnList::SelectionMode")
+        else if(type == PropertyHelper<MultiColumnList::SelectionMode>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<MultiColumnList::SelectionMode>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "VerticalFormatting")
+        else if(type == PropertyHelper<VerticalFormatting>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<VerticalFormatting>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "HorizontalFormatting")
+        else if(type == PropertyHelper<HorizontalFormatting>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<HorizontalFormatting>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if(type == "Range")
+        else if(type == PropertyHelper<Range>::getDataTypeName())
             prop = CEGUI_NEW_AO PropertyDefinition<Range>(name, init, help, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
         else
         {
-            if (type != "Generic" && type != "String")
+            if (type != GenericDataType && type != "String")
             {
                 // type was specified but wasn't recognised
                 Logger::getSingleton().logEvent("Type '" + type + "' wasn't recognized in property definition (name: '" + name + "').", Warnings);
@@ -937,137 +1108,144 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementPropertyLinkDefinitionStart(const XMLAttributes& attributes)
     {
-        assert(d_widgetlook);
-        assert(d_propertyLink == 0);
+        if (d_widgetlook == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, PropertyLinkDefinitionElement, attributes.getValueAsString(NameAttribute), WidgetLookElement);
+        }
+        
+        if (d_propertyLink != 0)
+        {
+            throwExceptionChildOfSameNode(d_widgetlook, PropertyLinkDefinitionElement);
+        }
+
 
         const String widget(attributes.getValueAsString(WidgetAttribute));
         const String target(attributes.getValueAsString(TargetPropertyAttribute));
         const String name(attributes.getValueAsString(NameAttribute));
         const String init(attributes.getValueAsString(InitialValueAttribute));
-        const String type(attributes.getValueAsString(TypeAttribute, "Generic"));
+        const String type(attributes.getValueAsString(TypeAttribute, GenericDataType));
         bool redraw(attributes.getValueAsBool(RedrawOnWriteAttribute, false));
         bool layout(attributes.getValueAsBool(LayoutOnWriteAttribute, false));
-        const String eventName(attributes.getValueAsString(FireEventAttribute, ""));
+        const String eventName(attributes.getValueAsString(FireEventAttribute));
         typedef std::pair<float, float> Range;
 
-        if (type == "Colour")
+        if (type == PropertyHelper<Colour>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<Colour>(name,
                     widget, target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "ColourRect")
+        else if (type == PropertyHelper<ColourRect>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<ColourRect>(name,
                     widget, target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "UBox")
+        else if (type == PropertyHelper<UBox>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<UBox>(name, widget,
                     target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "URect")
+        else if (type == PropertyHelper<URect>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<URect>(name,
                     widget, target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "USize")
+        else if (type == PropertyHelper<USize>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<USize>(name,
                     widget, target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "UDim")
+        else if (type == PropertyHelper<UDim>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<UDim>(name, widget,
                     target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "UVector2")
+        else if (type == PropertyHelper<UVector2>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<UVector2>(name,
                     widget, target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "Sizef")
+        else if (type == PropertyHelper<Sizef>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<Sizef>(name,
                     widget, target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "Vector2f")
+        else if (type == PropertyHelper<Vector2f>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<Vector2f>(name,
                     widget, target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "Vector3f")
+        else if (type == PropertyHelper<Vector3f>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<Vector3f>(name,
                     widget, target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "Rectf")
+        else if (type == PropertyHelper<Rectf>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<Rectf>(name,
                     widget, target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "Font")
+        else if (type == PropertyHelper<Font*>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<Font*>(name,
                     widget, target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "Image")
+        else if (type == PropertyHelper<Image*>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<Image*>(name,
                     widget, target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "Quaternion")
+        else if (type == PropertyHelper<Quaternion>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<Quaternion>(name,
                     widget, target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "AspectMode")
+        else if (type == PropertyHelper<AspectMode>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<AspectMode>(name,
                     widget, target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "HorizontalAlignment")
+        else if (type == PropertyHelper<HorizontalAlignment>::getDataTypeName())
             d_propertyLink =CEGUI_NEW_AO PropertyLinkDefinition<HorizontalAlignment>(name,
-                    widget, target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName()
-            );
-        else if (type == "VerticalAlignment")
+                    widget, target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
+        else if (type == PropertyHelper<VerticalAlignment>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<VerticalAlignment>(
                     name, widget, target, init, d_widgetlook->getName(), redraw,
                     layout, eventName, d_widgetlook->getName());
-        else if (type == "HorizontalTextFormatting")
+        else if (type == PropertyHelper<HorizontalTextFormatting>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<
                     HorizontalTextFormatting>(name, widget, target, init,
                     d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "VerticalTextFormatting")
+        else if (type == PropertyHelper<VerticalTextFormatting>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<
                     VerticalTextFormatting>(name, widget, target, init,
                     d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "WindowUpdateMode")
+        else if (type == PropertyHelper<WindowUpdateMode>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<WindowUpdateMode>(
                     name, widget, target, init, d_widgetlook->getName(), redraw,
                     layout, eventName, d_widgetlook->getName());
-        else if (type == "bool")
+        else if (type == PropertyHelper<bool>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<bool>(name, widget,
                     target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "uint")
+        else if (type == PropertyHelper<uint>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<uint>(name, widget,
                     target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "unsigned long")
+        else if (type == PropertyHelper<unsigned long>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<unsigned long>(
                     name, widget, target, init, d_widgetlook->getName(), redraw,
                     layout, eventName, d_widgetlook->getName());
-        else if (type == "int")
+        else if (type == PropertyHelper<int>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<int>(name, widget,
                     target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "float")
+        else if (type == PropertyHelper<float>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<float>(name,
                     widget, target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "double")
+        else if (type == PropertyHelper<double>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<double>(name,
                     widget, target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "TabControl::TabPanePosition")
+        else if (type == PropertyHelper<TabControl::TabPanePosition>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<
                     TabControl::TabPanePosition>(name, widget, target, init,
                     d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "Spinner::TextInputMode")
+        else if (type == PropertyHelper<Spinner::TextInputMode>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<
                     Spinner::TextInputMode>(name, widget, target, init,
                     d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "ItemListBase::SortMode")
+        else if (type == PropertyHelper<ItemListBase::SortMode>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<
                     ItemListBase::SortMode>(name, widget, target, init,
                     d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "ListHeaderSegment::SortDirection")
+        else if (type == PropertyHelper<ListHeaderSegment::SortDirection>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<
                     ListHeaderSegment::SortDirection>(name, widget, target, init,
                     d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "MultiColumnList::SelectionMode")
+        else if (type == PropertyHelper<MultiColumnList::SelectionMode>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<
                     MultiColumnList::SelectionMode>(name, widget, target, init,
                     d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
-        else if (type == "VerticalFormatting")
+        else if (type == PropertyHelper<VerticalFormatting>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<VerticalFormatting>(
                     name, widget, target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName()
             );
-        else if (type == "HorizontalFormatting")
+        else if (type == PropertyHelper<HorizontalFormatting>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<HorizontalFormatting>(
                     name, widget, target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName()
             );
-        else if (type == "Range")
+        else if (type == PropertyHelper<Range>::getDataTypeName())
             d_propertyLink = CEGUI_NEW_AO PropertyLinkDefinition<Range>(name,
                     widget, target, init, d_widgetlook->getName(), redraw, layout, eventName, d_widgetlook->getName());
         else
         {
-            if (type != "Generic" && type != "String")
+            if (type != GenericDataType && type != PropertyHelper<String>::getDataTypeName())
             {
                 // type was specified but wasn't recognised
                 Logger::getSingleton().logEvent("Type '" + type + "' wasn't recognized in property link definition (name: '" + name + "').", Warnings);
@@ -1106,7 +1284,7 @@ namespace CEGUI
         {
             const FrameImageComponent what =
                 FalagardXMLHelper<FrameImageComponent>::fromString(
-                    attributes.getValueAsString(ComponentAttribute, "Background"));
+                    attributes.getValueAsString(ComponentAttribute, FalagardXMLHelper<FrameImageComponent>::Background));
             const VerticalFormatting fmt =
                 FalagardXMLHelper<VerticalFormatting>::fromString(
                     attributes.getValueAsString(TypeAttribute));
@@ -1146,7 +1324,7 @@ namespace CEGUI
         {
             const FrameImageComponent what =
                 FalagardXMLHelper<FrameImageComponent>::fromString(
-                    attributes.getValueAsString(ComponentAttribute, "Background"));
+                    attributes.getValueAsString(ComponentAttribute, FalagardXMLHelper<FrameImageComponent>::Background));
             const HorizontalFormatting fmt =
                 FalagardXMLHelper<HorizontalFormatting>::fromString(
                     attributes.getValueAsString(TypeAttribute));
@@ -1182,7 +1360,10 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementAreaPropertyStart(const XMLAttributes& attributes)
     {
-        assert (d_area != 0);
+        if (d_area != 0)
+        {
+            throwExceptionChildOfSameNode(d_widgetlook, AreaPropertyElement);
+        }
 
         d_area->setAreaPropertySource(attributes.getValueAsString(NameAttribute));
     }
@@ -1192,7 +1373,11 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementImagePropertyStart(const XMLAttributes& attributes)
     {
-        assert(d_imagerycomponent != 0 || d_framecomponent != 0);
+        if (d_imagerycomponent == 0 && d_framecomponent == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, ImagePropertyElement, attributes.getValueAsString(NameAttribute), 
+                ImageryComponentElement + " or " + FrameComponentElement);
+        }
 
         if (d_imagerycomponent)
         {
@@ -1220,7 +1405,10 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementTextPropertyStart(const XMLAttributes& attributes)
     {
-        assert(d_textcomponent != 0);
+        if (d_textcomponent == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, FontPropertyElement, attributes.getValueAsString(NameAttribute), TextComponentElement);
+        }
 
         d_textcomponent->setTextPropertySource(attributes.getValueAsString(NameAttribute));
     }
@@ -1230,7 +1418,10 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementFontPropertyStart(const XMLAttributes& attributes)
     {
-        assert(d_textcomponent != 0);
+        if (d_textcomponent == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, FontPropertyElement, attributes.getValueAsString(NameAttribute), TextComponentElement);
+        }
 
         d_textcomponent->setFontPropertySource(attributes.getValueAsString(NameAttribute));
     }
@@ -1257,13 +1448,12 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementWidgetLookEnd()
     {
-        if (d_widgetlook)
-        {
-            Logger::getSingleton().logEvent("---< End of definition for widget look '" + d_widgetlook->getName() + "'.", Informative);
-            d_manager->addWidgetLook(*d_widgetlook);
-            CEGUI_DELETE_AO d_widgetlook;
-            d_widgetlook = 0;
-        }
+        assert(d_widgetlook != 0);
+
+        Logger::getSingleton().logEvent("---< End of definition for widget look '" + d_widgetlook->getName() + "'.", Informative);
+        d_manager->addWidgetLook(*d_widgetlook);
+        CEGUI_DELETE_AO d_widgetlook;
+        d_widgetlook = 0;
     }
 
     /*************************************************************************
@@ -1271,15 +1461,17 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementChildEnd()
     {
-        assert(d_widgetlook != 0);
+        assert(d_childcomponent != 0);
 
-        if (d_childcomponent)
+        if (d_widgetlook == 0)
         {
-            CEGUI_LOGINSANE("-----< End of definition for child widget. Type: " + d_childcomponent->getBaseWidgetType() + ".");
-            d_widgetlook->addWidgetComponent(*d_childcomponent);
-            CEGUI_DELETE_AO d_childcomponent;
-            d_childcomponent = 0;
+            throwExceptionNotChildOfNode(d_widgetlook, ChildElement, d_childcomponent->getWidgetName(), WidgetLookElement);
         }
+
+        CEGUI_LOGINSANE("-----< End of definition for child widget. Type: " + d_childcomponent->getBaseWidgetType() + ".");
+        d_widgetlook->addWidgetComponent(*d_childcomponent);
+        CEGUI_DELETE_AO d_childcomponent;
+        d_childcomponent = 0;
     }
 
     /*************************************************************************
@@ -1287,15 +1479,17 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementImagerySectionEnd()
     {
-        assert(d_widgetlook != 0);
+        assert(d_imagerysection != 0);
 
-        if (d_imagerysection)
+        if (d_widgetlook == 0)
         {
-            CEGUI_LOGINSANE("-----< End of definition for imagery section '" + d_imagerysection->getName() + "'.");
-            d_widgetlook->addImagerySection(*d_imagerysection);
-            CEGUI_DELETE_AO d_imagerysection;
-            d_imagerysection = 0;
+            throwExceptionNotChildOfNode(d_widgetlook, ImagerySectionElement, d_imagerysection->getName(), WidgetLookElement);
         }
+
+        CEGUI_LOGINSANE("-----< End of definition for imagery section '" + d_imagerysection->getName() + "'.");
+        d_widgetlook->addImagerySection(*d_imagerysection);
+        CEGUI_DELETE_AO d_imagerysection;
+        d_imagerysection = 0;
     }
 
     /*************************************************************************
@@ -1303,7 +1497,10 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementStateImageryEnd()
     {
-        assert(d_widgetlook != 0);
+        if (d_widgetlook == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, StateImageryElement, d_stateimagery->getName(), WidgetLookElement);
+        }
 
         if (d_stateimagery)
         {
@@ -1319,15 +1516,17 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementLayerEnd()
     {
-        assert(d_stateimagery != 0);
+        assert(d_layer != 0);
 
-        if (d_layer)
+        if (d_stateimagery == 0)
         {
-            CEGUI_LOGINSANE("-------< End of definition of imagery layer.");
-            d_stateimagery->addLayer(*d_layer);
-            CEGUI_DELETE_AO d_layer;
-            d_layer = 0;
+            throwExceptionNotChildOfNode(d_widgetlook, LayerElement, StateImageryElement);
         }
+
+        CEGUI_LOGINSANE("-------< End of definition of imagery layer.");
+        d_stateimagery->addLayer(*d_layer);
+        CEGUI_DELETE_AO d_layer;
+        d_layer = 0;
     }
 
     /*************************************************************************
@@ -1335,14 +1534,16 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementSectionEnd()
     {
-        assert(d_layer != 0);
+        assert(d_section != 0);
 
-        if (d_section)
+        if (d_layer == 0)
         {
-            d_layer->addSectionSpecification(*d_section);
-            CEGUI_DELETE_AO d_section;
-            d_section = 0;
+            throwExceptionNotChildOfNode(d_widgetlook, SectionElement, d_section->getSectionName(), LayerElement);
         }
+
+        d_layer->addSectionSpecification(*d_section);
+        CEGUI_DELETE_AO d_section;
+        d_section = 0;
     }
 
     /*************************************************************************
@@ -1350,14 +1551,16 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementImageryComponentEnd()
     {
-        assert(d_imagerysection != 0);
+        assert(d_imagerycomponent != 0);
 
-        if (d_imagerycomponent)
+        if (d_imagerysection == 0)
         {
-            d_imagerysection->addImageryComponent(*d_imagerycomponent);
-            CEGUI_DELETE_AO d_imagerycomponent;
-            d_imagerycomponent = 0;
+            throwExceptionNotChildOfNode(d_widgetlook, ImageryComponentElement, ImagerySectionElement);
         }
+
+        d_imagerysection->addImageryComponent(*d_imagerycomponent);
+        CEGUI_DELETE_AO d_imagerycomponent;
+        d_imagerycomponent = 0;
     }
 
     /*************************************************************************
@@ -1365,14 +1568,16 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementTextComponentEnd()
     {
-        assert(d_imagerysection != 0);
+        assert(d_textcomponent != 0);
 
-        if (d_textcomponent)
+        if (d_imagerysection == 0)
         {
-            d_imagerysection->addTextComponent(*d_textcomponent);
-            CEGUI_DELETE_AO d_textcomponent;
-            d_textcomponent = 0;
+            throwExceptionNotChildOfNode(d_widgetlook, TextComponentElement, ImagerySectionElement);
         }
+
+        d_imagerysection->addTextComponent(*d_textcomponent);
+        CEGUI_DELETE_AO d_textcomponent;
+        d_textcomponent = 0;
     }
 
     /*************************************************************************
@@ -1380,14 +1585,16 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementFrameComponentEnd()
     {
-        assert(d_imagerysection != 0);
+        assert(d_framecomponent != 0);
 
-        if (d_framecomponent)
+        if (d_imagerysection == 0)
         {
-            d_imagerysection->addFrameComponent(*d_framecomponent);
-            CEGUI_DELETE_AO d_framecomponent;
-            d_framecomponent = 0;
+            throwExceptionNotChildOfNode(d_widgetlook, FrameComponentElement, ImagerySectionElement);
         }
+
+        d_imagerysection->addFrameComponent(*d_framecomponent);
+        CEGUI_DELETE_AO d_framecomponent;
+        d_framecomponent = 0;
     }
 
     /*************************************************************************
@@ -1395,8 +1602,13 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementAreaEnd()
     {
-        assert((d_childcomponent != 0) || (d_imagerycomponent != 0) || (d_textcomponent != 0) || d_namedArea != 0 || d_framecomponent != 0);
         assert(d_area != 0);
+
+        if ((d_childcomponent == 0) && (d_imagerycomponent == 0) && (d_textcomponent == 0) && d_namedArea == 0 && d_framecomponent == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, AreaElement, ChildElement + " or " + ImageryComponentElement + " or " +
+                TextComponentElement + " or " + NamedAreaElement + " or " + FrameComponentElement);
+        }   
 
         if (d_childcomponent)
         {
@@ -1428,14 +1640,16 @@ namespace CEGUI
     *************************************************************************/
     void Falagard_xmlHandler::elementNamedAreaEnd()
     {
-        assert(d_widgetlook != 0);
+        assert(d_namedArea != 0);
 
-        if (d_namedArea)
+        if (d_widgetlook == 0)
         {
-            d_widgetlook->addNamedArea(*d_namedArea);
-            CEGUI_DELETE_AO d_namedArea;
-            d_namedArea = 0;
+            throwExceptionNotChildOfNode(d_widgetlook, NamedAreaElement, d_namedArea->getName(), WidgetLookElement);
         }
+
+        d_widgetlook->addNamedArea(*d_namedArea);
+        CEGUI_DELETE_AO d_namedArea;
+        d_namedArea = 0;
     }
 
     /*************************************************************************
@@ -1451,7 +1665,7 @@ namespace CEGUI
             if (!d_dimStack.empty())
             {
                 if (OperatorDim* op = dynamic_cast<OperatorDim*>(d_dimStack.back()))
-                   op->setNextOperand(currDim); 
+                   op->setNextOperand(currDim);
             }
             else
             {
@@ -1467,6 +1681,7 @@ namespace CEGUI
     void Falagard_xmlHandler::elementPropertyLinkDefinitionEnd()
     {
         assert(d_propertyLink);
+
         d_widgetlook->addPropertyLinkDefinition(d_propertyLink);
 
         CEGUI_LOGINSANE("<----- End of PropertyLinkDefiniton. Name: " +
@@ -1476,86 +1691,89 @@ namespace CEGUI
 
     void Falagard_xmlHandler::elementPropertyLinkTargetStart(const XMLAttributes& attributes)
     {
-        assert(d_propertyLink);
+        if (d_propertyLink == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, PropertyLinkTargetElement, attributes.getValueAsString(PropertyAttribute), PropertyLinkDefinitionElement);
+        }
 
         const String w(attributes.getValueAsString(WidgetAttribute));
         const String p(attributes.getValueAsString(PropertyAttribute));
-        
+
         if (!w.empty() || !p.empty())
         {
             const String type(dynamic_cast<Property*>(d_propertyLink)->getDataType());
 
             typedef std::pair<float,float> Range;
 
-            if(type == "Colour")
+            if(type == PropertyHelper<Colour>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<Colour>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "ColourRect")
+            else if(type == PropertyHelper<ColourRect>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<ColourRect>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "UBox")
+            else if(type == PropertyHelper<UBox>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<UBox>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "URect")
+            else if(type == PropertyHelper<URect>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<URect>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "USize")
+            else if(type == PropertyHelper<USize>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<USize>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "UDim")
+            else if(type == PropertyHelper<UDim>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<UDim>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "UVector2")
+            else if(type == PropertyHelper<UVector2>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<UVector2>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "Sizef")
+            else if(type == PropertyHelper<Sizef>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<Sizef>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "Vector2f")
+            else if(type == PropertyHelper<Vector2f>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<Vector2f>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "Vector3f")
+            else if(type == PropertyHelper<Vector3f>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<Vector3f>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "Rectf")
+            else if(type == PropertyHelper<Rectf>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<Rectf>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "Font")
+            else if(type == PropertyHelper<Font*>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<Font*>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "Image")
+            else if(type == PropertyHelper<Image*>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<Image*>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "Quaternion")
+            else if(type == PropertyHelper<Quaternion>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<Quaternion>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "AspectMode")
+            else if(type == PropertyHelper<AspectMode>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<AspectMode>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "HorizontalAlignment")
+            else if(type == PropertyHelper<HorizontalAlignment>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<HorizontalAlignment>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "VerticalAlignment")
+            else if(type == PropertyHelper<VerticalAlignment>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<VerticalAlignment>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "HorizontalTextFormatting")
+            else if(type == PropertyHelper<HorizontalTextFormatting>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<HorizontalTextFormatting>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "VerticalTextFormatting")
+            else if(type == PropertyHelper<VerticalTextFormatting>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<VerticalTextFormatting>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "WindowUpdateMode")
+            else if(type == PropertyHelper<WindowUpdateMode>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<WindowUpdateMode>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "bool")
+            else if(type == PropertyHelper<bool>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<bool>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "uint")
+            else if(type == PropertyHelper<uint>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<uint>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "unsigned long")
+            else if(type == PropertyHelper<unsigned long>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<unsigned long>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "uint")
+            else if(type == PropertyHelper<uint>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<uint>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "int")
+            else if(type == PropertyHelper<int>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<int>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "float")
+            else if(type == PropertyHelper<float>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<float>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "double")
+            else if(type == PropertyHelper<double>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<double>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "TabPanePosition")
+            else if(type == PropertyHelper<TabControl::TabPanePosition>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<TabControl::TabPanePosition>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "TextInputMode")
+            else if(type == PropertyHelper<Spinner::TextInputMode>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<Spinner::TextInputMode>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "SortMode")
+            else if(type == PropertyHelper<ItemListBase::SortMode>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<ItemListBase::SortMode>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "SortDirection")
+            else if(type == PropertyHelper<ListHeaderSegment::SortDirection>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<ListHeaderSegment::SortDirection>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "SelectionMode")
+            else if(type == PropertyHelper<MultiColumnList::SelectionMode>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<MultiColumnList::SelectionMode>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "VerticalFormatting")
+            else if(type == PropertyHelper<VerticalFormatting>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<VerticalFormatting>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "HorizontalFormatting")
+            else if(type == PropertyHelper<HorizontalFormatting>::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<HorizontalFormatting>* >(d_propertyLink)->addLinkTarget(w, p);
-            else if(type == "std::pair<float,float>")
+            else if(type == PropertyHelper<std::pair<float,float> >::getDataTypeName())
                 dynamic_cast<PropertyLinkDefinition<Range>* >(d_propertyLink)->addLinkTarget(w, p);
             else
                 dynamic_cast<PropertyLinkDefinition<String>* >(d_propertyLink)->addLinkTarget(w, p);
@@ -1568,7 +1786,10 @@ namespace CEGUI
     void Falagard_xmlHandler::elementAnimationDefinitionStart(
                                             const XMLAttributes& attributes)
     {
-        assert(d_widgetlook != 0);
+        if (d_widgetlook == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, AnimationDefinitionHandler::ElementName, attributes.getValueAsString(NameAttribute), WidgetLookElement);
+        }
 
         String anim_name_prefix(d_widgetlook->getName());
         anim_name_prefix.append("/");
@@ -1599,8 +1820,15 @@ namespace CEGUI
     void Falagard_xmlHandler::elementEventLinkDefinitionStart(
                                                 const XMLAttributes& attributes)
     {
-        assert(d_widgetlook);
-        assert(d_eventLink == 0);
+        if (d_widgetlook == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, EventLinkDefinitionElement, attributes.getValueAsString(NameAttribute), WidgetLookElement);
+        }
+
+        if (d_eventLink != 0)
+        {
+            throwExceptionChildOfSameNode(d_widgetlook, EventLinkDefinitionElement);
+        }
 
         const String widget(attributes.getValueAsString(WidgetAttribute));
         const String event(attributes.getValueAsString(EventAttribute));
@@ -1616,7 +1844,10 @@ namespace CEGUI
 
     void Falagard_xmlHandler::processEventLinkTarget(const String& widget, const String& event)
     {
-        assert(d_eventLink);
+        if (d_eventLink == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, EventLinkTargetElement, EventLinkDefinitionElement);
+        }
 
         if (!widget.empty() || !event.empty())
         {
@@ -1638,6 +1869,7 @@ namespace CEGUI
     void Falagard_xmlHandler::elementEventLinkDefinitionEnd()
     {
         assert(d_eventLink);
+
         d_widgetlook->addEventLinkDefinition(*d_eventLink);
 
         CEGUI_LOGINSANE("<----- End of EventLinkDefiniton. Name: " +
@@ -1649,17 +1881,23 @@ namespace CEGUI
 
     void Falagard_xmlHandler::elementNamedAreaSourceStart(const XMLAttributes& attributes)
     {
-        assert (d_area != 0);
+        if (d_area == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, NamedAreaElement, AreaElement);
+        }
 
         const String look(attributes.getValueAsString(LookAttribute));
 
         d_area->setNamedAreaSouce(look.empty() ? d_widgetlook->getName() : look,
                                   attributes.getValueAsString(NameAttribute));
     }
-        
+
     void Falagard_xmlHandler::elementEventActionStart(const XMLAttributes& attributes)
     {
-        assert(d_childcomponent != 0);
+        if (d_childcomponent == 0)
+        {
+            throwExceptionNotChildOfNode(d_widgetlook, EventActionElement, ChildElement);
+        }
 
         const EventAction action(
             attributes.getValueAsString(EventAttribute),

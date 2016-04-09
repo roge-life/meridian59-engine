@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   CEGUIWidgetLookManager.h
     created:    Mon Jun 13 2005
     author:     Paul D Turner <paul@cegui.org.uk>
 *************************************************************************/
@@ -83,6 +82,12 @@ namespace CEGUI
 	      */
 	      static	WidgetLookManager*	getSingletonPtr(void);
 
+
+        /** Typedef for a set of WidgetLookFeel names. */
+        typedef std::set<String, StringFastLessCompare CEGUI_SET_ALLOC(String)> WidgetLookNameSet;
+
+        //! Typedef for a map of Strings to WidgetLookFeel objects
+        typedef std::map<String, WidgetLookFeel*, StringFastLessCompare CEGUI_MAP_ALLOC(String, WidgetLookFeel*)> WidgetLookPointerMap;
 
         /*!
         \brief
@@ -183,21 +188,47 @@ namespace CEGUI
 
         /*!
         \brief
-            Writes a complete Widge Look to a stream.  Note that xml file header and
-            falagard opening/closing tags will also be written.
+            Writes a complete WidgetLookFeel to a stream. Note that XML file header and
+            Falagard opening/closing tags will also be written.
 
         \param name
-            String holding the name of the widget look to be output to the stream.
+            String holding the name of the WidgetLookFeel to be output to the stream.
 
         \param out_stream
             OutStream where XML data should be sent.
         */
-        void writeWidgetLookToStream(const String& name, OutStream& out_stream) const;
+        void writeWidgetLookToStream(const String& widgetLookName, OutStream& out_stream) const;
 
         /*!
         \brief
-            Writes a series of complete Widge Look objects to a stream.  Note that xml file header and
-            falagard opening/closing tags will also be written.
+            Writes a complete WidgetLookFeel to a string. Note that XML file header and
+            Falagard opening/closing tags will also be written.
+
+        \param name
+            String holding the name of the WidgetLookFeel to be output to the string.
+
+        \return
+            String containing the WidgetLook parsed to XML.
+        */
+        String getWidgetLookAsString(const String& widgetLookName) const;
+ 
+        /*!
+        \brief
+            Writes a set WidgetLookFeels to a string. Note that XML file header and
+            Falagard opening/closing tags will also be written.
+
+        \param widgetLookNameSet
+            Set of strings containing the WidgetLookFeel names to be output to the string.
+
+        \return
+            String containing the set of WidgetLookFeels parsed to XML.
+        */
+        String getWidgetLookSetAsString(const WidgetLookNameSet& widgetLookNameSet) const;
+
+        /*!
+        \brief
+            Writes a series of complete WidgetLook objects to a stream. Note that XML file header and
+            Falagard opening/closing tags will also be written.
 
             The \a prefix specifies a name prefix common to all widget looks to be written, you could
             specify this as "TaharezLook/" and then any defined widget look starting with that prefix, such
@@ -211,6 +242,22 @@ namespace CEGUI
             OutStream where XML data should be sent.
         */
         void writeWidgetLookSeriesToStream(const String& prefix, OutStream& out_stream) const;
+
+        /*!
+        \brief
+            Writes a series of complete WidgetLook objects to a stream. Note that XML file header and
+            Falagard opening/closing tags will also be written.
+
+            The \a widgetLookSet specifies a set of strings containing the names of the WidgetLookFeels
+            to be written to the stream.
+
+        \param widgetLookNameSet
+            Set of strings containing the WidgetLookFeel names to be added to be written to the stream.
+
+        \param out_stream
+            OutStream where XML data should be sent.
+        */
+        void writeWidgetLookSetToStream(const WidgetLookNameSet& widgetLookNameSet, OutStream& out_stream) const;
 
         /*!
         \brief
@@ -236,18 +283,36 @@ namespace CEGUI
         static void setDefaultResourceGroup(const String& resourceGroup)
             { d_defaultResourceGroup = resourceGroup; }
 
+        /*!
+        \brief
+            Returns a map containing Strings to WidgetLookFeel pointers. The map contains pointers to the WidgetLookFeels
+            that were added to this Manager.
+
+        \return
+            A map of Strings to WidgetLookFeel pointers.
+        */
+        WidgetLookPointerMap getWidgetLookPointerMap();
 
     private:
-        static const String FalagardSchemaName;     //!< Name of schema file used for XML validation.
+        //! Name of schema file used for XML validation.
+        static const String FalagardSchemaName; 
+        //! holds default resource group
+        static String d_defaultResourceGroup;
 
+
+        //! Typedef for a map of Strings to WidgetLookFeel objects
+        // \deprecated  Will use the correct allocator in the next version and will
+        // be renamed to "WidgetLookMap"
         typedef std::map<String, WidgetLookFeel, StringFastLessCompare> WidgetLookList;
-        WidgetLookList  d_widgetLooks;
 
-        static String d_defaultResourceGroup;   //!< holds default resource group
+        //! List of WidgetLookFeels added to this Manager
+        WidgetLookList  d_widgetLooks;  
+
     public:
+        //! \deprecated Use WidgetLookPointerMap instead, which provides direct access to the added elements.
         typedef ConstMapIterator<WidgetLookList> WidgetLookIterator;
+        //! \deprecated Use getWidgetLookPointerMap instead, which provides direct access to the added elements. In the next version getWidgetLookMap will be added to replace the const-ness.
         WidgetLookIterator getWidgetLookIterator() const;
-
     };
 
 } // End of  CEGUI namespace section

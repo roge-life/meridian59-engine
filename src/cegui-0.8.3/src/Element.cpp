@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   CEGUI/Element.cpp
     created:    18/8/2011
     author:     Martin Preisler
 
@@ -89,7 +88,8 @@ Element::~Element()
 {}
 
 //----------------------------------------------------------------------------//
-Element::Element(const Element&):
+Element::Element(const Element& other):
+    EventSet(other),
     d_unclippedOuterRect(this, &Element::getUnclippedOuterRect_impl),
     d_unclippedInnerRect(this, &Element::getUnclippedInnerRect_impl)
 {}
@@ -473,7 +473,7 @@ void Element::addElementProperties()
 
     CEGUI_DEFINE_PROPERTY(Element, bool,
         "PixelAligned", "Property to get/set whether the Element's size and position should be pixel aligned. "
-        "Value is either \"True\" or \"False\".",
+        "Value is either \"true\" or \"false\".",
         &Element::setPixelAligned, &Element::isPixelAligned, true
     );
 
@@ -486,7 +486,7 @@ void Element::addElementProperties()
 
     CEGUI_DEFINE_PROPERTY(Element, bool,
         "NonClient", "Property to get/set whether the Element is 'non-client'. "
-        "Value is either \"True\" or \"False\".",
+        "Value is either \"true\" or \"false\".",
         &Element::setNonClient, &Element::isNonClient, false
     );
 }

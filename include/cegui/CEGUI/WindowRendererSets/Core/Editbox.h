@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   Editbox.h
     created:    Sat Jun 25 2005
     author:     Paul D Turner <paul@cegui.org.uk>
 *************************************************************************/
@@ -79,10 +78,14 @@ public:
     //! type name for this widget.
     static const String TypeName;
 
-    //! Name of property to access for unselected text colour.
+    //! Name of the optional property to access for the unselected text colour.
     static const String UnselectedTextColourPropertyName;
-    //! Name of property to access for selected text colour.
+    //! Name of the optional property to access for the selected text colour.
     static const String SelectedTextColourPropertyName;
+    //! Name of the optional property to access to obtain active selection rendering colour.
+    static const String ActiveSelectionColourPropertyName;
+    //! Name of the optional property to access to obtain inactive selection rendering colour.
+    static const String InactiveSelectionColourPropertyName;
     //! The default timeout (in seconds) used when blinking the caret.
     static const float DefaultCaretBlinkTimeout;
 
@@ -157,7 +160,7 @@ protected:
     void renderBaseImagery(const WidgetLookFeel& wlf) const;
     //! helper to set 'visual' to the string we will render (part of)
     void setupVisualString(String& visual) const;
-    size_t getCaretIndex(const String& visual_string) const;
+    size_t getCaretIndex(const String& visual_text) const;
     float calculateTextOffset(const Rectf& text_area,
                               const float text_extent,
                               const float caret_width,

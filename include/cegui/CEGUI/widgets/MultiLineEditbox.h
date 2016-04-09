@@ -1,5 +1,4 @@
 /***********************************************************************
-	filename: 	CEGUIMultiLineEditbox.h
 	created:	30/6/2004
 	author:		Paul D Turner
 	
@@ -394,15 +393,6 @@ public:
         Nothing.
     */
     void setSelectionLength(size_t length);
-	
-	/*!
-	\brief
-		Erase the currently selected text.
-
-	\param modify_text
-		when true, the actual text will be modified.  When false, everything is done except erasing the characters.
-	*/
-	void	eraseSelectedText(bool modify_text = true);
 
 	/*!
 	\brief
@@ -489,6 +479,15 @@ public:
 	*/
 	virtual ~MultiLineEditbox(void);
 
+
+	/*!
+	\brief
+	Erase the currently selected text.
+
+	\param modify_text
+	when true, the actual text will be modified.  When false, everything is done except erasing the characters.
+	*/
+	void	eraseSelectedText(bool modify_text = true);
 
 protected:
 	/*************************************************************************

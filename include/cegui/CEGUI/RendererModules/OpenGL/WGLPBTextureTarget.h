@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   CEGUIOpenGLWGLPBTextureTarget.h
     created:    Sun Feb 1 2009
     author:     Paul D Turner
 *************************************************************************/
@@ -29,7 +28,7 @@
 #define _CEGUIOpenGLWGLPBTextureTarget_h_
 
 //#include <windows.h>
-#include <GL/glew.h>
+#include "CEGUI/RendererModules/OpenGL/GL.h"
 #include <GL/wglew.h>
 
 #include "CEGUI/RendererModules/OpenGL/TextureTarget.h"

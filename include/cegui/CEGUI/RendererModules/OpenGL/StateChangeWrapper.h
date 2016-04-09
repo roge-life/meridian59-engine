@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   StateChangeWrapper.h
     created:    Wed, 8th Feb 2012
     author:     Lukas E Meindl
 *************************************************************************/
@@ -80,10 +79,10 @@ namespace CEGUI
             GLuint d_buffer;
         };
 
-    public:
-    //! constructor.
+public:
+
+    OpenGL3StateChangeWrapper();
     OpenGL3StateChangeWrapper(OpenGL3Renderer& owner);
-    //! destructor
     virtual ~OpenGL3StateChangeWrapper();
 
     void reset();

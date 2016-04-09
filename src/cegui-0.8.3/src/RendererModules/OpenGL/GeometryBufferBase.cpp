@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   GeometryBufferBase.cpp
     created:    Tue Apr 30 2013
     authors:    Paul D Turner <paul@cegui.org.uk>
                 Lukas E Meindl
@@ -26,8 +25,7 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  *   OTHER DEALINGS IN THE SOFTWARE.
  ***************************************************************************/
-#include <GL/glew.h>
-
+#include "CEGUI/RendererModules/OpenGL/GL.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/quaternion.hpp"
 #include "glm/gtc/type_ptr.hpp"

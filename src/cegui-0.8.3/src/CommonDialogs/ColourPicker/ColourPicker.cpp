@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   CEGUIColourPicker.cpp
     created:    29/12/2010
     author:     Lukas E Meindl
 
@@ -77,8 +76,6 @@ ColourPicker::~ColourPicker(void)
 
             if (iter != s_colourPickerWindows.end())
             {
-                iter->second;
-
                 if (iter->second <= 0)
                     WindowManager::getSingleton().destroyWindow(iter->first);
             }

@@ -412,9 +412,7 @@
     <ClInclude Include="..\..\..\include\Ogre\OgrePrefabFactory.h" />
     <ClInclude Include="..\..\..\include\Ogre\OgrePrerequisites.h" />
     <ClInclude Include="..\..\..\include\Ogre\OgreProfiler.h" />
-    <ClInclude Include="..\..\..\include\Ogre\OgreProgressiveMeshGenerator.h" />
     <ClInclude Include="..\..\..\include\Ogre\OgreQuaternion.h" />
-    <ClInclude Include="..\..\..\include\Ogre\OgreQueuedProgressiveMeshGenerator.h" />
     <ClInclude Include="..\..\..\include\Ogre\OgreRadixSort.h" />
     <ClInclude Include="..\..\..\include\Ogre\OgreRay.h" />
     <ClInclude Include="..\..\..\include\Ogre\OgreRectangle2D.h" />
@@ -469,7 +467,6 @@
     <ClInclude Include="..\..\..\include\Ogre\OgreSkeletonInstance.h" />
     <ClInclude Include="..\..\..\include\Ogre\OgreSkeletonManager.h" />
     <ClInclude Include="..\..\..\include\Ogre\OgreSkeletonSerializer.h" />
-    <ClInclude Include="..\..\..\include\Ogre\OgreSmallVector.h" />
     <ClInclude Include="..\..\..\include\Ogre\OgreSphere.h" />
     <ClInclude Include="..\..\..\include\Ogre\OgreSpotShadowFadePng.h" />
     <ClInclude Include="..\..\..\include\Ogre\OgreStableHeaders.h" />
@@ -533,6 +530,7 @@
     <ClCompile Include="src\OgreAnimation.cpp" />
     <ClCompile Include="src\OgreAnimationState.cpp" />
     <ClCompile Include="src\OgreAnimationTrack.cpp" />
+    <ClCompile Include="src\OgreArchive.cpp" />
     <ClCompile Include="src\OgreArchiveManager.cpp" />
     <ClCompile Include="src\OgreAtomicScalar.cpp" />
     <ClCompile Include="src\OgreAutoParamDataSource.cpp" />
@@ -650,9 +648,7 @@
     <ClCompile Include="src\OgrePredefinedControllers.cpp" />
     <ClCompile Include="src\OgrePrefabFactory.cpp" />
     <ClCompile Include="src\OgreProfiler.cpp" />
-    <ClCompile Include="src\OgreProgressiveMeshGenerator.cpp" />
     <ClCompile Include="src\OgreQuaternion.cpp" />
-    <ClCompile Include="src\OgreQueuedProgressiveMeshGenerator.cpp" />
     <ClCompile Include="src\OgreRectangle2D.cpp" />
     <ClCompile Include="src\OgreRenderQueue.cpp" />
     <ClCompile Include="src\OgreRenderQueueInvocation.cpp" />
@@ -695,7 +691,6 @@
     <ClCompile Include="src\OgreSkeletonInstance.cpp" />
     <ClCompile Include="src\OgreSkeletonManager.cpp" />
     <ClCompile Include="src\OgreSkeletonSerializer.cpp" />
-    <ClCompile Include="src\OgreSmallVector.cpp" />
     <ClCompile Include="src\OgreStaticGeometry.cpp" />
     <ClCompile Include="src\OgreStreamSerialiser.cpp" />
     <ClCompile Include="src\OgreString.cpp" />
@@ -727,6 +722,7 @@
     <ClCompile Include="src\WIN32\OgreConfigDialog.cpp" />
     <ClCompile Include="src\WIN32\OgreErrorDialog.cpp" />
     <ClCompile Include="src\WIN32\OgreFileSystemLayer.cpp" />
+    <ClCompile Include="src\WIN32\OgreOptimisedUtilDirectXMath.cpp" />
     <ClCompile Include="src\WIN32\OgreTimer.cpp" />
     <ResourceCompile Include="src\WIN32\OgreWin32Resources.rc" />
     <ClCompile Include="src\Threading\OgreDefaultWorkQueueStandard.cpp" />

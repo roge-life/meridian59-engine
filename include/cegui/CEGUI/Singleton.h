@@ -1,5 +1,4 @@
 /***********************************************************************
-	filename: 	CEGUISingleton.h
 	created:	22/2/2004
 	author:		Paul D Turner
 
@@ -81,7 +80,7 @@ public:
         {  return ( ms_Singleton );  }
 
 private:
-    Singleton& operator=(const Singleton&) { return this; }
+    Singleton& operator=(const Singleton&) { return *this; }
     Singleton(const Singleton&) {}
 };
 

@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   SystemKeys.cpp
     created:    Fri Feb 17 2012
     author:     Paul D Turner <paul@cegui.org.uk>
 *************************************************************************/
@@ -136,6 +135,7 @@ void SystemKeys::updatePressedStateForKey(Key::Scan key, bool state)
 
     case Key::RightControl:
         d_rightCtrl = state;
+        break;
 
     case Key::LeftAlt:
         d_leftAlt = state;

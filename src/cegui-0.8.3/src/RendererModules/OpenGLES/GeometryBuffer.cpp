@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   CEGUIOpenGLESGeometryBuffer.cpp
     created:    Thu Jan 8 2009
     author:     Paul D Turner
 *************************************************************************/
@@ -36,6 +35,8 @@ namespace CEGUI
 //----------------------------------------------------------------------------//
 OpenGLESGeometryBuffer::OpenGLESGeometryBuffer() :
     d_activeTexture(0),
+    d_clipRect(0, 0, 0, 0),
+    d_clippingActive(true),
     d_translation(0, 0, 0),
     d_rotation(0, 0, 0),
     d_pivot(0, 0, 0),
@@ -267,6 +268,17 @@ void OpenGLESGeometryBuffer::updateMatrix() const
     d_matrixValid = true;
 }
 
+//----------------------------------------------------------------------------//
+void OpenGLESGeometryBuffer::setClippingActive(const bool active)
+{
+    d_clippingActive = active;
+}
+
+//----------------------------------------------------------------------------//
+bool OpenGLESGeometryBuffer::isClippingActive() const
+{
+    return d_clippingActive;
+}
 //----------------------------------------------------------------------------//
 
 } // End of  CEGUI namespace section

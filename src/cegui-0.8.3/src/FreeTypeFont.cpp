@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   CEGUIFont.cpp
     created:    21/2/2004
     author:     Paul D Turner
 
@@ -317,7 +316,11 @@ void FreeTypeFont::drawGlyphToBuffer(argb_t *buffer, uint buf_width) const
 {
     FT_Bitmap *glyph_bitmap = &d_fontFace->glyph->bitmap;
 
-    for (int i = 0; i < glyph_bitmap->rows; ++i)
+    unsigned int glyph_bitmap_height =
+      static_cast<unsigned int>(glyph_bitmap->rows);
+    unsigned int glyph_bitmap_width =
+      static_cast<unsigned int>(glyph_bitmap->width);
+    for (unsigned int i = 0;  i < glyph_bitmap_height;  ++i)
     {
         uchar *src = glyph_bitmap->buffer + (i * glyph_bitmap->pitch);
         switch (glyph_bitmap->pixel_mode)
@@ -325,7 +328,7 @@ void FreeTypeFont::drawGlyphToBuffer(argb_t *buffer, uint buf_width) const
         case FT_PIXEL_MODE_GRAY:
         {
             uchar *dst = reinterpret_cast<uchar*>(buffer);
-            for (int j = 0; j < glyph_bitmap->width; ++j)
+            for (unsigned int j = 0;  j < glyph_bitmap_width;  ++j)
             {
                 // RGBA
                 *dst++ = 0xFF;
@@ -337,7 +340,7 @@ void FreeTypeFont::drawGlyphToBuffer(argb_t *buffer, uint buf_width) const
         break;
 
         case FT_PIXEL_MODE_MONO:
-            for (int j = 0; j < glyph_bitmap->width; ++j)
+            for (unsigned int j = 0;  j < glyph_bitmap_width;  ++j)
                 buffer [j] = (src [j / 8] & (0x80 >> (j & 7))) ? 0xFFFFFFFF : 0x00000000;
             break;
 
@@ -520,7 +523,7 @@ void FreeTypeFont::writeXMLToStream_impl(XMLSerializer& xml_stream) const
     xml_stream.attribute(Font_xmlHandler::FontSizeAttribute,
                          PropertyHelper<float>::toString(d_ptSize));
     if (!d_antiAliased)
-        xml_stream.attribute(Font_xmlHandler::FontAntiAliasedAttribute, "False");
+        xml_stream.attribute(Font_xmlHandler::FontAntiAliasedAttribute, "false");
 
     if (d_specificLineSpacing > 0.0f)
         xml_stream.attribute(Font_xmlHandler::FontLineSpacingAttribute,

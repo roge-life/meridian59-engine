@@ -1,5 +1,4 @@
 /***********************************************************************
-    filename:   FalEditbox.cpp
     created:    Sat Jun 25 2005
     author:     Paul D Turner <paul@cegui.org.uk>
 *************************************************************************/
@@ -43,8 +42,11 @@ namespace CEGUI
 //----------------------------------------------------------------------------//
 const String FalagardEditbox::TypeName("Core/Editbox");
 
-const String FalagardEditbox::UnselectedTextColourPropertyName("NormalTextColour");
-const String FalagardEditbox::SelectedTextColourPropertyName("SelectedTextColour");
+const String FalagardEditbox::UnselectedTextColourPropertyName( "NormalTextColour" );
+const String FalagardEditbox::SelectedTextColourPropertyName( "SelectedTextColour" );
+const String FalagardEditbox::ActiveSelectionColourPropertyName( "ActiveSelectionColour" );
+const String FalagardEditbox::InactiveSelectionColourPropertyName( "InactiveSelectionColour" );
+
 const float FalagardEditbox::DefaultCaretBlinkTimeout(0.66f);
 
 //----------------------------------------------------------------------------//
@@ -59,7 +61,7 @@ FalagardEditbox::FalagardEditbox(const String& type) :
 {
     CEGUI_DEFINE_WINDOW_RENDERER_PROPERTY(FalagardEditbox, bool,
         "BlinkCaret", "Property to get/set whether the Editbox caret should blink.  "
-        "Value is either \"True\" or \"False\".",
+        "Value is either \"true\" or \"false\".",
         &FalagardEditbox::setCaretBlinkEnabled, &FalagardEditbox::isCaretBlinkEnabled,
         false);
     CEGUI_DEFINE_WINDOW_RENDERER_PROPERTY(FalagardEditbox, float,
@@ -185,6 +187,8 @@ size_t FalagardEditbox::getCaretIndex(const String& visual_text) const
         if (!firstCharRtl)
             caretIndex--;
     }
+#else
+    CEGUI_UNUSED(visual_text);
 #endif
 
     return caretIndex;
@@ -377,6 +381,11 @@ void FalagardEditbox::renderTextBidi(const WidgetLookFeel& wlf,
 
         }
     }
+#else
+    CEGUI_UNUSED(wlf);
+    CEGUI_UNUSED(text);
+    CEGUI_UNUSED(text_area);
+    CEGUI_UNUSED(text_offset);
 #endif
 }
 

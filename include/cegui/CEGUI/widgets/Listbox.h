@@ -1,5 +1,4 @@
 /***********************************************************************
-	filename: 	CEGUIListbox.h
 	created:	13/4/2004
 	author:		Paul D Turner
 
@@ -97,7 +96,7 @@ public:
     /** Event fired when there is a change to the currently selected item(s)
      * within the list.
      * Handlers are passed a const WindowEventArgs reference with
-     * WindowEventArgs::window set to the Litbox that has had a change in the
+     * WindowEventArgs::window set to the Listbox that has had a change in the
      * selected items.
      */
 	static const String EventSelectionChanged;
