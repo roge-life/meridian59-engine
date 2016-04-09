@@ -112,7 +112,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ois_d.lib;boost_d.lib;ogremain_d.lib;ogreterrain_d.lib;ogreoctree_d.lib;ogred3d9_d.lib;zlib_d.lib;zziplib_d.lib;freeimage_d.lib;freetype_d.lib;LibTIFF4_d.lib;LibJPEG_d.lib;LibOpenJPEG_d.lib;LibPNG_d.lib;LibRaw_d.lib;OpenEXR_d.lib;pcre_d.lib;d3d9.lib;d3dx9d.lib;dinput8.lib;dxerr.lib;dxguid.lib;CEGUIBase_d.lib;CEGUICommonDialogs_d.lib;CEGUICoreWindowRendererSet_d.lib;CEGUIOgreRenderer_d.lib;CEGUIRapidXMLParser_d.lib;CEGUISTBImageCodec_d.lib;dbghelp.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ois_d.lib;boost_d.lib;ogremain_d.lib;ogreoctree_d.lib;ogred3d9_d.lib;zlib_d.lib;zziplib_d.lib;freeimage_d.lib;freetype_d.lib;LibTIFF4_d.lib;LibJPEG_d.lib;LibOpenJPEG_d.lib;LibPNG_d.lib;LibRaw_d.lib;OpenEXR_d.lib;pcre_d.lib;d3d9.lib;d3dx9d.lib;dinput8.lib;dxerr.lib;dxguid.lib;CEGUIBase_d.lib;CEGUICommonDialogs_d.lib;CEGUICoreWindowRendererSet_d.lib;CEGUIOgreRenderer_d.lib;CEGUIRapidXMLParser_d.lib;CEGUISTBImageCodec_d.lib;dbghelp.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>..\..\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
@@ -142,7 +142,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>boost_d.lib;ogremain_d.lib;ogreterrain_d.lib;ogreoctree_d.lib;ogred3d9_d.lib;ois_d.lib;zlib_d.lib;zziplib_d.lib;freeimage_d.lib;freetype_d.lib;LibTIFF4_d.lib;LibJPEG_d.lib;LibOpenJPEG_d.lib;LibPNG_d.lib;LibRaw_d.lib;OpenEXR_d.lib;pcre_d.lib;d3d9.lib;d3dx9d.lib;dinput8.lib;dxerr.lib;dxguid.lib;CEGUIBase_d.lib;CEGUICommonDialogs_d.lib;CEGUICoreWindowRendererSet_d.lib;CEGUIOgreRenderer_d.lib;CEGUIRapidXMLParser_d.lib;CEGUISTBImageCodec_d.lib;dbghelp.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>boost_d.lib;ogremain_d.lib;ogreoctree_d.lib;ogred3d9_d.lib;ois_d.lib;zlib_d.lib;zziplib_d.lib;freeimage_d.lib;freetype_d.lib;LibTIFF4_d.lib;LibJPEG_d.lib;LibOpenJPEG_d.lib;LibPNG_d.lib;LibRaw_d.lib;OpenEXR_d.lib;pcre_d.lib;d3d9.lib;d3dx9d.lib;dinput8.lib;dxerr.lib;dxguid.lib;CEGUIBase_d.lib;CEGUICommonDialogs_d.lib;CEGUICoreWindowRendererSet_d.lib;CEGUIOgreRenderer_d.lib;CEGUIRapidXMLParser_d.lib;CEGUISTBImageCodec_d.lib;dbghelp.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>..\..\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
@@ -173,7 +173,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>boost.lib;ogremain.lib;ogreterrain.lib;ogreoctree.lib;ogred3d9.lib;ois.lib;zlib.lib;zziplib.lib;freeimage.lib;freetype.lib;LibTIFF4.lib;LibJPEG.lib;LibOpenJPEG.lib;LibPNG.lib;LibRaw.lib;OpenEXR.lib;pcre.lib;d3d9.lib;d3dx9.lib;dinput8.lib;dxerr.lib;dxguid.lib;CEGUIBase.lib;CEGUICommonDialogs.lib;CEGUICoreWindowRendererSet.lib;CEGUIOgreRenderer.lib;CEGUIRapidXMLParser.lib;CEGUISTBImageCodec.lib;dbghelp.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>boost.lib;ogremain.lib;ogreoctree.lib;ogred3d9.lib;ois.lib;zlib.lib;zziplib.lib;freeimage.lib;freetype.lib;LibTIFF4.lib;LibJPEG.lib;LibOpenJPEG.lib;LibPNG.lib;LibRaw.lib;OpenEXR.lib;pcre.lib;d3d9.lib;d3dx9.lib;dinput8.lib;dxerr.lib;dxguid.lib;CEGUIBase.lib;CEGUICommonDialogs.lib;CEGUICoreWindowRendererSet.lib;CEGUIOgreRenderer.lib;CEGUIRapidXMLParser.lib;CEGUISTBImageCodec.lib;dbghelp.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>..\..\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
@@ -205,7 +205,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>boost.lib;ogremain.lib;ogreterrain.lib;ogreoctree.lib;ogred3d9.lib;ois.lib;zlib.lib;zziplib.lib;freeimage.lib;freetype.lib;LibTIFF4.lib;LibJPEG.lib;LibOpenJPEG.lib;LibPNG.lib;LibRaw.lib;OpenEXR.lib;pcre.lib;d3d9.lib;d3dx9.lib;dinput8.lib;dxerr.lib;dxguid.lib;CEGUIBase.lib;CEGUICommonDialogs.lib;CEGUICoreWindowRendererSet.lib;CEGUIOgreRenderer.lib;CEGUIRapidXMLParser.lib;CEGUISTBImageCodec.lib;dbghelp.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>boost.lib;ogremain.lib;ogreoctree.lib;ogred3d9.lib;ois.lib;zlib.lib;zziplib.lib;freeimage.lib;freetype.lib;LibTIFF4.lib;LibJPEG.lib;LibOpenJPEG.lib;LibPNG.lib;LibRaw.lib;OpenEXR.lib;pcre.lib;d3d9.lib;d3dx9.lib;dinput8.lib;dxerr.lib;dxguid.lib;CEGUIBase.lib;CEGUICommonDialogs.lib;CEGUICoreWindowRendererSet.lib;CEGUIOgreRenderer.lib;CEGUIRapidXMLParser.lib;CEGUISTBImageCodec.lib;dbghelp.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>..\..\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
