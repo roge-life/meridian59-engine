@@ -2,7 +2,9 @@
 *.suo
 *.pdb
 *.opensdf
+*.user
 /obj
+/src/ipch
 /src/zlib-1.2.8/win32/zlib1.res
 /lib/x86/CEGUIRapidXMLParser.lib
 /lib/x86/CEGUIRapidXMLParser_d.lib
@@ -116,4 +118,3 @@
 /TEST/x64/*.lib
 /TEST/x64/*.exp
 /TEST/x64/*.exe
-/src/ipch
