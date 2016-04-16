@@ -97,7 +97,7 @@
       <AssemblerListingLocation>Debug</AssemblerListingLocation>
       <MinimalRebuild>false</MinimalRebuild>
       <CompileAs>CompileAsCpp</CompileAs>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>ParticleUniversePCH.h</PrecompiledHeaderFile>
       <AdditionalOptions>-Zm153 %(AdditionalOptions)</AdditionalOptions>
       <StringPooling>false</StringPooling>
@@ -126,10 +126,11 @@
       <AssemblerListingLocation>Debug</AssemblerListingLocation>
       <MinimalRebuild>false</MinimalRebuild>
       <CompileAs>CompileAsCpp</CompileAs>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>ParticleUniversePCH.h</PrecompiledHeaderFile>
       <AdditionalOptions>-Zm153 %(AdditionalOptions)</AdditionalOptions>
       <PreprocessorDefinitions>BOOST_THREAD_VERSION=4;BOOST_ALL_NO_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4244;4267</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -165,6 +166,8 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <StringPooling>true</StringPooling>
       <PreprocessorDefinitions>BOOST_THREAD_VERSION=4;BOOST_ALL_NO_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalOptions>-Zm153</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -205,6 +208,9 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <StringPooling>true</StringPooling>
       <PreprocessorDefinitions>BOOST_THREAD_VERSION=4;BOOST_ALL_NO_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalOptions>-Zm153 %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4244;4267</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -337,7 +343,12 @@
     <ClCompile Include="ParticleUniverseParticlePool.cpp" />
     <ClCompile Include="ParticleUniversePathFollower.cpp" />
     <ClCompile Include="ParticleUniversePathFollowerTokens.cpp" />
-    <ClCompile Include="ParticleUniversePCH.cpp" />
+    <ClCompile Include="ParticleUniversePCH.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="ParticleUniversePhysXActorExtern.cpp" />
     <ClCompile Include="ParticleUniversePhysXActorExternTokens.cpp" />
     <ClCompile Include="ParticleUniversePhysXBridge.cpp" />
