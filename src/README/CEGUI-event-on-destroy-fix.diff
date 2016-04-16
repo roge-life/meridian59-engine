@@ -1,0 +1,32 @@
+ src/cegui-0.8.5/src/Window.cpp | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/src/cegui-0.8.5/src/Window.cpp b/src/cegui-0.8.5/src/Window.cpp
+index e0c0c76..3e38a9f 100644
+--- a/src/cegui-0.8.5/src/Window.cpp
++++ b/src/cegui-0.8.5/src/Window.cpp
+@@ -1734,6 +1734,13 @@ void Window::destroy(void)
+         return;
+     }
+ 
++	// remove all events
++	removeAllEvents();
++
++	// double check we are detached from parent
++	if (d_parent)
++		d_parent->removeChild(this);
++
+     // signal our imminent destruction
+     WindowEventArgs args(this);
+     onDestructionStarted(args);
+@@ -1765,10 +1772,6 @@ void Window::destroy(void)
+         d_windowRenderer = 0;
+     }
+ 
+-    // double check we are detached from parent
+-    if (d_parent)
+-        d_parent->removeChild(this);
+-
+     cleanupChildren();
+ 
+     releaseRenderingWindow();
