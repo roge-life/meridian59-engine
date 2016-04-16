@@ -116,3 +116,4 @@
 /TEST/x64/*.lib
 /TEST/x64/*.exp
 /TEST/x64/*.exe
+/src/ipch
