@@ -126,8 +126,7 @@
       <AdditionalIncludeDirectories>..\..\include;..\..\include\caelum;..\..\include\ogre;</AdditionalIncludeDirectories>
       <MinimalRebuild>false</MinimalRebuild>
       <PreprocessorDefinitions>BOOST_ALL_NO_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <DisableSpecificWarnings>
-      </DisableSpecificWarnings>
+      <DisableSpecificWarnings>4305;4244</DisableSpecificWarnings>
       <CompileAs>CompileAsCpp</CompileAs>
       <AdditionalOptions>-Zm214</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -198,8 +197,7 @@
       <PrecompiledHeaderFile>CaelumPrecompiled.h</PrecompiledHeaderFile>
       <DebugInformationFormat>None</DebugInformationFormat>
       <PreprocessorDefinitions>BOOST_ALL_NO_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <DisableSpecificWarnings>
-      </DisableSpecificWarnings>
+      <DisableSpecificWarnings>4305;4244</DisableSpecificWarnings>
       <AdditionalOptions>-Zm214</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
