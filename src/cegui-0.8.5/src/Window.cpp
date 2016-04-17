@@ -1258,7 +1258,7 @@ void Window::removeChild_impl(Element* element)
     wnd->onZChange_impl();
 
     // Removed windows should not be active anymore
-    wnd->deactivate();
+    //wnd->deactivate();
 }
 
 //----------------------------------------------------------------------------//
@@ -1733,9 +1733,6 @@ void Window::destroy(void)
         // once WindowManager re-calls this method.
         return;
     }
-
-	// remove all events
-	removeAllEvents();
 
 	// double check we are detached from parent
 	if (d_parent)
