@@ -37,6 +37,8 @@
 /lib/x86/OgreOctree.lib
 /lib/x86/LibTIFF4.lib
 /lib/x86/LibTIFF4_d.lib
+/lib/x86/OgreD3D11.lib
+/lib/x86/OgreD3D11_d.lib
 /lib/x86/OgreD3D9.lib
 /lib/x86/OgreD3D9_d.lib
 /lib/x86/OgreMain.lib
@@ -83,13 +85,15 @@
 /lib/x64/LibJPEG_d.lib
 /lib/x64/LibOpenJPEG.lib
 /lib/x64/LibOpenJPEG_d.lib
-/lib/x64/OgreD3D9_d.lib
 /lib/x64/LibPNG_d.lib
 /lib/x64/LibRaw.lib
 /lib/x64/LibRaw_d.lib
 /lib/x64/LibTIFF4.lib
 /lib/x64/LibTIFF4_d.lib
+/lib/x64/OgreD3D11.lib
+/lib/x64/OgreD3D11_d.lib
 /lib/x64/OgreD3D9.lib
+/lib/x64/OgreD3D9_d.lib
 /lib/x64/ParticleUniverse_d.lib
 /lib/x64/OgreMain.lib
 /lib/x64/OgreMain_d.lib
