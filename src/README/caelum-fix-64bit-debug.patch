@@ -1,0 +1,13 @@
+diff --git "a/C:\\Users\\CLINT~1.BAN\\AppData\\Local\\Temp\\TortoiseGit\\AstC85F.tmp\\Astronomy-f24b4a7-left.cpp" "b/F:\\meridian59-dotnet\\Engine\\src\\caelum-0.6.1\\Astronomy.cpp"
+index 05d116b..3d8ff4c 100644
+--- "a/C:\\Users\\CLINT~1.BAN\\AppData\\Local\\Temp\\TortoiseGit\\AstC85F.tmp\\Astronomy-f24b4a7-left.cpp"
++++ "b/F:\\meridian59-dotnet\\Engine\\src\\caelum-0.6.1\\Astronomy.cpp"
+@@ -344,7 +344,7 @@ namespace Caelum
+         getGregorianDateTimeFromJulianDay(julianDay, year, month, day, hour, minute, second);
+     }
+ 
+-#if (OGRE_PLATFORM == OGRE_PLATFORM_WIN32) && (OGRE_COMPILER == OGRE_COMPILER_MSVC)
++#if (OGRE_PLATFORM == OGRE_PLATFORM_WIN32) && (OGRE_COMPILER == OGRE_COMPILER_MSVC) && (_WIN64 == 0)
+     int Astronomy::enterHighPrecissionFloatingPointMode ()
+     {
+         int oldMode = ::_controlfp (0, 0);
