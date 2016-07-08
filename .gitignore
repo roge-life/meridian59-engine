@@ -1,8 +1,15 @@
+# File-Type exclusions for Visual Studio
 *.sdf
 *.suo
 *.pdb
+*.opendb
 *.opensdf
 *.user
+*.VC.db
+
+# Other generic exclusions
+*.log
+
 /obj
 /src/ipch
 /src/zlib-1.2.8/win32/zlib1.res
