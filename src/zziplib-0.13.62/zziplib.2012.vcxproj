@@ -226,7 +226,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <ExceptionHandling>false</ExceptionHandling>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
-      <DisableSpecificWarnings>4244;4267;4028</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4244;4267;4028;4311</DisableSpecificWarnings>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>
@@ -284,7 +284,7 @@
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <EnableParallelCodeGeneration>
       </EnableParallelCodeGeneration>
-      <DisableSpecificWarnings>4244;4267;4028</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4244;4267;4028;4311</DisableSpecificWarnings>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>
