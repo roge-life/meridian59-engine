@@ -6,6 +6,7 @@
 *.opensdf
 *.user
 *.VC.db
+*.idb
 
 # Other generic exclusions
 *.log
