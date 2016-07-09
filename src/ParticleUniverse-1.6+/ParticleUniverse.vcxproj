@@ -392,6 +392,25 @@
     <ClCompile Include="ParticleUniverseSphereSet.cpp" />
     <ClCompile Include="ParticleUniverseSphereSurfaceEmitter.cpp" />
     <ClCompile Include="ParticleUniverseSphereSurfaceEmitterTokens.cpp" />
+	<ClCompile Include="ParticleUniverseSystem.cpp" />
+    <ClCompile Include="ParticleUniverseSystemManager.cpp" />
+    <ClCompile Include="ParticleUniverseSystemManagerTokens.cpp" />
+    <ClCompile Include="ParticleUniverseSystemTokens.cpp" />
+    <ClCompile Include="ParticleUniverseTechnique.cpp" />
+    <ClCompile Include="ParticleUniverseTechniqueTokens.cpp" />
+    <ClCompile Include="ParticleUniverseTextureAnimator.cpp" />
+    <ClCompile Include="ParticleUniverseTextureAnimatorTokens.cpp" />
+    <ClCompile Include="ParticleUniverseTextureRotator.cpp" />
+    <ClCompile Include="ParticleUniverseTextureRotatorTokens.cpp" />
+    <ClCompile Include="ParticleUniverseVelocityMatchingAffector.cpp" />
+    <ClCompile Include="ParticleUniverseVelocityMatchingAffectorTokens.cpp" />
+    <ClCompile Include="ParticleUniverseVertexEmitter.cpp" />
+    <ClCompile Include="ParticleUniverseVertexEmitterTokens.cpp" />
+    <ClCompile Include="ParticleUniverseVisualParticle.cpp" />
+    <ClCompile Include="ParticleUniverseVortexAffector.cpp" />
+    <ClCompile Include="ParticleUniverseVortexAffectorTokens.cpp" />
+    <ClCompile Include="ParticleUniverseVortexExtern.cpp" />
+    <ClCompile Include="ParticleUniverseVortexExternTokens.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
