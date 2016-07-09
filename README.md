@@ -70,24 +70,6 @@ GameEngine stack for Windows, built from Open-Source or free components.
   <td><a href="http://www.pcre.org">http://www.pcre.org</a></td>
 </tr>
 <tr>
-  <td>OpenEXR</td>
-  <td>EXR-Fileformat</td>
-  <td><a href="http://www.openexr.com/license.html">Modified BSD</a></td>
-  <td><a href="http://www.openexr.com">http://www.openexr.com</a></td>
-</tr>
-<tr>
-  <td>LibTIFF</td>
-  <td>TIF-Fileformat</td>
-  <td><a href="http://en.wikipedia.org/wiki/BSD_licenses">BSD-like</a></td>
-  <td><a href="http://www.remotesensing.org/libtiff">http://www.remotesensing.org/libtiff</a></td>
-</tr>
-<tr>
-  <td>LibRAW</td>
-  <td>RAW-Fileformat</td>
-  <td><a href="http://www.libraw.org/libraw-lite">LGPL</a></td>
-  <td><a href="http://www.libraw.org">http://www.libraw.org</a></td>
-</tr>
-<tr>
   <td>LibPNG</td>
   <td>PNG-Fileformat</td>
   <td><a href="http://www.libpng.org/pub/png/src/libpng-LICENSE.txt">Custom</a></td>
@@ -118,12 +100,6 @@ GameEngine stack for Windows, built from Open-Source or free components.
   <td><a href="http://www.freetype.org">http://www.freetype.org</a></td>
 </tr>
 <tr>
-  <td>CG</td>
-  <td>Shaders</td>
-  <td><a href="http://developer.download.nvidia.com/cg/Cg_3.0/license.pdf">Custom</a></td>
-  <td><a href="https://developer.nvidia.com/cg-toolkit">https://developer.nvidia.com/cg-toolkit</a></td>
-</tr>
-<tr>
   <td>boost</td>
   <td>C++ framework</td>
   <td><a href="http://www.boost.org/users/license.html">Custom</a></td>
@@ -132,10 +108,10 @@ GameEngine stack for Windows, built from Open-Source or free components.
 </table>
 
 ## Notes
- * Requires Visual Studio 2013.
+ * Requires Visual Studio 2015.
  * Use included <a href="https://github.com/cyberjunk/Engine/blob/master/src/Engine.sln">Engine.sln</a> solution file.
  * Almost all libraries are statical linked.
- * Not compatible with Windows XP (would need to switch 32-Bit builds to use *v120_xp toolset* and linker system 5.01.
+ * Not compatible with Windows XP (would need to switch 32-Bit builds to use *v140_xp toolset* and linker system 5.01.
  * Engine can also be built in 64-Bit.
  * Release-builds have high optimizations, SSE2 enabled and no debuginfo. Debug-builds the opposite.
  * This package works with CLR (C++/CLI) enabled applications (see TEST app).
