@@ -113,7 +113,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\include;..\..\include\freeimage;..\..\include\freeimage\metadata;..\..\include\freeimage\freeimagetoolkit;..\..\include\freeimage\deprecationmanager;..\..\include\zlib;..\..\include\libtiff4;..\..\include\libpng;..\..\include\OpenEXR;..\..\include\OpenEXR\Imath;..\..\include\OpenEXR\IlmImf;..\..\include\OpenEXR\Half;..\..\include\OpenEXR\Iex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\..\include\freeimage;..\..\include\freeimage\metadata;..\..\include\freeimage\freeimagetoolkit;..\..\include\freeimage\deprecationmanager;..\..\include\zlib;..\..\include\libpng;..\..\include\OpenEXR;..\..\include\OpenEXR\Imath;..\..\include\OpenEXR\IlmImf;..\..\include\OpenEXR\Half;..\..\include\OpenEXR\Iex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;FREEIMAGE_LIB;OPJ_STATIC;FREEIMAGE_EXPORTS;_CRT_SECURE_NO_DEPRECATE;LIBRAW_NODLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -188,7 +188,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\include;..\..\include\freeimage;..\..\include\freeimage\metadata;..\..\include\freeimage\freeimagetoolkit;..\..\include\freeimage\deprecationmanager;..\..\include\zlib;..\..\include\libtiff4;..\..\include\libpng;..\..\include\OpenEXR;..\..\include\OpenEXR\Imath;..\..\include\OpenEXR\IlmImf;..\..\include\OpenEXR\Half;..\..\include\OpenEXR\Iex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\..\include\freeimage;..\..\include\freeimage\metadata;..\..\include\freeimage\freeimagetoolkit;..\..\include\freeimage\deprecationmanager;..\..\include\zlib;..\..\include\libpng;..\..\include\OpenEXR;..\..\include\OpenEXR\Imath;..\..\include\OpenEXR\IlmImf;..\..\include\OpenEXR\Half;..\..\include\OpenEXR\Iex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;FREEIMAGE_LIB;OPJ_STATIC;FREEIMAGE_EXPORTS;_CRT_SECURE_NO_DEPRECATE;LIBRAW_NODLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -253,7 +253,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\include;..\..\include\freeimage;..\..\include\freeimage\metadata;..\..\include\freeimage\freeimagetoolkit;..\..\include\freeimage\deprecationmanager;..\..\include\zlib;..\..\include\libtiff4;..\..\include\libpng;..\..\include\OpenEXR;..\..\include\OpenEXR\Imath;..\..\include\OpenEXR\IlmImf;..\..\include\OpenEXR\Half;..\..\include\OpenEXR\Iex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\..\include\freeimage;..\..\include\freeimage\metadata;..\..\include\freeimage\freeimagetoolkit;..\..\include\freeimage\deprecationmanager;..\..\include\zlib;..\..\include\libpng;..\..\include\OpenEXR;..\..\include\OpenEXR\Imath;..\..\include\OpenEXR\IlmImf;..\..\include\OpenEXR\Half;..\..\include\OpenEXR\Iex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;FREEIMAGE_LIB;OPJ_STATIC;FREEIMAGE_EXPORTS;_CRT_SECURE_NO_DEPRECATE;LIBRAW_NODLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -313,7 +313,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\include;..\..\include\freeimage;..\..\include\freeimage\metadata;..\..\include\freeimage\freeimagetoolkit;..\..\include\freeimage\deprecationmanager;..\..\include\zlib;..\..\include\libtiff4;..\..\include\libpng;..\..\include\OpenEXR;..\..\include\OpenEXR\Imath;..\..\include\OpenEXR\IlmImf;..\..\include\OpenEXR\Half;..\..\include\OpenEXR\Iex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\..\include\freeimage;..\..\include\freeimage\metadata;..\..\include\freeimage\freeimagetoolkit;..\..\include\freeimage\deprecationmanager;..\..\include\zlib;..\..\include\libpng;..\..\include\OpenEXR;..\..\include\OpenEXR\Imath;..\..\include\OpenEXR\IlmImf;..\..\include\OpenEXR\Half;..\..\include\OpenEXR\Iex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;FREEIMAGE_LIB;OPJ_STATIC;FREEIMAGE_EXPORTS;_CRT_SECURE_NO_DEPRECATE;LIBRAW_NODLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -376,7 +376,6 @@
     <ClCompile Include="PluginCUT.cpp" />
     <ClCompile Include="PluginDDS.cpp" />
     <ClCompile Include="PluginEXR.cpp" />
-    <ClCompile Include="PluginG3.cpp" />
     <ClCompile Include="PluginGIF.cpp" />
     <ClCompile Include="PluginHDR.cpp" />
     <ClCompile Include="PluginICO.cpp" />
@@ -397,7 +396,6 @@
     <ClCompile Include="PluginRAS.cpp" />
     <ClCompile Include="PluginSGI.cpp" />
     <ClCompile Include="PluginTARGA.cpp" />
-    <ClCompile Include="PluginTIFF.cpp" />
     <ClCompile Include="PluginWBMP.cpp" />
     <ClCompile Include="PluginXBM.cpp" />
     <ClCompile Include="PluginXPM.cpp" />
@@ -434,7 +432,6 @@
     <ClCompile Include="IPTC.cpp" />
     <ClCompile Include="TagConversion.cpp" />
     <ClCompile Include="TagLib.cpp" />
-    <ClCompile Include="XTIFF.cpp" />
     <ClCompile Include="Background.cpp" />
     <ClCompile Include="BSplineRotate.cpp" />
     <ClCompile Include="Channels.cpp" />
