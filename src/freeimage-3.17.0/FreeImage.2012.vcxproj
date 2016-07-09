@@ -365,7 +365,6 @@
     <ClCompile Include="ConversionRGBA16.cpp" />
     <ClCompile Include="ConversionRGBAF.cpp" />
     <ClCompile Include="FreeImage.cpp" />
-    <ClCompile Include="FreeImageC.c" />
     <ClCompile Include="FreeImageIO.cpp" />
     <ClCompile Include="GetType.cpp" />
     <ClCompile Include="LFPQuantizer.cpp" />
