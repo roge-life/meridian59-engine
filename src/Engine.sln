@@ -41,7 +41,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CEGUISTBImageCodec", "cegui
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "caelum", "caelum-0.6.1\caelum.vcxproj", "{DBA2AEFB-1BE9-47A4-A592-1EE6F382CADC}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "boost", "boost-1.55.0\boost.vcxproj", "{E09FC166-2921-4D6D-9E14-E6F89B46FD53}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "boost", "boost-1.61.0\boost.vcxproj", "{E09FC166-2921-4D6D-9E14-E6F89B46FD53}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParticleUniverse", "ParticleUniverse-1.6+\ParticleUniverse.vcxproj", "{837046F4-06E7-4DD3-BDF4-5522427D5FD5}"
 EndProject
