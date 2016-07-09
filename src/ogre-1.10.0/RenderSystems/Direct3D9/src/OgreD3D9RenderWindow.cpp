@@ -25,19 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "OgreD3D9RenderWindow.h"
-#include "OgreLogManager.h"
-#include "OgreViewport.h"
-#include "OgreException.h"
-#include "OgreD3D9RenderSystem.h"
-#include "OgreRenderSystem.h"
-#include "OgreBitwise.h"
-#include "OgreImageCodec.h"
-#include "OgreStringConverter.h"
-#include "OgreRoot.h"
-#include "OgreWindowEventUtilities.h"
-#include "OgreD3D9DeviceManager.h"
-#include "OgreDepthBuffer.h"
+#include "OgreD3D9Precompiled.h"
 
 #if OGRE_NO_QUAD_BUFFER_STEREO == 0
 #include "OgreD3D9StereoDriverBridge.h"

@@ -25,11 +25,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "OgreD3D9HLSLProgram.h"
-#include "OgreGpuProgramManager.h"
-#include "OgreStringConverter.h"
-#include "OgreD3D9GpuProgram.h"
-#include "OgreLogManager.h"
+#include "OgreD3D9Precompiled.h"
+
 
 namespace Ogre {
     //-----------------------------------------------------------------------

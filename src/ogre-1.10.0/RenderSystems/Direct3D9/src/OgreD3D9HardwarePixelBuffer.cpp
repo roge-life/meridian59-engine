@@ -25,15 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#include "OgreD3D9HardwarePixelBuffer.h"
-#include "OgreD3D9Texture.h"
-#include "OgreD3D9Mappings.h"
-#include "OgreException.h"
-#include "OgreLogManager.h"
-#include "OgreStringConverter.h"
-#include "OgreBitwise.h"
-#include "OgreRoot.h"
-#include "OgreRenderSystem.h"
+#include "OgreD3D9Precompiled.h"
 
 namespace Ogre {
 
