@@ -103,6 +103,7 @@
       <StringPooling>false</StringPooling>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PreprocessorDefinitions>BOOST_ALL_NO_LIB;BOOST_THREAD_BUILD_LIB;BOOST_THREAD_VERSION=4;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4305</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -349,11 +350,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ParticleUniversePhysXActorExtern.cpp" />
-    <ClCompile Include="ParticleUniversePhysXActorExternTokens.cpp" />
-    <ClCompile Include="ParticleUniversePhysXBridge.cpp" />
-    <ClCompile Include="ParticleUniversePhysXFluidExtern.cpp" />
-    <ClCompile Include="ParticleUniversePhysXFluidExternTokens.cpp" />
     <ClCompile Include="ParticleUniversePlaneCollider.cpp" />
     <ClCompile Include="ParticleUniversePlaneColliderTokens.cpp" />
     <ClCompile Include="ParticleUniversePlugin.cpp" />
@@ -392,7 +388,7 @@
     <ClCompile Include="ParticleUniverseSphereSet.cpp" />
     <ClCompile Include="ParticleUniverseSphereSurfaceEmitter.cpp" />
     <ClCompile Include="ParticleUniverseSphereSurfaceEmitterTokens.cpp" />
-	<ClCompile Include="ParticleUniverseSystem.cpp" />
+    <ClCompile Include="ParticleUniverseSystem.cpp" />
     <ClCompile Include="ParticleUniverseSystemManager.cpp" />
     <ClCompile Include="ParticleUniverseSystemManagerTokens.cpp" />
     <ClCompile Include="ParticleUniverseSystemTokens.cpp" />
