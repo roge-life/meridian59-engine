@@ -213,7 +213,6 @@
   <ItemGroup>
     <ClCompile Include="Astronomy.cpp" />
     <ClCompile Include="BrightStarCatalogue.cpp" />
-    <ClCompile Include="CaelumDefaultTypeDescriptorData.cpp" />
     <ClCompile Include="CaelumPlugin.cpp" />
     <ClCompile Include="CaelumPrecompiled.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -221,7 +220,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="CaelumScriptTranslator.cpp" />
     <ClCompile Include="CaelumSystem.cpp" />
     <ClCompile Include="CameraBoundElement.cpp" />
     <ClCompile Include="CloudSystem.cpp" />
@@ -237,7 +235,6 @@
     <ClCompile Include="SkyDome.cpp" />
     <ClCompile Include="SkyLight.cpp" />
     <ClCompile Include="Sun.cpp" />
-    <ClCompile Include="TypeDescriptor.cpp" />
     <ClCompile Include="UniversalClock.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -248,7 +245,6 @@
     <ClInclude Include="..\..\include\caelum\CaelumPlugin.h" />
     <ClInclude Include="..\..\include\caelum\CaelumPrecompiled.h" />
     <ClInclude Include="..\..\include\caelum\CaelumPrerequisites.h" />
-    <ClInclude Include="..\..\include\caelum\CaelumScriptTranslator.h" />
     <ClInclude Include="..\..\include\caelum\CaelumSystem.h" />
     <ClInclude Include="..\..\include\caelum\CameraBoundElement.h" />
     <ClInclude Include="..\..\include\caelum\CloudSystem.h" />
@@ -265,7 +261,6 @@
     <ClInclude Include="..\..\include\caelum\SkyDome.h" />
     <ClInclude Include="..\..\include\caelum\SkyLight.h" />
     <ClInclude Include="..\..\include\caelum\Sun.h" />
-    <ClInclude Include="..\..\include\caelum\TypeDescriptor.h" />
     <ClInclude Include="..\..\include\caelum\UniversalClock.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
