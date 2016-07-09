@@ -256,9 +256,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\OgreD3D9StereoDriverAMD.cpp" />
-    <ClCompile Include="src\OgreD3D9StereoDriverBridge.cpp" />
-    <ClCompile Include="src\OgreD3D9StereoDriverNVIDIA.cpp" />
     <ClCompile Include="src\OgreDxErr.cpp" />
     <ClInclude Include="..\..\..\..\include\Ogre\OgreD3D9DepthBuffer.h" />
     <ClInclude Include="..\..\..\..\include\Ogre\OgreD3D9Device.h" />
@@ -282,10 +279,6 @@
     <ClInclude Include="..\..\..\..\include\Ogre\OgreD3D9RenderWindow.h" />
     <ClInclude Include="..\..\..\..\include\Ogre\OgreD3D9Resource.h" />
     <ClInclude Include="..\..\..\..\include\Ogre\OgreD3D9ResourceManager.h" />
-    <ClInclude Include="..\..\..\..\include\Ogre\OgreD3D9StereoDriverAMD.h" />
-    <ClInclude Include="..\..\..\..\include\Ogre\OgreD3D9StereoDriverBridge.h" />
-    <ClInclude Include="..\..\..\..\include\Ogre\OgreD3D9StereoDriverImpl.h" />
-    <ClInclude Include="..\..\..\..\include\Ogre\OgreD3D9StereoDriverNVIDIA.h" />
     <ClInclude Include="..\..\..\..\include\Ogre\OgreD3D9Texture.h" />
     <ClInclude Include="..\..\..\..\include\Ogre\OgreD3D9TextureManager.h" />
     <ClInclude Include="..\..\..\..\include\Ogre\OgreD3D9VertexDeclaration.h" />
