@@ -44,7 +44,7 @@ restrictions:
 #ifdef OIS_DYNAMIC_LIB
 #  undef OIS_DYNAMIC_LIB
 #endif
-#define OIS_DYNAMIC_LIB
+//#define OIS_DYNAMIC_LIB
 
 /**
 @remarks
