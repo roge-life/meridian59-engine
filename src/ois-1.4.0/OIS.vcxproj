@@ -282,45 +282,9 @@
     <ClCompile Include="win32\Win32JoyStick.cpp" />
     <ClCompile Include="win32\Win32KeyBoard.cpp" />
     <ClCompile Include="win32\Win32Mouse.cpp" />
-    <ClCompile Include="win32\extras\hiddevice.cpp" />
-    <ClCompile Include="win32\extras\OISWiiMote.cpp" />
-    <ClCompile Include="win32\extras\OISWiiMoteFactoryCreator.cpp" />
-    <ClCompile Include="win32\extras\OISWiiMoteForceFeedback.cpp" />
-    <ClCompile Include="win32\extras\OISWiiMoteRingBuffer.cpp" />
-    <ClCompile Include="win32\extras\wiimote.cpp" />
-    <ClCompile Include="win32\extras\OISLIRC.cpp" />
-    <ClCompile Include="win32\extras\OISLIRCFactoryCreator.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\OIS\OIS.h" />
     <ClInclude Include="..\..\include\OIS\OISConfig.h" />
-    <ClInclude Include="..\..\include\OIS\OISEvents.h" />
-    <ClInclude Include="..\..\include\OIS\OISException.h" />
-    <ClInclude Include="..\..\include\OIS\OISFactoryCreator.h" />
-    <ClInclude Include="..\..\include\OIS\OISInputManager.h" />
-    <ClInclude Include="..\..\include\OIS\OISJoystick.h" />
-    <ClInclude Include="..\..\include\OIS\OISKeyboard.h" />
-    <ClInclude Include="..\..\include\OIS\OISMouse.h" />
-    <ClInclude Include="..\..\include\OIS\OISObject.h" />
-    <ClInclude Include="..\..\include\OIS\OISPrereqs.h" />
-    <ClInclude Include="..\..\include\OIS\OISEffect.h" />
-    <ClInclude Include="..\..\include\OIS\OISForceFeedback.h" />
-    <ClInclude Include="..\..\include\OIS\OISInterface.h" />
-    <ClInclude Include="..\..\include\OIS\win32\Win32ForceFeedback.h" />
-    <ClInclude Include="..\..\include\OIS\win32\Win32InputManager.h" />
-    <ClInclude Include="..\..\include\OIS\win32\Win32JoyStick.h" />
-    <ClInclude Include="..\..\include\OIS\win32\Win32KeyBoard.h" />
-    <ClInclude Include="..\..\include\OIS\win32\Win32Mouse.h" />
-    <ClInclude Include="..\..\include\OIS\win32\Win32Prereqs.h" />
-    <ClInclude Include="..\..\include\OIS\win32\extras\hiddevice.h" />
-    <ClInclude Include="..\..\include\OIS\win32\extras\OISWiiMote.h" />
-    <ClInclude Include="..\..\include\OIS\win32\extras\OISWiiMoteFactoryCreator.h" />
-    <ClInclude Include="..\..\include\OIS\win32\extras\OISWiiMoteForceFeedback.h" />
-    <ClInclude Include="..\..\include\OIS\win32\extras\OISWiiMoteRingBuffer.h" />
-    <ClInclude Include="..\..\include\OIS\win32\extras\wiimote.h" />
-    <ClInclude Include="..\..\include\OIS\win32\extras\OISLIRC.h" />
-    <ClInclude Include="..\..\include\OIS\win32\extras\OISLIRCFactoryCreator.h" />
-    <ClInclude Include="..\..\include\OIS\win32\extras\OISLIRCRingBuffer.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
