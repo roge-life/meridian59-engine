@@ -95,7 +95,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;BOOST_THREAD_BUILD_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;BOOST_THREAD_BUILD_LIB;BOOST_THREAD_VERSION=4;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -115,7 +115,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;BOOST_THREAD_BUILD_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;BOOST_THREAD_BUILD_LIB;BOOST_THREAD_VERSION=4;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4267</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -142,7 +142,7 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;BOOST_THREAD_BUILD_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;BOOST_THREAD_BUILD_LIB;BOOST_THREAD_VERSION=4;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
     </ClCompile>
     <Link>
@@ -172,7 +172,7 @@
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;BOOST_THREAD_BUILD_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;BOOST_THREAD_BUILD_LIB;BOOST_THREAD_VERSION=4;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <DisableSpecificWarnings>4267</DisableSpecificWarnings>
     </ClCompile>

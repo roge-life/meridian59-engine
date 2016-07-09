@@ -102,7 +102,7 @@
       <AdditionalOptions>-Zm153 %(AdditionalOptions)</AdditionalOptions>
       <StringPooling>false</StringPooling>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <PreprocessorDefinitions>BOOST_THREAD_VERSION=4;BOOST_ALL_NO_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;BOOST_THREAD_BUILD_LIB;BOOST_THREAD_VERSION=4;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -129,7 +129,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>ParticleUniversePCH.h</PrecompiledHeaderFile>
       <AdditionalOptions>-Zm153 %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessorDefinitions>BOOST_THREAD_VERSION=4;BOOST_ALL_NO_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;BOOST_THREAD_BUILD_LIB;BOOST_THREAD_VERSION=4;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4244;4267</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -165,7 +165,7 @@
       <PrecompiledHeaderFile>ParticleUniversePCH.h</PrecompiledHeaderFile>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <StringPooling>true</StringPooling>
-      <PreprocessorDefinitions>BOOST_THREAD_VERSION=4;BOOST_ALL_NO_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;BOOST_THREAD_BUILD_LIB;BOOST_THREAD_VERSION=4;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <AdditionalOptions>-Zm153</AdditionalOptions>
     </ClCompile>
@@ -207,7 +207,7 @@
       <PrecompiledHeaderFile>ParticleUniversePCH.h</PrecompiledHeaderFile>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <StringPooling>true</StringPooling>
-      <PreprocessorDefinitions>BOOST_THREAD_VERSION=4;BOOST_ALL_NO_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;BOOST_THREAD_BUILD_LIB;BOOST_THREAD_VERSION=4;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <AdditionalOptions>-Zm153 %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4244;4267</DisableSpecificWarnings>
