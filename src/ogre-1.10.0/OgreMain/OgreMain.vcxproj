@@ -369,11 +369,9 @@
     <ClInclude Include="..\..\..\include\Ogre\OgreMatrix4.h" />
     <ClInclude Include="..\..\..\include\Ogre\OgreMemoryAllocatedObject.h" />
     <ClInclude Include="..\..\..\include\Ogre\OgreMemoryAllocatorConfig.h" />
-    <ClInclude Include="..\..\..\include\Ogre\OgreMemoryNedAlloc.h" />
     <ClInclude Include="..\..\..\include\Ogre\OgreMemoryNedPooling.h" />
     <ClInclude Include="..\..\..\include\Ogre\OgreMemoryStdAlloc.h" />
     <ClInclude Include="..\..\..\include\Ogre\OgreMemorySTLAllocator.h" />
-    <ClInclude Include="..\..\..\include\Ogre\OgreMemoryTracker.h" />
     <ClInclude Include="..\..\..\include\Ogre\OgreMesh.h" />
     <ClInclude Include="..\..\..\include\Ogre\OgreMeshFileFormat.h" />
     <ClInclude Include="..\..\..\include\Ogre\OgreMeshManager.h" />
@@ -606,9 +604,7 @@
     <ClCompile Include="src\OgreMatrix3.cpp" />
     <ClCompile Include="src\OgreMatrix4.cpp" />
     <ClCompile Include="src\OgreMemoryAllocatedObject.cpp" />
-    <ClCompile Include="src\OgreMemoryNedAlloc.cpp" />
     <ClCompile Include="src\OgreMemoryNedPooling.cpp" />
-    <ClCompile Include="src\OgreMemoryTracker.cpp" />
     <ClCompile Include="src\OgreMesh.cpp" />
     <ClCompile Include="src\OgreMeshManager.cpp" />
     <ClCompile Include="src\OgreMeshSerializer.cpp" />
