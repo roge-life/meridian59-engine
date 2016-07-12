@@ -1662,8 +1662,8 @@ namespace Ogre
         // Hacky override - many (all?) cards seem to not be able to autogen on 
         // textures which are not a power of two
         // Can we even mipmap on 3D textures? Well
-        if ((mWidth & mWidth-1) || (mHeight & mHeight-1) || (mDepth & mDepth-1))
-            return false;
+        //if ((mWidth & mWidth-1) || (mHeight & mHeight-1) || (mDepth & mDepth-1))
+        //    return false;
 
         if (rkCurCaps.Caps2 & D3DCAPS2_CANAUTOGENMIPMAP)
         {
