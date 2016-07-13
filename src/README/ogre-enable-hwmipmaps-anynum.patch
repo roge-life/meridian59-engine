@@ -1,0 +1,13 @@
+diff --git "a/C:\\Users\\CLINT~1.BAN\\AppData\\Local\\Temp\\TortoiseGit\\Ogr2DC8.tmp\\OgreD3D9Texture-9b7989d-left.cpp" "b/F:\\meridian59-dotnet\\Engine\\src\\ogre-1.10.0\\RenderSystems\\Direct3D9\\src\\OgreD3D9Texture.cpp"
+index d40c214..0332976 100644
+--- "a/C:\\Users\\CLINT~1.BAN\\AppData\\Local\\Temp\\TortoiseGit\\Ogr2DC8.tmp\\OgreD3D9Texture-9b7989d-left.cpp"
++++ "b/F:\\meridian59-dotnet\\Engine\\src\\ogre-1.10.0\\RenderSystems\\Direct3D9\\src\\OgreD3D9Texture.cpp"
+@@ -1063,7 +1063,7 @@ namespace Ogre
+                 if (mMipmapsHardwareGenerated)
+                 {
+                     usage |= D3DUSAGE_AUTOGENMIPMAP;
+-                    numMips = 0;
++                    //numMips = 0;
+                 }
+             }
+         }

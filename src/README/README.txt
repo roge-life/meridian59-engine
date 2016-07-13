@@ -22,6 +22,7 @@
 3) OGRE
 3.1) Changed ColorKey in D3D9 backend to M59 cyan
 3.2) Enable HW mipmaps for non-power-of-two textures (see ogre-enable-hwmipmaps...patch)
+3.3) Enable HW mipmaps with specified num (see ogre-enable-hwmipmaps...patch)
 
 4) Caelum
 4.1) Patched for Ogre 1.9.0 according to
