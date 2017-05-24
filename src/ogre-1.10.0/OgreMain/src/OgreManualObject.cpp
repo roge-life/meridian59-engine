@@ -109,7 +109,7 @@ namespace Ogre {
             if (!mTempVertexBuffer)
             {
                 // init
-                newSize = mTempVertexSize;
+                //newSize = mTempVertexSize;
             }
             else
             {
@@ -137,7 +137,7 @@ namespace Ogre {
             if (!mTempIndexBuffer)
             {
                 // init
-                newSize = mTempIndexSize;
+                //newSize = mTempIndexSize;
             }
             else
             {

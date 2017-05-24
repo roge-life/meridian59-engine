@@ -1,0 +1,22 @@
+diff --git "a/C:\\Users\\CLINT~1.BAN\\AppData\\Local\\Temp\\TortoiseGit\\OgreManualObject-3557060.001.cpp" "b/F:\\meridian59-dotnet\\Engine\\src\\ogre-1.10.0\\OgreMain\\src\\OgreManualObject.cpp"
+index 10673a7..12dcdc2 100644
+--- "a/C:\\Users\\CLINT~1.BAN\\AppData\\Local\\Temp\\TortoiseGit\\OgreManualObject-3557060.001.cpp"
++++ "b/F:\\meridian59-dotnet\\Engine\\src\\ogre-1.10.0\\OgreMain\\src\\OgreManualObject.cpp"
+@@ -109,7 +109,7 @@ namespace Ogre {
+             if (!mTempVertexBuffer)
+             {
+                 // init
+-                newSize = mTempVertexSize;
++                //newSize = mTempVertexSize;
+             }
+             else
+             {
+@@ -137,7 +137,7 @@ namespace Ogre {
+             if (!mTempIndexBuffer)
+             {
+                 // init
+-                newSize = mTempIndexSize;
++                //newSize = mTempIndexSize;
+             }
+             else
+             {
