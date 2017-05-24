@@ -1,0 +1,13 @@
+diff --git "a/C:\\Users\\CLINT~1.BAN\\AppData\\Local\\Temp\\TortoiseGit\\Sun-74a2656.001.cpp" "b/F:\\meridian59-dotnet\\Engine\\src\\caelum-0.6.1\\Sun.cpp"
+index 36c887c..c623f26 100644
+--- "a/C:\\Users\\CLINT~1.BAN\\AppData\\Local\\Temp\\TortoiseGit\\Sun-74a2656.001.cpp"
++++ "b/F:\\meridian59-dotnet\\Engine\\src\\caelum-0.6.1\\Sun.cpp"
+@@ -84,7 +84,7 @@ namespace Caelum
+         mSunMaterial.reset (InternalUtilities::checkLoadMaterialClone (SUN_MATERIAL_NAME, SUN_MATERIAL_NAME + uniqueSuffix));
+         setSunTexture (sunTextureName);
+ 
+-        mSunBillboardSet.reset (sceneMgr->createBillboardSet ("Caelum/SpriteSun" + uniqueSuffix, 2));
++        mSunBillboardSet.reset (sceneMgr->createBillboardSet ("Caelum/SpriteSun" + uniqueSuffix, 1));
+         mSunBillboardSet->setMaterialName (mSunMaterial->getName());
+         mSunBillboardSet->setCastShadows (false);
+         mSunBillboardSet->setRenderQueueGroup (CAELUM_RENDER_QUEUE_SUN);

@@ -28,6 +28,7 @@
 4.1) Patched for Ogre 1.9.0 according to
      https://bitbucket.org/jacmoe/ogitor/pull-request/46/update-for-ogre-190-sharedptr-see-ghadamon
 4.2) Don't set _MCW_PC for x64 in Astronomy.cpp (see caelum-fix-64bit-debug.patch)
+4.3) Set Caelum sun billboardset to poolsize 1 (faster), see .patch
  
 5) ParticleUniverse
 5.1) Disabled exception for unknown EventHandler type in "ParticleUniverseSystemManager.cpp" because of own subclass

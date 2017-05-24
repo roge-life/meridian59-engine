@@ -84,7 +84,7 @@ namespace Caelum
         mSunMaterial.reset (InternalUtilities::checkLoadMaterialClone (SUN_MATERIAL_NAME, SUN_MATERIAL_NAME + uniqueSuffix));
         setSunTexture (sunTextureName);
 
-        mSunBillboardSet.reset (sceneMgr->createBillboardSet ("Caelum/SpriteSun" + uniqueSuffix, 2));
+        mSunBillboardSet.reset (sceneMgr->createBillboardSet ("Caelum/SpriteSun" + uniqueSuffix, 1));
         mSunBillboardSet->setMaterialName (mSunMaterial->getName());
         mSunBillboardSet->setCastShadows (false);
         mSunBillboardSet->setRenderQueueGroup (CAELUM_RENDER_QUEUE_SUN);
