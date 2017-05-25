@@ -18,6 +18,7 @@
 2.3) Added "eraseText" method to Window.h / Window.cpp
 2.4) Prevent EditBox from raising onKeyDown twice due to parent Window class
 2.5) Add include to <algorithm> to Base.h due to min/max in VS2013
+2.6) Add 'd_ensureCaretVisible' to MultiLineEditobox to control auto-scrolling to caret in onTextChanged()
 
 3) OGRE
 3.1) Changed ColorKey in D3D9 backend to M59 cyan

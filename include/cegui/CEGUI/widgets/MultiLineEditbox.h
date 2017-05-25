@@ -307,6 +307,16 @@ public:
     */
     size_t  getLineNumberFromIndex(size_t index) const;
 
+    /*!
+    \brief
+    return true if ensureCaretVisible shuold be called in onTextChanged.
+
+    \return
+    - true if ensureCaretVisible will be called in onTextChanged
+    - false if ensureCaretVisible will not be called in onTextChanged
+    */
+    inline bool	isEnsureCaretVisible(void) const { return d_ensureCaretVisible; }
+
 	/*************************************************************************
 		Manipulators
 	*************************************************************************/
@@ -452,6 +462,18 @@ public:
     
     //! \copydoc Window::performPaste
     virtual bool performPaste(Clipboard& clipboard);
+
+    /*!
+    \brief
+    Set whether ensureCaretVisible will be called in onTextChanged
+
+    \param setting
+    - true if ensureCaretVisible should be called in onTextChanged
+    - false if ensureCaretVisible should not be called in onTextChanged
+    \return
+    Nothing.
+    */
+    inline void	setEnsureCaretVisible(bool setting) { d_ensureCaretVisible = setting; }
 
     /*!
     \brief
@@ -770,6 +792,7 @@ protected:
 	// images
 	const Image*	d_selectionBrush;	//!< Image to use as the selection brush (should be set by derived class).
 
+   bool d_ensureCaretVisible; //!< true of ensureCaretIsVisible() should be called in onTextChanged()
 
 private:
 	/*************************************************************************

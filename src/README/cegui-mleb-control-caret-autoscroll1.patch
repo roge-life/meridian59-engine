@@ -1,0 +1,48 @@
+diff --git "a/C:\\Users\\CLINT~1.BAN\\AppData\\Local\\Temp\\TortoiseGit\\MultiLineEditbox-8a4d3b2.002.h" "b/F:\\meridian59-dotnet\\Engine\\include\\cegui\\CEGUI\\widgets\\MultiLineEditbox.h"
+index 9e35c61..757d824 100644
+--- "a/C:\\Users\\CLINT~1.BAN\\AppData\\Local\\Temp\\TortoiseGit\\MultiLineEditbox-8a4d3b2.002.h"
++++ "b/F:\\meridian59-dotnet\\Engine\\include\\cegui\\CEGUI\\widgets\\MultiLineEditbox.h"
+@@ -307,6 +307,16 @@ public:
+     */
+     size_t  getLineNumberFromIndex(size_t index) const;
+ 
++    /*!
++    \brief
++    return true if ensureCaretVisible shuold be called in onTextChanged.
++
++    \return
++    - true if ensureCaretVisible will be called in onTextChanged
++    - false if ensureCaretVisible will not be called in onTextChanged
++    */
++    inline bool	isEnsureCaretVisible(void) const { return d_ensureCaretVisible; }
++
+ 	/*************************************************************************
+ 		Manipulators
+ 	*************************************************************************/
+@@ -455,6 +465,18 @@ public:
+ 
+     /*!
+     \brief
++    Set whether ensureCaretVisible will be called in onTextChanged
++
++    \param setting
++    - true if ensureCaretVisible should be called in onTextChanged
++    - false if ensureCaretVisible should not be called in onTextChanged
++    \return
++    Nothing.
++    */
++    inline void	setEnsureCaretVisible(bool setting) { d_ensureCaretVisible = setting; }
++
++    /*!
++    \brief
+         Format the text into lines as dictated by the formatting options.
+ 
+     \param update_scrollbars 
+@@ -770,6 +792,7 @@ protected:
+ 	// images
+ 	const Image*	d_selectionBrush;	//!< Image to use as the selection brush (should be set by derived class).
+ 
++   bool d_ensureCaretVisible; //!< true of ensureCaretIsVisible() should be called in onTextChanged()
+ 
+ private:
+ 	/*************************************************************************

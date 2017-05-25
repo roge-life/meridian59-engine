@@ -108,7 +108,8 @@ MultiLineEditbox::MultiLineEditbox(const String& type, const String& name) :
 	d_widestExtent(0.0f),
 	d_forceVertScroll(false),
 	d_forceHorzScroll(false),
-	d_selectionBrush(0)
+	d_selectionBrush(0),
+   d_ensureCaretVisible(true)
 {
 	addMultiLineEditboxProperties();
 
@@ -1486,7 +1487,8 @@ void MultiLineEditbox::onTextChanged(WindowEventArgs& e)
     // ensure caret is visible
     // NB: this will already have been called at least once, but since we
     // may have changed the formatting of the text, it needs to be called again.
-    ensureCaretIsVisible();
+    if (isEnsureCaretVisible())
+        ensureCaretIsVisible();
 
     ++e.handled;
 }
