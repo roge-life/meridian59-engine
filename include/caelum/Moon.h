@@ -39,21 +39,12 @@ namespace Caelum
 		/// Name of the moon material.
 		static const Ogre::String MOON_MATERIAL_NAME;
 
-        /// Name of the moon background material.
-		static const Ogre::String MOON_BACKGROUND_MATERIAL_NAME;
-
 	private:
         /// Material for MoonBB
 		PrivateMaterialPtr mMoonMaterial;
 
 		/// The moon sprite.
 		PrivateBillboardSetPtr mMoonBB;
-
-        /// Material for mBackBB
-		PrivateMaterialPtr mBackMaterial;
-		
-        /// The moon's background; used to block the stars.
-		PrivateBillboardSetPtr mBackBB;
 
 		/// The moon sprite visible angle
 		Ogre::Degree mAngularSize;
