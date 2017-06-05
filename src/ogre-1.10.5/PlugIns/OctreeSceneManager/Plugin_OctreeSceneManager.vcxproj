@@ -95,7 +95,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <Optimization>Disabled</Optimization>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <WarningLevel>Level3</WarningLevel>
@@ -103,6 +103,7 @@
       <AssemblerListingLocation>Debug</AssemblerListingLocation>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <PrecompiledHeaderFile>OgreOctreePrecompiled.h</PrecompiledHeaderFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;DEBUG;BOOST_THREAD_VERSION=4;BOOST_ALL_NO_LIB;_USRDLL;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -135,7 +136,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <Optimization>Disabled</Optimization>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <WarningLevel>Level3</WarningLevel>
@@ -143,6 +144,7 @@
       <AssemblerListingLocation>Debug</AssemblerListingLocation>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <PrecompiledHeaderFile>OgreOctreePrecompiled.h</PrecompiledHeaderFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;DEBUG;BOOST_THREAD_VERSION=4;BOOST_ALL_NO_LIB;_USRDLL;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -172,7 +174,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <Optimization>MaxSpeed</Optimization>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <WarningLevel>Level3</WarningLevel>
@@ -189,6 +191,7 @@
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderFile>OgreOctreePrecompiled.h</PrecompiledHeaderFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;BOOST_THREAD_VERSION=4;BOOST_ALL_NO_LIB;_USRDLL;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -219,7 +222,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <Optimization>MaxSpeed</Optimization>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <WarningLevel>Level3</WarningLevel>
@@ -236,6 +239,7 @@
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderFile>OgreOctreePrecompiled.h</PrecompiledHeaderFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;BOOST_THREAD_VERSION=4;BOOST_ALL_NO_LIB;_USRDLL;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -260,6 +264,7 @@
     <ClInclude Include="..\..\..\..\include\Ogre\OgreOctreeCamera.h" />
     <ClInclude Include="..\..\..\..\include\Ogre\OgreOctreeNode.h" />
     <ClInclude Include="..\..\..\..\include\Ogre\OgreOctreePlugin.h" />
+    <ClInclude Include="..\..\..\..\include\Ogre\OgreOctreePrecompiled.h" />
     <ClInclude Include="..\..\..\..\include\Ogre\OgreOctreePrerequisites.h" />
     <ClInclude Include="..\..\..\..\include\Ogre\OgreOctreeSceneManager.h" />
     <ClInclude Include="..\..\..\..\include\Ogre\OgreOctreeSceneQuery.h" />
@@ -267,6 +272,16 @@
     <ClCompile Include="src\OgreOctreeCamera.cpp" />
     <ClCompile Include="src\OgreOctreeNode.cpp" />
     <ClCompile Include="src\OgreOctreePlugin.cpp" />
+    <ClCompile Include="src\OgreOctreePrecompiled.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">OgreOctreePrecompiled.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">OgreOctreePrecompiled.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">OgreOctreePrecompiled.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">OgreOctreePrecompiled.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="src\OgreOctreeSceneManager.cpp" />
     <ClCompile Include="src\OgreOctreeSceneQuery.cpp" />
   </ItemGroup>

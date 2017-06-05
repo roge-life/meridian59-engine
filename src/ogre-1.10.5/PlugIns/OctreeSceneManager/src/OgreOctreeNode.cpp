@@ -33,9 +33,7 @@ copyright            : (C) 2002 by Jon Anderson
 email                : janders@users.sf.net
 
 ***************************************************************************/
-
-#include "OgreOctreeNode.h"
-#include "OgreOctreeSceneManager.h"
+#include "OgreOctreePrecompiled.h"
 
 namespace Ogre
 {
