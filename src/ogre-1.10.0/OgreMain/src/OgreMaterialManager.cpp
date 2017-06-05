@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -81,7 +81,7 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     MaterialManager::~MaterialManager()
     {
-        mDefaultSettings.setNull();
+        mDefaultSettings.reset();
         // Resources cleared by superclass
         // Unregister with resource group manager
         ResourceGroupManager::getSingleton()._unregisterResourceManager(mResourceType);
@@ -103,13 +103,28 @@ namespace Ogre {
                                     bool isManual, ManualResourceLoader* loader,
                                     const NameValuePairList* createParams)
     {
-        return createResource(name,group,isManual,loader,createParams).staticCast<Material>();
+        return static_pointer_cast<Material>(createResource(name,group,isManual,loader,createParams));
     }
     //-----------------------------------------------------------------------
     MaterialPtr MaterialManager::getByName(const String& name, const String& groupName)
     {
-        return getResourceByName(name, groupName).staticCast<Material>();
+        return static_pointer_cast<Material>(getResourceByName(name, groupName));
     }
+
+    MaterialPtr MaterialManager::getDefaultMaterial(bool useLighting) {
+        MaterialPtr ret = getByName(useLighting ? "BaseWhite" : "BaseWhiteNoLighting",
+                                    ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+
+        if (!ret)
+        {
+            OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, "Can't find default material "
+                " Did you forget to call MaterialManager::initialise()?",
+                "MaterialManager::getDefaultMaterial");
+        }
+
+        return ret;
+    }
+
     //-----------------------------------------------------------------------
     void MaterialManager::initialise(void)
     {

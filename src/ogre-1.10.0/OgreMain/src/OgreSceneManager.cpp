@@ -170,7 +170,7 @@ mGpuParamsDirty((uint16)GPV_ALL)
     mActiveQueuedRenderableVisitor = &mDefaultQueuedRenderableVisitor;
 
     // set up default shadow camera setup
-    mDefaultShadowCameraSetup.bind(OGRE_NEW DefaultShadowCameraSetup());
+    mDefaultShadowCameraSetup.reset(OGRE_NEW DefaultShadowCameraSetup());
 
     // init shadow texture config
     setShadowTextureCount(1);
@@ -970,6 +970,14 @@ const Pass* SceneManager::_setPass(const Pass* pass, bool evenIfSuppressed,
             // does the vertex program want surface and light params passed to rendersystem?
             passSurfaceAndLightParams = pass->getVertexProgram()->getPassSurfaceAndLightStates();
         }
+        else if (!mDestRenderSystem->getCapabilities()->hasCapability(RSC_FIXED_FUNCTION))
+        {
+            OGRE_EXCEPT(Exception::ERR_INVALID_STATE,
+                        "RenderSystem does not support FixedFunction, "
+                        "but technique has no Vertex Shader: " +
+                            pass->getParent()->getParent()->getName(),
+                        "SceneManager::_setPass");
+        }
         else
         {
             // Unbind program?
@@ -1064,6 +1072,15 @@ const Pass* SceneManager::_setPass(const Pass* pass, bool evenIfSuppressed,
             // bind parameters later 
             passFogParams = pass->getFragmentProgram()->getPassFogStates();
         }
+        else if (!mDestRenderSystem->getCapabilities()->hasCapability(RSC_FIXED_FUNCTION) &&
+                 !pass->hasGeometryProgram())
+        {
+            OGRE_EXCEPT(Exception::ERR_INVALID_STATE,
+                        "RenderSystem does not support FixedFunction, "
+                        "but technique has no Fragment Shader: " +
+                            pass->getParent()->getParent()->getName(),
+                        "SceneManager::_setPass");
+        }
         else
         {
             // Unbind program?
@@ -1155,8 +1172,6 @@ const Pass* SceneManager::_setPass(const Pass* pass, bool evenIfSuppressed,
             mDestRenderSystem->_setPointSpritesEnabled(pass->getPointSpritesEnabled());
 
         // Texture unit settings
-
-        Pass::ConstTextureUnitStateIterator texIter =  pass->getTextureUnitStateIterator();
         size_t unit = 0;
         // Reset the shadow texture index for each pass
         size_t startLightIndex = pass->getStartLight();
@@ -1164,9 +1179,10 @@ const Pass* SceneManager::_setPass(const Pass* pass, bool evenIfSuppressed,
         size_t shadowTexIndex = mShadowTextures.size();
         if (mShadowTextureIndexLightList.size() > startLightIndex)
             shadowTexIndex = mShadowTextureIndexLightList[startLightIndex];
-        while(texIter.hasMoreElements())
+        Pass::TextureUnitStates::const_iterator it;
+        for(it = pass->getTextureUnitStates().begin(); it != pass->getTextureUnitStates().end(); ++it)
         {
-            TextureUnitState* pTex = texIter.getNext();
+            TextureUnitState* pTex = *it;
             if (!pass->getIteratePerLight() && 
                 isShadowTechniqueTextureBased() && 
                 pTex->getContentType() == TextureUnitState::CONTENT_SHADOW)
@@ -1237,7 +1253,7 @@ const Pass* SceneManager::_setPass(const Pass* pass, bool evenIfSuppressed,
                 }
                 Ogre::TexturePtr refTex = refComp->getTextureInstance(
                     pTex->getReferencedTextureName(), pTex->getReferencedMRTIndex());
-                if (refTex.isNull())
+                if (!refTex)
                 {
                     OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND,
                         "Invalid compositor content_type texture name",
@@ -1595,7 +1611,7 @@ void SceneManager::_setDestinationRenderSystem(RenderSystem* sys)
     {
         if (sys->getName().find("Direct3D11") != String::npos)
         {
-            UnifiedHighLevelGpuProgram::setPrioriry("hlsl", 1);
+            UnifiedHighLevelGpuProgram::setPriority("hlsl", 1);
         }
     }
 }
@@ -1603,7 +1619,7 @@ void SceneManager::_setDestinationRenderSystem(RenderSystem* sys)
 void SceneManager::_releaseManualHardwareResources()
 {
     // release stencil shadows index buffer
-    mShadowIndexBuffer.setNull();
+    mShadowIndexBuffer.reset();
 
     // release hardware resources inside all movable objects
     OGRE_LOCK_MUTEX(mMovableObjectCollectionMapMutex);
@@ -1716,7 +1732,7 @@ void SceneManager::_setSkyPlane(
         mSkyPlane = plane;
 
         MaterialPtr m = MaterialManager::getSingleton().getByName(materialName, groupName);
-        if (m.isNull())
+        if (!m)
         {
             OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
                 "Sky plane material '" + materialName + "' not found.",
@@ -1730,11 +1746,11 @@ void SceneManager::_setSkyPlane(
         mSkyPlaneRenderQueue = renderQueue;
 
         // Set up the plane
-        MeshPtr planeMesh = MeshManager::getSingleton().getByName(meshName);
-        if (!planeMesh.isNull())
+        MeshPtr planeMesh = MeshManager::getSingleton().getByName(meshName, groupName);
+        if (planeMesh)
         {
             // Destroy the old one
-            MeshManager::getSingleton().remove(planeMesh->getHandle());
+            MeshManager::getSingleton().remove(planeMesh);
         }
 
         // Create up vector
@@ -1824,7 +1840,7 @@ void SceneManager::_setSkyBox(
     if (enable)
     {
         MaterialPtr m = MaterialManager::getSingleton().getByName(materialName, groupName);
-        if (m.isNull())
+        if (!m)
         {
             OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
                 "Sky box material '" + materialName + "' not found.",
@@ -1959,7 +1975,7 @@ void SceneManager::_setSkyBox(
                 // This doesn't use much memory because textures aren't duplicated
                 String matName = mName + "SkyBoxPlane" + StringConverter::toString(i);
                 MaterialPtr boxMat = matMgr.getByName(matName, groupName);
-                if (boxMat.isNull())
+                if (!boxMat)
                 {
                     // Create new by clone
                     boxMat = m->clone(matName);
@@ -1974,10 +1990,10 @@ void SceneManager::_setSkyBox(
                 // Make sure the material doesn't update the depth buffer
                 boxMat->setDepthWriteEnabled(false);
                 // Set active frame
-                Material::TechniqueIterator ti = boxMat->getSupportedTechniqueIterator();
-                while (ti.hasMoreElements())
+                Material::Techniques::const_iterator it;
+                for(it = boxMat->getSupportedTechniques().begin(); it != boxMat->getSupportedTechniques().end(); ++it)
                 {
-                    Technique* tech = ti.getNext();
+                    Technique* tech = *it;
                     if (tech->getPass(0)->getNumTextureUnitStates() > 0)
                     {
                         TextureUnitState* t = tech->getPass(0)->getTextureUnitState(0);
@@ -2049,7 +2065,7 @@ void SceneManager::_setSkyDome(
     if (enable)
     {
         MaterialPtr m = MaterialManager::getSingleton().getByName(materialName, groupName);
-        if (m.isNull())
+        if (!m)
         {
             OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
                 "Sky dome material '" + materialName + "' not found.",
@@ -2186,7 +2202,7 @@ MeshPtr SceneManager::createSkyboxPlane(
     // Check to see if existing plane
     MeshManager& mm = MeshManager::getSingleton();
     MeshPtr planeMesh = mm.getByName(meshName, groupName);
-    if(!planeMesh.isNull())
+    if(planeMesh)
     {
         // destroy existing
         mm.remove(planeMesh->getHandle());
@@ -2258,7 +2274,7 @@ MeshPtr SceneManager::createSkydomePlane(
     // Check to see if existing plane
     MeshManager& mm = MeshManager::getSingleton();
     MeshPtr planeMesh = mm.getByName(meshName, groupName);
-    if(!planeMesh.isNull())
+    if(planeMesh)
     {
         // destroy existing
         mm.remove(planeMesh->getHandle());
@@ -2708,7 +2724,7 @@ void SceneManager::renderModulativeTextureShadowedQueueGroupObjects(
                 continue;
 
             // Store current shadow texture
-            mCurrentShadowTexture = si->getPointer();
+            mCurrentShadowTexture = si->get();
             // Get camera for current shadow texture
             Camera *cam = mCurrentShadowTexture->getBuffer()->getRenderTarget()->getViewport(0)->getCamera();
             // Hook up receiver texture
@@ -2841,7 +2857,7 @@ void SceneManager::renderAdditiveTextureShadowedQueueGroupObjects(
                 if (l->getCastShadows() && si != siend)
                 {
                     // Store current shadow texture
-                    mCurrentShadowTexture = si->getPointer();
+                    mCurrentShadowTexture = si->get();
                     // Get camera for current shadow texture
                     Camera *cam = mCurrentShadowTexture->getBuffer()->getRenderTarget()->getViewport(0)->getCamera();
                     // Hook up receiver texture
@@ -3243,11 +3259,11 @@ void SceneManager::renderSingleObject(Renderable* rend, const Pass* pass,
         }
 
         // Reissue any texture gen settings which are dependent on view matrix
-        Pass::ConstTextureUnitStateIterator texIter =  pass->getTextureUnitStateIterator();
         size_t unit = 0;
-        while(texIter.hasMoreElements())
+        Pass::TextureUnitStates::const_iterator it;
+        for(it = pass->getTextureUnitStates().begin(); it != pass->getTextureUnitStates().end(); ++it)
         {
-            TextureUnitState* pTex = texIter.getNext();
+            TextureUnitState* pTex = *it;
             if (pTex->hasViewRelativeTextureCoordinateGeneration())
             {
                 mDestRenderSystem->_setTextureUnitSettings(unit, *pTex);
@@ -3824,11 +3840,10 @@ void SceneManager::_applySceneAnimations(void)
     OGRE_LOCK_MUTEX(mAnimationStates.OGRE_AUTO_MUTEX_NAME);
 
     // Iterate twice, once to reset, once to apply, to allow blending
-    ConstEnabledAnimationStateIterator stateIt = mAnimationStates.getEnabledAnimationStateIterator();
-
-    while (stateIt.hasMoreElements())
+    EnabledAnimationStateList::const_iterator animIt;
+    for(animIt = mAnimationStates.getEnabledAnimationStates().begin(); animIt != mAnimationStates.getEnabledAnimationStates().end(); ++animIt)
     {
-        const AnimationState* state = stateIt.getNext();
+        const AnimationState* state = *animIt;
         Animation* anim = getAnimation(state->getAnimationName());
 
         // Reset any nodes involved
@@ -3844,16 +3859,15 @@ void SceneManager::_applySceneAnimations(void)
         while(numTrackIt.hasMoreElements())
         {
             const AnimableValuePtr& animPtr = numTrackIt.getNext()->getAssociatedAnimable();
-            if (!animPtr.isNull())
+            if (animPtr)
                 animPtr->resetToBaseValue();
         }
     }
 
     // this should allow blended animations
-    stateIt = mAnimationStates.getEnabledAnimationStateIterator();
-    while (stateIt.hasMoreElements())
+    for(animIt = mAnimationStates.getEnabledAnimationStates().begin(); animIt != mAnimationStates.getEnabledAnimationStates().end(); ++animIt)
     {
-        const AnimationState* state = stateIt.getNext();
+        const AnimationState* state = *animIt;
         Animation* anim = getAnimation(state->getAnimationName());
         // Apply the animation
         anim->apply(state->getTimePosition(), state->getWeight());
@@ -4301,7 +4315,7 @@ void SceneManager::setShadowTechnique(ShadowTechnique technique)
                 "have a hardware stencil. Shadows disabled.", LML_CRITICAL);
             mShadowTechnique = SHADOWTYPE_NONE;
         }
-        else if (mShadowIndexBuffer.isNull())
+        else if (!mShadowIndexBuffer)
         {
             // Create an estimated sized shadow index buffer
             mShadowIndexBuffer = HardwareBufferManager::getSingleton().
@@ -4688,7 +4702,7 @@ void SceneManager::initShadowVolumeMaterials(void)
        created the SceneManager BEFORE the Root object, you will need to call
        SceneManager::_setDestinationRenderSystem manually.
      */
-    assert( mDestRenderSystem );
+    OgreAssert( mDestRenderSystem, "no RenderSystem");
 
     if (mShadowMaterialInitDone)
         return;
@@ -4697,7 +4711,7 @@ void SceneManager::initShadowVolumeMaterials(void)
     {
         MaterialPtr matDebug = 
             MaterialManager::getSingleton().getByName("Ogre/Debug/ShadowVolumes");
-        if (matDebug.isNull())
+        if (!matDebug)
         {
             // Create
             matDebug = MaterialManager::getSingleton().create(
@@ -4730,6 +4744,15 @@ void SceneManager::initShadowVolumeMaterials(void)
                 // Note ignored extra parameter - for compatibility with finite extrusion vertex program
                 mInfiniteExtrusionParams->setAutoConstant(5, 
                     GpuProgramParameters::ACT_SHADOW_EXTRUSION_DISTANCE);
+
+                try {
+                    mInfiniteExtrusionParams->setNamedAutoConstant(
+                        "worldviewproj_matrix",
+                        GpuProgramParameters::ACT_WORLDVIEWPROJ_MATRIX);
+                    mInfiniteExtrusionParams->setNamedAutoConstant(
+                        "light_position_object_space",
+                        GpuProgramParameters::ACT_LIGHT_POSITION_OBJECT_SPACE);
+                } catch(InvalidParametersException&) {} // ignore
             }   
             matDebug->compile();
 
@@ -4750,7 +4773,7 @@ void SceneManager::initShadowVolumeMaterials(void)
 
         MaterialPtr matStencil = MaterialManager::getSingleton().getByName(
             "Ogre/StencilShadowVolumes");
-        if (matStencil.isNull())
+        if (!matStencil)
         {
             // Init
             matStencil = MaterialManager::getSingleton().create(
@@ -4775,6 +4798,18 @@ void SceneManager::initShadowVolumeMaterials(void)
                 // Note extra parameter
                 mFiniteExtrusionParams->setAutoConstant(5, 
                     GpuProgramParameters::ACT_SHADOW_EXTRUSION_DISTANCE);
+
+                try {
+                    mFiniteExtrusionParams->setNamedAutoConstant(
+                        "worldviewproj_matrix",
+                        GpuProgramParameters::ACT_WORLDVIEWPROJ_MATRIX);
+                    mFiniteExtrusionParams->setNamedAutoConstant(
+                        "light_position_object_space",
+                        GpuProgramParameters::ACT_LIGHT_POSITION_OBJECT_SPACE);
+                    mFiniteExtrusionParams->setNamedAutoConstant(
+                        "shadow_extrusion_distance",
+                        GpuProgramParameters::ACT_SHADOW_EXTRUSION_DISTANCE);
+                } catch(InvalidParametersException&) {} // ignore
             }
             matStencil->compile();
             // Nothing else, we don't use this like a 'real' pass anyway,
@@ -4798,7 +4833,7 @@ void SceneManager::initShadowVolumeMaterials(void)
     {
     MaterialPtr matModStencil = MaterialManager::getSingleton().getByName(
         "Ogre/StencilShadowModulationPass");
-    if (matModStencil.isNull())
+    if (!matModStencil)
     {
         // Init
         matModStencil = MaterialManager::getSingleton().create(
@@ -4842,7 +4877,7 @@ void SceneManager::initShadowVolumeMaterials(void)
     {
         MaterialPtr matPlainBlack = MaterialManager::getSingleton().getByName(
             "Ogre/TextureShadowCaster");
-        if (matPlainBlack.isNull())
+        if (!matPlainBlack)
         {
             matPlainBlack = MaterialManager::getSingleton().create(
                 "Ogre/TextureShadowCaster",
@@ -4871,7 +4906,7 @@ void SceneManager::initShadowVolumeMaterials(void)
     {
         MaterialPtr matShadRec = MaterialManager::getSingleton().getByName(
             "Ogre/TextureShadowReceiver");
-        if (matShadRec.isNull())            
+        if (!matShadRec)            
         {
             matShadRec = MaterialManager::getSingleton().create(
                 "Ogre/TextureShadowReceiver",
@@ -4888,9 +4923,9 @@ void SceneManager::initShadowVolumeMaterials(void)
     }
 
     // Set up spot shadow fade texture (loaded from code data block)
-    TexturePtr spotShadowFadeTex = 
-        TextureManager::getSingleton().getByName("spot_shadow_fade.png");
-    if (spotShadowFadeTex.isNull())
+    TexturePtr spotShadowFadeTex = TextureManager::getSingleton().getByName(
+        "spot_shadow_fade.png", ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+    if (!spotShadowFadeTex)
     {
         // Load the manual buffer into an image (don't destroy memory!
         DataStreamPtr stream(
@@ -4911,7 +4946,7 @@ const Pass* SceneManager::deriveShadowCasterPass(const Pass* pass)
     if (isShadowTechniqueTextureBased())
     {
         Pass* retPass;  
-        if (!pass->getParent()->getShadowCasterMaterial().isNull())
+        if (pass->getParent()->getShadowCasterMaterial())
         {
             return pass->getParent()->getShadowCasterMaterial()->getBestTechnique()->getPass(0); 
         }
@@ -5082,7 +5117,7 @@ const Pass* SceneManager::deriveShadowReceiverPass(const Pass* pass)
     if (isShadowTechniqueTextureBased())
     {
         Pass* retPass = NULL;
-        if (!pass->getParent()->getShadowReceiverMaterial().isNull())
+        if (pass->getParent()->getShadowReceiverMaterial())
         {
             return retPass = pass->getParent()->getShadowReceiverMaterial()->getBestTechnique()->getPass(0); 
         }
@@ -5612,6 +5647,9 @@ void SceneManager::renderShadowVolumesToStencil(const Light* light,
         mDestRenderSystem->unbindGpuProgram(GPT_GEOMETRY_PROGRAM);
     }
 
+    mDestRenderSystem->_setAlphaRejectSettings(mShadowStencilPass->getAlphaRejectFunction(),
+        mShadowStencilPass->getAlphaRejectValue(), mShadowStencilPass->isAlphaToCoverageEnabled());
+
     // Turn off colour writing and depth writing
     mDestRenderSystem->_setColourBufferWriteEnabled(false, false, false, false);
     mDestRenderSystem->_disableTextureUnitsFrom(0);
@@ -5931,7 +5969,7 @@ Real SceneManager::getShadowDirectionalLightExtrusionDistance(void) const
 //---------------------------------------------------------------------
 void SceneManager::setShadowIndexBufferSize(size_t size)
 {
-    if (!mShadowIndexBuffer.isNull() && size != mShadowIndexBufferSize)
+    if (mShadowIndexBuffer && size != mShadowIndexBufferSize)
     {
         // re-create shadow buffer with new size
         mShadowIndexBuffer = HardwareBufferManager::getSingleton().
@@ -6088,7 +6126,7 @@ void SceneManager::setShadowTextureCasterMaterial(const String& name)
     else
     {
         MaterialPtr mat = MaterialManager::getSingleton().getByName(name);
-        if (mat.isNull())
+        if (!mat)
         {
             OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND,
                 "Cannot locate material called '" + name + "'", 
@@ -6133,7 +6171,7 @@ void SceneManager::setShadowTextureReceiverMaterial(const String& name)
     else
     {
         MaterialPtr mat = MaterialManager::getSingleton().getByName(name);
-        if (mat.isNull())
+        if (!mat)
         {
             OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND,
                 "Cannot locate material called '" + name + "'", 
@@ -6239,7 +6277,7 @@ void SceneManager::ensureShadowTexturesCreated()
 
             // Also create corresponding Material used for rendering this shadow
             MaterialPtr mat = MaterialManager::getSingleton().getByName(matName);
-            if (mat.isNull())
+            if (!mat)
             {
                 mat = MaterialManager::getSingleton().create(
                     matName, ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
@@ -6267,7 +6305,7 @@ void SceneManager::ensureShadowTexturesCreated()
             // Get null shadow texture
             if (mShadowTextureConfigList.empty())
             {
-                mNullShadowTexture.setNull();
+                mNullShadowTexture.reset();
             }
             else
             {
@@ -6295,7 +6333,7 @@ void SceneManager::destroyShadowTextures(void)
         // Cleanup material that references this texture
         String matName = shadowTex->getName() + "Mat" + getName();
         MaterialPtr mat = MaterialManager::getSingleton().getByName(matName);
-        if (!mat.isNull())
+        if (mat)
         {
             // manually clear TUS to ensure texture ref released
             mat->getTechnique(0)->getPass(0)->removeAllTextureUnitStates();
@@ -6417,7 +6455,7 @@ void SceneManager::prepareShadowTextures(Camera* cam, Viewport* vp, const LightL
                 assert(camLightIt != mShadowCamLightMapping.end());
                 camLightIt->second = light;
 
-                if (light->getCustomShadowCameraSetup().isNull())
+                if (!light->getCustomShadowCameraSetup())
                     mDefaultShadowCameraSetup->getShadowCamera(this, cam, vp, light, texCam, j);
                 else
                     light->getCustomShadowCameraSetup()->getShadowCamera(this, cam, vp, light, texCam, j);

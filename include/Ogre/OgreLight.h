@@ -117,15 +117,7 @@ namespace Ogre {
         */
         void setDiffuseColour(Real red, Real green, Real blue);
 
-        /** Sets the colour of the diffuse light given off by this source.
-        @remarks
-            Material objects have ambient, diffuse and specular values which indicate how much of each type of
-            light an object reflects. This value denotes the amount and colour of this type of light the light
-            exudes into the scene. The actual appearance of objects is a combination of the two.
-        @par
-            Diffuse light simulates the typical light emanating from light sources and affects the base colour
-            of objects together with ambient light.
-        */
+        /// @overload
         void setDiffuseColour(const ColourValue& colour);
 
         /** Returns the colour of the diffuse light given off by this light source (see setDiffuseColour for more info).
@@ -143,15 +135,7 @@ namespace Ogre {
         */
         void setSpecularColour(Real red, Real green, Real blue);
 
-        /** Sets the colour of the specular light given off by this source.
-        @remarks
-            Material objects have ambient, diffuse and specular values which indicate how much of each type of
-            light an object reflects. This value denotes the amount and colour of this type of light the light
-            exudes into the scene. The actual appearance of objects is a combination of the two.
-        @par
-            Specular light affects the appearance of shiny highlights on objects, and is also dependent on the
-            'shininess' Material value.
-        */
+        /// @overload
         void setSpecularColour(const ColourValue& colour);
 
         /** Returns the colour of specular light given off by this light source.
@@ -203,12 +187,7 @@ namespace Ogre {
         */
         void setPosition(Real x, Real y, Real z);
 
-        /** Sets the position of the light.
-        @remarks
-            Applicable to point lights and spotlights only.
-        @note
-            This will be overridden if the light is attached to a SceneNode.
-        */
+        /// @overload
         void setPosition(const Vector3& vec);
 
         /** Returns the position of the light.
@@ -225,12 +204,7 @@ namespace Ogre {
         */
         void setDirection(Real x, Real y, Real z);
 
-        /** Sets the direction in which a light points.
-        @remarks
-            Applicable only to the spotlight and directional light types.
-        @note
-            This will be overridden if the light is attached to a SceneNode.
-        */
+        //// @overload
         void setDirection(const Vector3& vec);
 
         /** Returns the light's direction.
@@ -328,12 +302,12 @@ namespace Ogre {
         /** Retrieves the direction of the light including any transform from nodes it is attached to. */
         const Vector3& getDerivedDirection(void) const;
 
-        /** @copydoc MovableObject::setVisible.
+        /** @copydoc MovableObject::setVisible
         @remarks
             Although lights themselves are not 'visible', setting a light to invisible
             means it no longer affects the scene.
         */
-        void setVisible(bool visible);
+        void setVisible(bool visible) { MovableObject::setVisible(visible); }
 
         /** @copydoc MovableObject::getBoundingRadius */
         Real getBoundingRadius(void) const { return 0; /* not visible */ }
@@ -618,7 +592,7 @@ namespace Ogre {
     /** @} */
     /** @} */
 
-#include "OgreHeaderPrefix.h"
+#include "OgreHeaderSuffix.h"
 
 } // namespace Ogre
 #endif // _LIGHT_H__

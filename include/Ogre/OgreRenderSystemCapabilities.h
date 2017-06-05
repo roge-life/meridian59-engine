@@ -63,28 +63,33 @@ namespace Ogre
         CAPS_CATEGORY_COMMON_2 = 1,
         CAPS_CATEGORY_D3D9 = 2,
         CAPS_CATEGORY_GL = 3,
+        CAPS_CATEGORY_COMMON_3 = 4,
         /// Placeholder for max value
-        CAPS_CATEGORY_COUNT = 4
+        CAPS_CATEGORY_COUNT = 5
     };
 
     /// Enum describing the different hardware capabilities we want to check for
     /// OGRE_CAPS_VALUE(a, b) defines each capability
-    // a is the category (which can be from 0 to 15)
-    // b is the value (from 0 to 27)
+    /// a is the category (which can be from 0 to 15)
+    /// b is the value (from 0 to 27)
     enum Capabilities
     {
         /// Supports generating mipmaps in hardware
+        /// @deprecated All targetted APIs by Ogre support this feature
         RSC_AUTOMIPMAP              = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 0),
+        /// @deprecated All targetted APIs by Ogre support this feature
         RSC_BLENDING                = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 1),
         /// Supports anisotropic texture filtering
         RSC_ANISOTROPY              = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 2),
         /// Supports fixed-function DOT3 texture blend
+        /// @deprecated All targetted APIs by Ogre support this feature
         RSC_DOT3                    = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 3),
         /// Supports cube mapping
         RSC_CUBEMAPPING             = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 4),
         /// Supports hardware stencil buffer
         RSC_HWSTENCIL               = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 5),
         /// Supports hardware vertex and index buffers
+        /// @deprecated All targetted APIs by Ogre support this feature
         RSC_VBO                     = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 7),
         /// Supports 32bit hardware index buffers
         RSC_32BIT_INDEX             = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 8),
@@ -93,6 +98,7 @@ namespace Ogre
         /// Supports fragment programs (pixel shaders)
         RSC_FRAGMENT_PROGRAM        = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 10),
         /// Supports performing a scissor test to exclude areas of the screen
+		/// @deprecated All targetted APIs by Ogre support this feature
         RSC_SCISSOR_TEST            = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 11),
         /// Supports separate stencil updates for both front and back faces
         RSC_TWO_SIDED_STENCIL       = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 12),
@@ -126,8 +132,6 @@ namespace Ogre
         RSC_GEOMETRY_PROGRAM = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 26),
         /// Supports rendering to vertex buffers
         RSC_HWRENDER_TO_VERTEX_BUFFER = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 27),
-        /// Supports different texture bindings
-        RSC_COMPLETE_TEXTURE_BINDING = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON, 28),
 
         /// Supports compressed textures
         RSC_TEXTURE_COMPRESSION = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 0),
@@ -154,6 +158,7 @@ namespace Ogre
         /// Supports Alpha to Coverage (A2C)
         RSC_ALPHA_TO_COVERAGE = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 11),
         /// Supports Blending operations other than +
+		/// @deprecated All targetted APIs by Ogre support this feature.
         RSC_ADVANCED_BLEND_OPERATIONS = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 12),
         /// Supports a separate depth buffer for RTTs. D3D 9 & 10, OGL w/FBO (RSC_FBO implies this flag)
         RSC_RTT_SEPARATE_DEPTHBUFFER = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 13),
@@ -185,31 +190,52 @@ namespace Ogre
         RSC_ATOMIC_COUNTERS = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 25),
         /// Supports reading back the inactive depth-stencil buffer as texture
         RSC_READ_BACK_AS_TEXTURE = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 26),
+        /// Supports HW gamma, both in the framebuffer and as texture.
+        RSC_HW_GAMMA = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON_2, 27),
+
+        /// GL ES2/ES3 does not support generating mipmaps for compressed formats in hardware
+        RSC_AUTOMIPMAP_COMPRESSED = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON_3, 0),
+        /// Supports different texture bindings
+        RSC_COMPLETE_TEXTURE_BINDING = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON_3, 1),
+
+
         // ***** DirectX specific caps *****
         /// Is DirectX feature "per stage constants" supported
         RSC_PERSTAGECONSTANT = OGRE_CAPS_VALUE(CAPS_CATEGORY_D3D9, 0),
 
         // ***** GL Specific Caps *****
         /// Supports OpenGL version 1.5
+		/// @deprecated All targetted APIs by Ogre support this feature.
         RSC_GL1_5_NOVBO    = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 1),
         /// Support for Frame Buffer Objects (FBOs)
+        /// @deprecated All targetted APIs by Ogre support this feature.
         RSC_FBO              = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 2),
         /// Support for Frame Buffer Objects ARB implementation (regular FBO is higher precedence)
+        /// @deprecated obsolete
         RSC_FBO_ARB          = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 3),
         /// Support for Frame Buffer Objects ATI implementation (ARB FBO is higher precedence)
+        /// @deprecated obsolete
         RSC_FBO_ATI          = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 4),
         /// Support for PBuffer
         RSC_PBUFFER          = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 5),
         /// Support for GL 1.5 but without HW occlusion workaround
+		/// @deprecated obsolete
         RSC_GL1_5_NOHWOCCLUSION = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 6),
         /// Support for point parameters ARB implementation
+        /// @deprecated obsolete
         RSC_POINT_EXTENDED_PARAMETERS_ARB = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 7),
         /// Support for point parameters EXT implementation
+        /// @deprecated obsolete
         RSC_POINT_EXTENDED_PARAMETERS_EXT = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 8),
         /// Support for Separate Shader Objects
         RSC_SEPARATE_SHADER_OBJECTS = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 9),
         /// Support for Vertex Array Objects (VAOs)
-        RSC_VAO              = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 10)
+        RSC_VAO              = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 10),
+        /// with Separate Shader Objects the gl_PerVertex interface block must be redeclared
+        /// but some drivers misbehave and do not compile if we do so
+        RSC_GLSL_SSO_REDECLARE = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 11),
+        /// Supports for debugging/ profiling events
+        RSC_DEBUG = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 12)
     };
 
     /// DriverVersion is used by RenderSystemCapabilities and both GL and D3D9
@@ -274,10 +300,9 @@ namespace Ogre
         GPU_VENDOR_COUNT = 17
     };
 
-    /** singleton class for storing the capabilities of the graphics card. 
+    /** This class stores the capabilities of the graphics card.
     @remarks
-    This class stores the capabilities of the graphics card.  This
-    information is set by the individual render systems.
+    This information is set by the individual render systems.
     */
     class _OgreExport RenderSystemCapabilities : public RenderSysAlloc
     {
@@ -293,7 +318,7 @@ namespace Ogre
         /// GPU Vendor
         GPUVendor mVendor;
 
-        static StringVector msGPUVendorStrings;
+        static String msGPUVendorStrings[GPU_VENDOR_COUNT];
         static void initVendorStrings();
 
         /// The number of world matrices available
@@ -374,9 +399,10 @@ namespace Ogre
 
     public: 
         RenderSystemCapabilities ();
-        virtual ~RenderSystemCapabilities ();
+        virtual ~RenderSystemCapabilities () {}
 
-        virtual size_t calculateSize() const {return 0;}
+        /// @deprecated
+        OGRE_DEPRECATED virtual size_t calculateSize() const {return 0;}
 
         /** Set the driver version. */
         void setDriverVersion(const DriverVersion& version)
@@ -416,7 +442,7 @@ namespace Ogre
         /// Convert a vendor string to an enum
         static GPUVendor vendorFromString(const String& vendorString);
         /// Convert a vendor enum to a string
-        static String vendorToString(GPUVendor v);
+        static const String& vendorToString(GPUVendor v);
 
         bool isDriverOlderThanVersion(const DriverVersion &v) const
         {
@@ -758,7 +784,7 @@ namespace Ogre
         }
 
         /// Get the identifier of the rendersystem from which these capabilities were generated
-        String getRenderSystemName(void) const
+        const String& getRenderSystemName(void) const
         {
             return mRenderSystemName;
         }

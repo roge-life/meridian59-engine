@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -87,7 +87,7 @@ namespace Ogre
     bool InstancedEntity::shareTransformWith( InstancedEntity *slave )
     {
         if( !this->mBatchOwner->_getMeshRef()->hasSkeleton() ||
-            this->mBatchOwner->_getMeshRef()->getSkeleton().isNull() ||
+            !this->mBatchOwner->_getMeshRef()->getSkeleton() ||
             !this->mBatchOwner->_supportsSkeletalAnimation() )
         {
             return false;
@@ -267,7 +267,7 @@ namespace Ogre
     {
         //Is mesh skeletally animated?
         if( mBatchOwner->_getMeshRef()->hasSkeleton() &&
-            !mBatchOwner->_getMeshRef()->getSkeleton().isNull() &&
+            mBatchOwner->_getMeshRef()->getSkeleton() &&
             mBatchOwner->_supportsSkeletalAnimation() )
         {
             mSkeletonInstance = OGRE_NEW SkeletonInstance( mBatchOwner->_getMeshRef()->getSkeleton() );
@@ -362,7 +362,7 @@ namespace Ogre
     //-----------------------------------------------------------------------
     Real InstancedEntity::getBoundingRadius(void) const
     {
-        return mBatchOwner->_getMeshReference()->getBoundingSphereRadius() * getMaxScaleCoef();
+        return mBatchOwner->_getMeshReference()->getBoundingSphereRadius();
     }
     //-----------------------------------------------------------------------
     Real InstancedEntity::getSquaredViewDepth( const Camera* cam ) const

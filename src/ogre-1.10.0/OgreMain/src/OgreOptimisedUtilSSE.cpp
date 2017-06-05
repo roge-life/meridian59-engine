@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -730,7 +730,7 @@ namespace Ogre {
             }
         }
     };
-    static FORCEINLINE void softwareVertexSkinning_SSE_PosNorm_Shared_Packed(
+    static OGRE_FORCE_INLINE void softwareVertexSkinning_SSE_PosNorm_Shared_Packed(
             const float* pSrcPos, float* pDestPos,
             const float* pBlendWeight, const unsigned char* pBlendIndex,
             const Matrix4* const* blendMatrices,
@@ -885,7 +885,7 @@ namespace Ogre {
             }
         }
     };
-    static FORCEINLINE void softwareVertexSkinning_SSE_PosNorm_Separated_Packed(
+    static OGRE_FORCE_INLINE void softwareVertexSkinning_SSE_PosNorm_Separated_Packed(
         const float* pSrcPos, float* pDestPos,
         const float* pSrcNorm, float* pDestNorm,
         const float* pBlendWeight, const unsigned char* pBlendIndex,
@@ -1004,7 +1004,7 @@ namespace Ogre {
             }
         }
     };
-    static FORCEINLINE void softwareVertexSkinning_SSE_PosOnly_Packed(
+    static OGRE_FORCE_INLINE void softwareVertexSkinning_SSE_PosOnly_Packed(
         const float* pSrcPos, float* pDestPos,
         const float* pBlendWeight, const unsigned char* pBlendIndex,
         const Matrix4* const* blendMatrices,

@@ -39,7 +39,6 @@ THE SOFTWARE.
     OGRE_PLATFORM == OGRE_PLATFORM_EMSCRIPTEN
 #   include "OgreSearchOps.h"
 #   include <sys/param.h>
-#   define MAX_PATH MAXPATHLEN
 #endif
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_WINRT
@@ -99,7 +98,7 @@ namespace Ogre {
     }
     //-----------------------------------------------------------------------
     void FileSystemArchive::findFiles(const String& pattern, bool recursive, 
-        bool dirs, StringVector* simpleList, FileInfoList* detailList)
+        bool dirs, StringVector* simpleList, FileInfoList* detailList) const
     {
         intptr_t lHandle, res;
         struct _finddata_t tagData;
@@ -200,7 +199,7 @@ namespace Ogre {
         // nothing to see here, move along
     }
     //-----------------------------------------------------------------------
-    DataStreamPtr FileSystemArchive::open(const String& filename, bool readOnly)
+    DataStreamPtr FileSystemArchive::open(const String& filename, bool readOnly) const
     {
         String full_path = concatenate_path(mName, filename);
 
@@ -313,51 +312,51 @@ namespace Ogre {
 
     }
     //-----------------------------------------------------------------------
-    StringVectorPtr FileSystemArchive::list(bool recursive, bool dirs)
+    StringVectorPtr FileSystemArchive::list(bool recursive, bool dirs) const
     {
         // directory change requires locking due to saved returns
         // Note that we have to tell the SharedPtr to use OGRE_DELETE_T not OGRE_DELETE by passing category
         StringVectorPtr ret(OGRE_NEW_T(StringVector, MEMCATEGORY_GENERAL)(), SPFM_DELETE_T);
 
-        findFiles("*", recursive, dirs, ret.getPointer(), 0);
+        findFiles("*", recursive, dirs, ret.get(), 0);
 
         return ret;
     }
     //-----------------------------------------------------------------------
-    FileInfoListPtr FileSystemArchive::listFileInfo(bool recursive, bool dirs)
+    FileInfoListPtr FileSystemArchive::listFileInfo(bool recursive, bool dirs) const
     {
         // Note that we have to tell the SharedPtr to use OGRE_DELETE_T not OGRE_DELETE by passing category
         FileInfoListPtr ret(OGRE_NEW_T(FileInfoList, MEMCATEGORY_GENERAL)(), SPFM_DELETE_T);
 
-        findFiles("*", recursive, dirs, 0, ret.getPointer());
+        findFiles("*", recursive, dirs, 0, ret.get());
 
         return ret;
     }
     //-----------------------------------------------------------------------
     StringVectorPtr FileSystemArchive::find(const String& pattern,
-                                            bool recursive, bool dirs)
+                                            bool recursive, bool dirs) const
     {
         // Note that we have to tell the SharedPtr to use OGRE_DELETE_T not OGRE_DELETE by passing category
         StringVectorPtr ret(OGRE_NEW_T(StringVector, MEMCATEGORY_GENERAL)(), SPFM_DELETE_T);
 
-        findFiles(pattern, recursive, dirs, ret.getPointer(), 0);
+        findFiles(pattern, recursive, dirs, ret.get(), 0);
 
         return ret;
 
     }
     //-----------------------------------------------------------------------
     FileInfoListPtr FileSystemArchive::findFileInfo(const String& pattern, 
-        bool recursive, bool dirs)
+        bool recursive, bool dirs) const
     {
         // Note that we have to tell the SharedPtr to use OGRE_DELETE_T not OGRE_DELETE by passing category
         FileInfoListPtr ret(OGRE_NEW_T(FileInfoList, MEMCATEGORY_GENERAL)(), SPFM_DELETE_T);
 
-        findFiles(pattern, recursive, dirs, 0, ret.getPointer());
+        findFiles(pattern, recursive, dirs, 0, ret.get());
 
         return ret;
     }
     //-----------------------------------------------------------------------
-    bool FileSystemArchive::exists(const String& filename)
+    bool FileSystemArchive::exists(const String& filename) const
     {
         String full_path = concatenate_path(mName, filename);
 
@@ -383,7 +382,7 @@ namespace Ogre {
         return ret;
     }
     //---------------------------------------------------------------------
-    time_t FileSystemArchive::getModifiedTime(const String& filename)
+    time_t FileSystemArchive::getModifiedTime(const String& filename) const
     {
         String full_path = concatenate_path(mName, filename);
 

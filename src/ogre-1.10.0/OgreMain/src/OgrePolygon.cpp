@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 Copyright (c) 2006 Matthias Fink, netAllied GmbH <matthias.fink@web.de>                             
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -57,7 +57,7 @@ namespace Ogre
     void Polygon::insertVertex(const Vector3& vdata, size_t vertex )
     {
         // TODO: optional: check planarity
-        OgreAssert(vertex <= getVertexCount(), "Insert position out of range" );
+        OgreAssertDbg(vertex <= getVertexCount(), "Insert position out of range" );
 
         VertexList::iterator it = mVertexList.begin();
 
@@ -73,7 +73,7 @@ namespace Ogre
     //-----------------------------------------------------------------------
     const Vector3& Polygon::getVertex( size_t vertex ) const
     {
-        OgreAssert(vertex < getVertexCount(), "Search position out of range");
+        OgreAssertDbg(vertex < getVertexCount(), "Search position out of range");
 
         return mVertexList[vertex];
     }
@@ -81,7 +81,7 @@ namespace Ogre
     void Polygon::setVertex(const Vector3& vdata, size_t vertex )
     {
         // TODO: optional: check planarity
-        OgreAssert(vertex < getVertexCount(), "Search position out of range" );
+        OgreAssertDbg(vertex < getVertexCount(), "Search position out of range" );
 
         // set new vertex
         mVertexList[ vertex ] = vdata;
@@ -109,8 +109,6 @@ namespace Ogre
     //-----------------------------------------------------------------------
     const Vector3& Polygon::getNormal( void ) const
     {
-        OgreAssert( getVertexCount() >= 3, "Insufficient vertex count!" );
-
         updateNormal();
 
         return mNormal;
@@ -118,7 +116,7 @@ namespace Ogre
     //-----------------------------------------------------------------------
     void Polygon::updateNormal( void ) const
     {
-        OgreAssert( getVertexCount() >= 3, "Insufficient vertex count!" );
+        OgreAssertDbg( getVertexCount() >= 3, "Insufficient vertex count!" );
 
         if (mIsNormalSet)
             return;
@@ -149,7 +147,7 @@ namespace Ogre
     //-----------------------------------------------------------------------
     void Polygon::deleteVertex( size_t vertex )
     {
-        OgreAssert( vertex < getVertexCount(), "Search position out of range" );
+        OgreAssertDbg( vertex < getVertexCount(), "Search position out of range" );
 
         VertexList::iterator it = mVertexList.begin();
         std::advance(it, vertex);

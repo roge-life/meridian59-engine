@@ -483,7 +483,7 @@ void D3D9HardwarePixelBuffer::blit(const HardwarePixelBufferSharedPtr &rsrc,
 {
     D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
-    D3D9HardwarePixelBuffer *src = static_cast<D3D9HardwarePixelBuffer*>(rsrc.getPointer());
+    D3D9HardwarePixelBuffer *src = static_cast<D3D9HardwarePixelBuffer*>(rsrc.get());
     DeviceToBufferResourcesIterator it = mMapDeviceToBufferResources.begin();
 
     // Update all the buffer copies.
@@ -557,7 +557,7 @@ void D3D9HardwarePixelBuffer::blit(IDirect3DDevice9* d3d9Device,
                 if(D3DXLoadSurfaceFromSurface(
                     dstBufferResources->surface, NULL, &ddestRect, 
                     tmpsurface, NULL, &dsrcRect,
-					D3DX_DEFAULT, D3DCOLOR(0x0000FFFF)) != D3D_OK)
+                    D3DX_DEFAULT, D3DCOLOR(0x0000FFFF)) != D3D_OK)
                 {
                     tmpsurface->Release();
                     tmptex->Release();
@@ -577,7 +577,7 @@ void D3D9HardwarePixelBuffer::blit(IDirect3DDevice9* d3d9Device,
         if(D3DXLoadSurfaceFromSurface(
             dstBufferResources->surface, NULL, &ddestRect, 
             srcBufferResources->surface, NULL, &dsrcRect,
-			D3DX_DEFAULT, D3DCOLOR(0x0000FFFF)) != D3D_OK)
+            D3DX_DEFAULT, D3DCOLOR(0x0000FFFF)) != D3D_OK)
         {
             OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "D3DXLoadSurfaceFromSurface failed",
                 "D3D9HardwarePixelBuffer::blit");
@@ -681,7 +681,7 @@ void D3D9HardwarePixelBuffer::blitFromMemory(const PixelBox &src, const Image::B
         if(D3DXLoadSurfaceFromMemory(dstBufferResources->surface, NULL, &destRect, 
             converted.data, D3D9Mappings::_getPF(converted.format),
             static_cast<UINT>(rowWidth),
-			NULL, &srcRect, D3DX_DEFAULT, D3DCOLOR(0x0000FFFF)) != D3D_OK)
+            NULL, &srcRect, D3DX_DEFAULT, D3DCOLOR(0x0000FFFF)) != D3D_OK)
         {
             OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, "D3DXLoadSurfaceFromMemory failed",
                 "D3D9HardwarePixelBuffer::blitFromMemory");
@@ -818,7 +818,7 @@ void D3D9HardwarePixelBuffer::blitToMemory(const Image::Box &srcBox, const Pixel
             if(D3DXLoadSurfaceFromSurface(
                 surface, NULL, &destRect, 
                 srcBufferResources->surface, NULL, &srcRect,
-				D3DX_DEFAULT, D3DCOLOR(0x0000FFFF)) != D3D_OK)
+                D3DX_DEFAULT, D3DCOLOR(0x0000FFFF)) != D3D_OK)
             {
                 surface->Release();
                 tmp->Release();

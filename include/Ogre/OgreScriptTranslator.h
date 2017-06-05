@@ -59,7 +59,7 @@ namespace Ogre{
         // needs virtual destructor
         virtual ~ScriptTranslator() {}
         /// Retrieves a new translator from the factories and uses it to process the give node
-        void processNode(ScriptCompiler *compiler, const AbstractNodePtr &node);
+        static void processNode(ScriptCompiler *compiler, const AbstractNodePtr &node);
 
         /// Retrieves the node iterator at the given index
         static AbstractNodeList::const_iterator getNodeAt(const AbstractNodeList &nodes, int index);
@@ -68,7 +68,14 @@ namespace Ogre{
         /// Converts the node to a string and returns true if successful
         static bool getString(const AbstractNodePtr &node, String *result);
         /// Converts the node to a Real and returns true if successful
-        static bool getReal(const AbstractNodePtr &node, Real *result);
+        static bool getReal(const AbstractNodePtr& node, Real* result)
+        {
+#if OGRE_DOUBLE_PRECISION == 0
+            return getFloat(node, result);
+#else
+            return getDouble(node, result);
+#endif
+        }
         /// Converts the node to a float and returns true if successful
         static bool getFloat(const AbstractNodePtr &node, float *result);
         /// Converts the node to a float and returns true if successful
@@ -195,10 +202,6 @@ namespace Ogre{
     public:
         SharedParamsTranslator();
         void translate(ScriptCompiler *compiler, const AbstractNodePtr &node);
-        template <class T, BaseConstantType baseType>
-        void translateSharedParamNamed(ScriptCompiler *compiler, GpuSharedParameters *sharedParams, PropertyAbstractNode *prop, String pName, GpuConstantType constType);
-        template <class T, BaseConstantType baseType>
-        T parseParameter(const String& param);
     protected:
     };
 

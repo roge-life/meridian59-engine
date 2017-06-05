@@ -64,6 +64,7 @@ THE SOFTWARE.
 #include "OgreFrameListener.h"
 #include "OgreLodStrategyManager.h"
 #include "Threading/OgreDefaultWorkQueue.h"
+#include "OgreFileSystemLayer.h"
 
 #if OGRE_NO_FREEIMAGE == 0
 #include "OgreFreeImageCodec.h"
@@ -85,9 +86,6 @@ THE SOFTWARE.
 #include "OgreScriptCompiler.h"
 #include "OgreWindowEventUtilities.h"
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
-#include "macUtils.h"
-#endif
 #if OGRE_NO_PVRTC_CODEC == 0
 #  include "OgrePVRTCCodec.h"
 #endif
@@ -292,8 +290,6 @@ namespace Ogre {
     Root::~Root()
     {
         shutdown();
-        OGRE_DELETE mSceneManagerEnum;
-        OGRE_DELETE mShadowTextureManager;
         OGRE_DELETE mRenderSystemCapabilitiesManager;
 
         destroyAllRenderQueueInvocationSequences();
@@ -425,7 +421,7 @@ namespace Ogre {
     bool Root::restoreConfig(void)
     {
 #if OGRE_PLATFORM == OGRE_PLATFORM_NACL || OGRE_PLATFORM == OGRE_PLATFORM_EMSCRIPTEN
-        OGRE_EXCEPT(Exception::ERR_CANNOT_WRITE_TO_FILE, "restoreConfig is not supported on NaCl",
+        OGRE_EXCEPT(Exception::ERR_CANNOT_WRITE_TO_FILE, "restoreConfig is not supported",
             "Root::restoreConfig");
 #endif
 
@@ -488,23 +484,15 @@ namespace Ogre {
             // Don't trim whitespace
             cfg.load(mConfigFileName, "\t:=", false);
         }
-        catch (Exception& e)
+        catch (FileNotFoundException&)
         {
-            if (e.getNumber() == Exception::ERR_FILE_NOT_FOUND)
-            {
-                return false;
-            }
-            else
-            {
-                throw;
-            }
+            return false;
         }
 
-        ConfigFile::SectionIterator iSection = cfg.getSectionIterator();
-        while (iSection.hasMoreElements())
-        {
-            const String& renderSystem = iSection.peekNextKey();
-            const ConfigFile::SettingsMultiMap& settings = *iSection.getNext();
+        ConfigFile::SettingsBySection_::const_iterator seci;
+        for(seci = cfg.getSettingsBySection().begin(); seci != cfg.getSettingsBySection().end(); ++seci) {
+            const ConfigFile::SettingsMultiMap& settings = seci->second;
+            const String& renderSystem = seci->first;
 
             RenderSystem* rs = getRenderSystemByName(renderSystem);
             if (!rs)
@@ -539,6 +527,29 @@ namespace Ogre {
     }
 
     //-----------------------------------------------------------------------
+    bool Root::showConfigDialog(ConfigDialog* dialog) {
+        if(dialog) {
+            restoreConfig();
+
+            if (dialog->display()) {
+                saveConfig();
+                return true;
+            }
+
+            return false;
+        }
+
+        // just select the first available render system
+        if (!mRenderers.empty())
+        {
+            setRenderSystem(mRenderers.front());
+            return true;
+        }
+
+        return false;
+    }
+
+    //-----------------------------------------------------------------------
     bool Root::showConfigDialog(void)
     {
 #if OGRE_PLATFORM == OGRE_PLATFORM_NACL || OGRE_PLATFORM == OGRE_PLATFORM_EMSCRIPTEN
@@ -548,15 +559,8 @@ namespace Ogre {
 
         // Displays the standard config dialog
         // Will use stored defaults if available
-        ConfigDialog* dlg;
-        bool isOk;
-
-        restoreConfig();
-
-        dlg = OGRE_NEW ConfigDialog();
-        isOk = dlg->display();
-        if (isOk)
-            saveConfig();
+        ConfigDialog* dlg = OGRE_NEW ConfigDialog();
+        bool isOk = showConfigDialog(dlg);
 
         OGRE_DELETE dlg;
         return isOk;
@@ -667,12 +671,12 @@ namespace Ogre {
 
             // Capabilities Database setting must be in the same format as
             // resources.cfg in Ogre examples.
-            ConfigFile::SettingsIterator iter = cfg.getSettingsIterator("Capabilities Database");
-            while(iter.hasMoreElements())
+            const ConfigFile::SettingsMultiMap& dbs = cfg.getSettings("Capabilities Database");
+            for(ConfigFile::SettingsMultiMap::const_iterator it = dbs.begin(); it != dbs.end(); ++it)
             {
-                String archType = iter.peekNextKey();
+                const String& archType = it->first;
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
-                String filename = iter.getNext();
+                String filename = it->second;
 
                 // Only adjust relative directories
                 if (!StringUtil::startsWith(filename, "/", false))
@@ -681,7 +685,7 @@ namespace Ogre {
                     filename = String(macBundlePath() + "/Contents/Resources/" + filename);
                 }
 #else
-                String filename = iter.getNext();
+                String filename = it->second;
 #endif
 
                 rscManager.parseCapabilitiesFromArchive(filename, archType, true);
@@ -959,7 +963,7 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     void Root::startRendering(void)
     {
-        assert(mActiveRenderer != 0);
+        OgreAssert(mActiveRenderer != 0, "no RenderSystem");
 
         mActiveRenderer->_initRenderTargets();
 
@@ -1023,7 +1027,9 @@ namespace Ogre {
 
         SceneManagerEnumerator::getSingleton().shutdownAll();
         shutdownPlugins();
+        OGRE_DELETE mSceneManagerEnum;
 
+        OGRE_DELETE mShadowTextureManager;
         ShadowVolumeExtrudeProgram::shutdown();
         ResourceGroupManager::getSingleton().shutdownAll();
 
@@ -1053,6 +1059,8 @@ namespace Ogre {
 
         pluginDir = cfg.getSetting("PluginFolder"); // Ignored on Mac OS X, uses Resources/ directory
         pluginList = cfg.getMultiSetting("Plugin");
+
+        pluginDir = FileSystemLayer::resolveBundlePath(pluginDir);
 
         if (!pluginDir.empty() && *pluginDir.rbegin() != '/' && *pluginDir.rbegin() != '\\')
         {
@@ -1150,7 +1158,7 @@ namespace Ogre {
 
         }
 
-        if (stream.isNull())
+        if (!stream)
         {
             // save direct in filesystem
             std::fstream* fs = OGRE_NEW_T(std::fstream, MEMCATEGORY_GENERAL);
@@ -1172,27 +1180,24 @@ namespace Ogre {
     DataStreamPtr Root::openFileStream(const String& filename, const String& groupName,
         const String& locationPattern)
     {
-        DataStreamPtr stream;
-        if (ResourceGroupManager::getSingleton().resourceExists(
-            groupName, filename))
+        try
         {
-            stream = ResourceGroupManager::getSingleton().openResource(
-                filename, groupName);
+            return ResourceGroupManager::getSingleton().openResource(filename, groupName);
         }
-        else
+        catch (FileNotFoundException&)
         {
-            // try direct
-            std::ifstream *ifs = OGRE_NEW_T(std::ifstream, MEMCATEGORY_GENERAL);
-            ifs->open(filename.c_str(), std::ios::in | std::ios::binary);
-            if(!*ifs)
-            {
-                OGRE_DELETE_T(ifs, basic_ifstream, MEMCATEGORY_GENERAL);
-                OGRE_EXCEPT(
-                    Exception::ERR_FILE_NOT_FOUND, "'" + filename + "' file not found!", __FUNCTION__);
-            }
-            stream.bind(OGRE_NEW FileStreamDataStream(filename, ifs));
         }
-        return stream;
+
+        // try direct
+        std::ifstream *ifs = OGRE_NEW_T(std::ifstream, MEMCATEGORY_GENERAL);
+        ifs->open(filename.c_str(), std::ios::in | std::ios::binary);
+        if(!*ifs)
+        {
+            OGRE_DELETE_T(ifs, basic_ifstream, MEMCATEGORY_GENERAL);
+            OGRE_EXCEPT(
+                Exception::ERR_FILE_NOT_FOUND, "'" + filename + "' file not found!", __FUNCTION__);
+        }
+        return DataStreamPtr(OGRE_NEW FileStreamDataStream(filename, ifs));
     }
     //-----------------------------------------------------------------------
     void Root::convertColourValue(const ColourValue& colour, uint32* pDest)

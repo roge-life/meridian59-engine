@@ -49,7 +49,6 @@ namespace Ogre
     {
     public:
         TangentSpaceCalc();
-        virtual ~TangentSpaceCalc();
 
         typedef std::pair<size_t, size_t> VertexSplit;
 

@@ -26,6 +26,8 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "OgreD3D11Mappings.h"
+#include "OgreD3D11RenderSystem.h"
+#include "OgreRoot.h"
 
 namespace Ogre 
 {
@@ -262,9 +264,9 @@ namespace Ogre
         box.data = mapping.pData;
     }
     //---------------------------------------------------------------------
-    PixelBox D3D11Mappings::getPixelBoxWithMapping(size_t width, size_t height, size_t depth, PixelFormat pixelFormat, const D3D11_MAPPED_SUBRESOURCE& mapping)
+    PixelBox D3D11Mappings::getPixelBoxWithMapping(D3D11_BOX extents, DXGI_FORMAT pixelFormat, const D3D11_MAPPED_SUBRESOURCE& mapping)
     {
-        PixelBox box(width, height, depth, pixelFormat);
+        PixelBox box(Box(extents.left, extents.top, extents.front, extents.right, extents.bottom, extents.back), _getPF(pixelFormat));
         setPixelBoxMapping(box, mapping);
         return box;
     }
@@ -437,7 +439,7 @@ namespace Ogre
         case DXGI_FORMAT_R8G8B8A8_SNORM:            return PF_UNKNOWN;
         case DXGI_FORMAT_R8G8B8A8_SINT:             return PF_UNKNOWN;
         case DXGI_FORMAT_R16G16_TYPELESS:           return PF_UNKNOWN;
-        case DXGI_FORMAT_R16G16_FLOAT:              return PF_UNKNOWN;
+        case DXGI_FORMAT_R16G16_FLOAT:              return PF_FLOAT16_GR;
         case DXGI_FORMAT_R16G16_UNORM:              return PF_SHORT_GR;
         case DXGI_FORMAT_R16G16_UINT:               return PF_UNKNOWN;
         case DXGI_FORMAT_R16G16_SNORM:              return PF_UNKNOWN;
@@ -548,6 +550,7 @@ namespace Ogre
         case PF_A2B10G10R10:    return DXGI_FORMAT_R10G10B10A2_TYPELESS;
         case PF_A2R10G10B10:    return DXGI_FORMAT_UNKNOWN;
         case PF_FLOAT16_R:      return DXGI_FORMAT_R16_FLOAT;
+        case PF_FLOAT16_GR:     return DXGI_FORMAT_R16G16_FLOAT;
         case PF_FLOAT16_RGBA:   return DXGI_FORMAT_R16G16B16A16_FLOAT;
         case PF_FLOAT32_R:      return DXGI_FORMAT_R32_FLOAT;
         case PF_FLOAT32_RGBA:   return DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -570,6 +573,39 @@ namespace Ogre
         case PF_UNKNOWN:
         default:                return DXGI_FORMAT_UNKNOWN;
         }
+    }
+    //---------------------------------------------------------------------
+    DXGI_FORMAT D3D11Mappings::_getGammaFormat(DXGI_FORMAT format, bool appendSRGB)
+    {
+        if(appendSRGB)
+        {
+            switch(format)
+            {
+            case DXGI_FORMAT_R8G8B8A8_UNORM:       return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+            case DXGI_FORMAT_B8G8R8A8_UNORM:       return DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+            case DXGI_FORMAT_B8G8R8X8_UNORM:       return DXGI_FORMAT_B8G8R8X8_UNORM_SRGB;
+            case DXGI_FORMAT_BC1_UNORM:            return DXGI_FORMAT_BC1_UNORM_SRGB;
+            case DXGI_FORMAT_BC2_UNORM:            return DXGI_FORMAT_BC2_UNORM_SRGB;
+            case DXGI_FORMAT_BC3_UNORM:            return DXGI_FORMAT_BC3_UNORM_SRGB;
+            case DXGI_FORMAT_BC7_UNORM:            return DXGI_FORMAT_BC7_UNORM_SRGB;
+            }
+        }
+        return format;
+    }
+    //---------------------------------------------------------------------
+    bool D3D11Mappings::_isBinaryCompressedFormat(DXGI_FORMAT d3dPF)
+    {
+        return
+            d3dPF == DXGI_FORMAT_BC1_TYPELESS || d3dPF == DXGI_FORMAT_BC1_UNORM || d3dPF == DXGI_FORMAT_BC1_UNORM_SRGB ||
+            d3dPF == DXGI_FORMAT_BC2_TYPELESS || d3dPF == DXGI_FORMAT_BC2_UNORM || d3dPF == DXGI_FORMAT_BC2_UNORM_SRGB ||
+            d3dPF == DXGI_FORMAT_BC3_TYPELESS || d3dPF == DXGI_FORMAT_BC3_UNORM || d3dPF == DXGI_FORMAT_BC3_UNORM_SRGB ||
+            d3dPF == DXGI_FORMAT_BC4_TYPELESS || d3dPF == DXGI_FORMAT_BC4_UNORM || d3dPF == DXGI_FORMAT_BC4_SNORM ||
+            d3dPF == DXGI_FORMAT_BC5_TYPELESS || d3dPF == DXGI_FORMAT_BC5_UNORM || d3dPF == DXGI_FORMAT_BC5_SNORM ||
+#if OGRE_PLATFORM == OGRE_PLATFORM_WINRT
+            d3dPF == DXGI_FORMAT_BC6H_TYPELESS|| d3dPF == DXGI_FORMAT_BC6H_UF16 || d3dPF == DXGI_FORMAT_BC6H_SF16 || 
+            d3dPF == DXGI_FORMAT_BC7_TYPELESS || d3dPF == DXGI_FORMAT_BC7_UNORM || d3dPF == DXGI_FORMAT_BC7_UNORM_SRGB ||
+#endif
+            0;
     }
     //---------------------------------------------------------------------
     PixelFormat D3D11Mappings::_getClosestSupportedPF(PixelFormat ogrePF)
@@ -694,12 +730,13 @@ namespace Ogre
 			}
 		}
 
-		return isRenderTarget ? D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET : D3D11_BIND_SHADER_RESOURCE;
+		return (isRenderTarget ? D3D11_BIND_RENDER_TARGET : 0)
+			| ((usage & TU_NOTSHADERRESOURCE) ? 0 : D3D11_BIND_SHADER_RESOURCE);
 	}
 
-    UINT D3D11Mappings::_getTextureMiscFlags(UINT bindflags, TextureType textype, bool isdynamic)
+    UINT D3D11Mappings::_getTextureMiscFlags(UINT bindflags, TextureType textype, TextureUsage usage)
     {
-        if(isdynamic)
+        if(_isDynamic(usage))
             return 0;
 
         UINT flags = 0;

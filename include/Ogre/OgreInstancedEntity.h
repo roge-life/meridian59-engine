@@ -74,7 +74,7 @@ namespace Ogre
         @version
             1.0
      */
-    class _OgreExport InstancedEntity : public Ogre::MovableObject
+    class _OgreExport InstancedEntity : public MovableObject
     {
         friend class InstanceBatch;
         friend class InstanceBatchShader;
@@ -266,7 +266,7 @@ namespace Ogre
                 mParentNode ? mParentNode->_getDerivedPosition() : Vector3::ZERO;
         }
 
-        /** @copydoc MovableObject::isInScene. */
+        /** @copydoc MovableObject::isInScene */
         virtual bool isInScene(void) const
         {
             //We assume that the instanced entity is in the scene if it is in use

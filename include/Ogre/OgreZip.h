@@ -71,7 +71,7 @@ namespace Ogre {
         ZipArchive(const String& name, const String& archType, zzip_plugin_io_handlers* pluginIo = NULL);
         ~ZipArchive();
         /// @copydoc Archive::isCaseSensitive
-        bool isCaseSensitive(void) const { return false; }
+        bool isCaseSensitive(void) const { return OGRE_RESOURCEMANAGER_STRICT; }
 
         /// @copydoc Archive::load
         void load();
@@ -79,7 +79,7 @@ namespace Ogre {
         void unload();
 
         /// @copydoc Archive::open
-        DataStreamPtr open(const String& filename, bool readOnly = true);
+        DataStreamPtr open(const String& filename, bool readOnly = true) const;
 
         /// @copydoc Archive::create
         DataStreamPtr create(const String& filename);
@@ -88,24 +88,24 @@ namespace Ogre {
         void remove(const String& filename);
 
         /// @copydoc Archive::list
-        StringVectorPtr list(bool recursive = true, bool dirs = false);
+        StringVectorPtr list(bool recursive = true, bool dirs = false) const;
 
         /// @copydoc Archive::listFileInfo
-        FileInfoListPtr listFileInfo(bool recursive = true, bool dirs = false);
+        FileInfoListPtr listFileInfo(bool recursive = true, bool dirs = false) const;
 
         /// @copydoc Archive::find
         StringVectorPtr find(const String& pattern, bool recursive = true,
-            bool dirs = false);
+            bool dirs = false) const;
 
         /// @copydoc Archive::findFileInfo
         FileInfoListPtr findFileInfo(const String& pattern, bool recursive = true,
-            bool dirs = false);
+            bool dirs = false) const;
 
         /// @copydoc Archive::exists
-        bool exists(const String& filename);
+        bool exists(const String& filename) const;
 
         /// @copydoc Archive::getModifiedTime
-        time_t getModifiedTime(const String& filename);
+        time_t getModifiedTime(const String& filename) const;
     };
 
     /** Specialisation of ArchiveFactory for Zip files. */
@@ -138,7 +138,7 @@ namespace Ogre {
         virtual ~EmbeddedZipArchiveFactory();
         /// @copydoc FactoryObj::getType
         const String& getType(void) const;
-        /// @copydoc FactoryObj::createInstance
+        /// @copydoc ArchiveFactory::createInstance
         Archive *createInstance( const String& name, bool readOnly ) 
         {
             ZipArchive * resZipArchive = OGRE_NEW ZipArchive(name, "EmbeddedZip", mPluginIo);

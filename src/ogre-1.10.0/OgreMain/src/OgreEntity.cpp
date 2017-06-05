@@ -166,7 +166,7 @@ namespace Ogre {
             return;
 
         // Is mesh skeletally animated?
-        if (mMesh->hasSkeleton() && !mMesh->getSkeleton().isNull())
+        if (mMesh->hasSkeleton() && mMesh->getSkeleton())
         {
             mSkeletonInstance = OGRE_NEW SkeletonInstance(mMesh->getSkeleton());
             mSkeletonInstance->load();
@@ -1167,10 +1167,10 @@ namespace Ogre {
         // Note - you should only apply one morph animation to each set of vertex data
         // at once; if you do more, only the last one will actually apply
         markBuffersUnusedForAnimation();
-        ConstEnabledAnimationStateIterator animIt = mAnimationState->getEnabledAnimationStateIterator();
-        while(animIt.hasMoreElements())
+        EnabledAnimationStateList::const_iterator animIt;
+        for(animIt = mAnimationState->getEnabledAnimationStates().begin(); animIt != mAnimationState->getEnabledAnimationStates().end(); ++animIt)
         {
-            const AnimationState* state = animIt.getNext();
+            const AnimationState* state = *animIt;
             Animation* anim = msh->_getAnimationImpl(state->getAnimationName());
             if (anim)
             {
@@ -1525,7 +1525,7 @@ namespace Ogre {
     void Entity::buildSubEntityList(MeshPtr& mesh, SubEntityList* sublist)
     {
         // Create SubEntities
-        unsigned short i, numSubMeshes;
+        size_t i, numSubMeshes;
 
         numSubMeshes = mesh->getNumSubMeshes();
         for (i = 0; i < numSubMeshes; ++i)
@@ -2257,7 +2257,7 @@ namespace Ogre {
         mPositionBuffer = vertexData->vertexBufferBinding->getBuffer(mOriginalPosBufferBinding);
         mRenderOp.vertexData->vertexBufferBinding->setBinding(0, mPositionBuffer);
         // Map in w-coord buffer (if present)
-        if(!vertexData->hardwareShadowVolWBuffer.isNull())
+        if(vertexData->hardwareShadowVolWBuffer)
         {
             mRenderOp.vertexData->vertexDeclaration->addElement(1,0,VET_FLOAT1, VES_TEXTURE_COORDINATES, 0);
             mWBuffer = vertexData->hardwareShadowVolWBuffer;
@@ -2590,7 +2590,7 @@ namespace Ogre {
             }
 
         }
-        if (pMesh.isNull())
+        if (!pMesh)
         {
             OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
                 "'mesh' parameter required when constructing an Entity.",

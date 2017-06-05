@@ -34,6 +34,7 @@ THE SOFTWARE.
 #include "OgreLight.h"
 #include "OgreTextureUnitState.h"
 #include "OgreUserObjectBindings.h"
+#include "OgreHeaderPrefix.h"
 
 namespace Ogre {
 
@@ -86,6 +87,14 @@ namespace Ogre {
             be minimised between passes. An implementation of this functor should
             order passes so that the elements that you want to keep constant are
             sorted next to each other.
+
+            Hash format is 32-bit, divided as follows (high to low bits)
+            bits   purpose
+             4     Pass index (i.e. max 16 passes!).
+            28     Pass contents
+
+            @note the high bits returned by this function will get overwritten
+
             @see Pass::setHashFunc
         */
         struct HashFunc
@@ -94,6 +103,8 @@ namespace Ogre {
             /// Need virtual destructor in case subclasses use it
             virtual ~HashFunc() {}
         };
+
+        typedef vector<TextureUnitState*>::type TextureUnitStates;
     protected:
         Technique* mParent;
         unsigned short mIndex; /// Pass index
@@ -193,7 +204,6 @@ namespace Ogre {
         //-------------------------------------------------------------------------
 
         /// Storage of texture unit states
-        typedef vector<TextureUnitState*>::type TextureUnitStates;
         TextureUnitStates mTextureUnitStates;
 
         /// Vertex program details
@@ -265,7 +275,7 @@ namespace Ogre {
         Pass(Technique* parent, unsigned short index, const Pass& oth );
         /// Operator = overload
         Pass& operator=(const Pass& oth);
-        virtual ~Pass();
+        ~Pass();
 
         /// Returns true if this pass is programmable i.e. includes either a vertex or fragment program.
         bool isProgrammable(void) const { return mVertexProgramUsage || mFragmentProgramUsage || mGeometryProgramUsage ||
@@ -296,7 +306,7 @@ namespace Ogre {
 
         /// Gets the index of this Pass in the parent Technique
         unsigned short getIndex(void) const { return mIndex; }
-        /* Set the name of the pass
+        /** Set the name of the pass
            @remarks
            The name of the pass is optional.  Its useful in material scripts where a material could inherit
            from another material and only want to modify a particular pass.
@@ -318,18 +328,7 @@ namespace Ogre {
         */
         void setAmbient(Real red, Real green, Real blue);
 
-        /** Sets the ambient colour reflectance properties of this pass.
-            @remarks
-            The base colour of a pass is determined by how much red, green and blue light is reflects
-            (provided texture layer #0 has a blend mode other than LBO_REPLACE). This property determines how
-            much ambient light (directionless global light) is reflected. The default is full white, meaning
-            objects are completely globally illuminated. Reduce this if you want to see diffuse or specular light
-            effects, or change the blend of colours to make the object have a base colour other than white.
-            @note
-            This setting has no effect if dynamic lighting is disabled (see Pass::setLightingEnabled),
-            or if this is a programmable pass.
-        */
-
+        /// @overload
         void setAmbient(const ColourValue& ambient);
 
         /** Sets the diffuse colour reflectance properties of this pass.
@@ -344,16 +343,7 @@ namespace Ogre {
         */
         void setDiffuse(Real red, Real green, Real blue, Real alpha);
 
-        /** Sets the diffuse colour reflectance properties of this pass.
-            @remarks
-            The base colour of a pass is determined by how much red, green and blue light is reflects
-            (provided texture layer #0 has a blend mode other than LBO_REPLACE). This property determines how
-            much diffuse light (light from instances of the Light class in the scene) is reflected. The default
-            is full white, meaning objects reflect the maximum white light they can from Light objects.
-            @note
-            This setting has no effect if dynamic lighting is disabled (see Pass::setLightingEnabled),
-            or if this is a programmable pass.
-        */
+        /// @overload
         void setDiffuse(const ColourValue& diffuse);
 
         /** Sets the specular colour reflectance properties of this pass.
@@ -370,18 +360,7 @@ namespace Ogre {
         */
         void setSpecular(Real red, Real green, Real blue, Real alpha);
 
-        /** Sets the specular colour reflectance properties of this pass.
-            @remarks
-            The base colour of a pass is determined by how much red, green and blue light is reflects
-            (provided texture layer #0 has a blend mode other than LBO_REPLACE). This property determines how
-            much specular light (highlights from instances of the Light class in the scene) is reflected.
-            The default is to reflect no specular light.
-            @note
-            The size of the specular highlights is determined by the separate 'shininess' property.
-            @note
-            This setting has no effect if dynamic lighting is disabled (see Pass::setLightingEnabled),
-            or if this is a programmable pass.
-        */
+        /// @overload
         void setSpecular(const ColourValue& specular);
 
         /** Sets the shininess of the pass, affecting the size of specular highlights.
@@ -411,21 +390,10 @@ namespace Ogre {
             setSelfIllumination(red, green, blue);
         }
 
-        /** Sets the amount of self-illumination an object has.
-            @remarks
-            If an object is self-illuminating, it does not need external sources to light it, ambient or
-            otherwise. It's like the object has it's own personal ambient light. This property is rarely useful since
-            you can already specify per-pass ambient light, but is here for completeness.
-            @note
-            This setting has no effect if dynamic lighting is disabled (see Pass::setLightingEnabled),
-            or if this is a programmable pass.
-        */
+        /// @overload
         void setSelfIllumination(const ColourValue& selfIllum);
 
-        /** Sets the amount of self-illumination an object has.
-            @see
-            setSelfIllumination
-        */
+        /// @overload
         void setEmissive(const ColourValue& emissive)
         {
             setSelfIllumination(emissive);
@@ -549,11 +517,6 @@ namespace Ogre {
         /** Inserts a new TextureUnitState object into the Pass.
             @remarks
             This unit is is added on top of all previous units.
-        */
-        TextureUnitState* createTextureUnitState(void);
-        /** Inserts a new TextureUnitState object into the Pass.
-            @remarks
-            This unit is is added on top of all previous units.
             @param textureName
             The basic name of the texture e.g. brickwall.jpg, stonefloor.png
             @param texCoordSet
@@ -562,6 +525,9 @@ namespace Ogre {
             Applies to both fixed-function and programmable passes.
         */
         TextureUnitState* createTextureUnitState( const String& textureName, unsigned short texCoordSet = 0);
+        /// @overload
+        TextureUnitState* createTextureUnitState(void);
+
         /** Adds the passed in TextureUnitState, to the existing Pass.
             @param
             state The Texture Unit State to be attached to this pass.  It must not be attached to another pass.
@@ -576,6 +542,7 @@ namespace Ogre {
         */
         TextureUnitState* getTextureUnitState(const String& name);
         /** Retrieves a const pointer to a texture unit state.
+         * @deprecated use getTextureUnitStates()
          */
         const TextureUnitState* getTextureUnitState(unsigned short index) const;
         /** Retrieves the Texture Unit State matching name.
@@ -588,16 +555,22 @@ namespace Ogre {
              state The Texture Unit State this is attached to this pass.
              @note
              Throws an exception if the state is not attached to the pass.
+             @deprecated use getTextureUnitStates()
         */
         unsigned short getTextureUnitStateIndex(const TextureUnitState* state) const;
 
         typedef VectorIterator<TextureUnitStates> TextureUnitStateIterator;
-        /** Get an iterator over the TextureUnitStates contained in this Pass. */
-        TextureUnitStateIterator getTextureUnitStateIterator(void);
+        /** Get an iterator over the TextureUnitStates contained in this Pass.
+         * @deprecated use getTextureUnitStates() */
+        OGRE_DEPRECATED TextureUnitStateIterator getTextureUnitStateIterator(void);
 
         typedef ConstVectorIterator<TextureUnitStates> ConstTextureUnitStateIterator;
-        /** Get an iterator over the TextureUnitStates contained in this Pass. */
-        ConstTextureUnitStateIterator getTextureUnitStateIterator(void) const;
+        /** Get an iterator over the TextureUnitStates contained in this Pass.
+         * @deprecated use getTextureUnitStates() */
+        OGRE_DEPRECATED ConstTextureUnitStateIterator getTextureUnitStateIterator(void) const;
+
+        /** Get the TextureUnitStates contained in this Pass. */
+        const TextureUnitStates& getTextureUnitStates() const { return mTextureUnitStates; }
 
         /** Removes the indexed texture unit state from this pass.
             @remarks
@@ -610,6 +583,7 @@ namespace Ogre {
         void removeAllTextureUnitStates(void);
 
         /** Returns the number of texture unit settings.
+         * @deprecated use getTextureUnitStates()
          */
         unsigned short getNumTextureUnitStates(void) const
         {
@@ -939,7 +913,7 @@ namespace Ogre {
             @param override true means that a lower camera detail will override this
             pass's detail level, false means it won't (default true).
         */
-        virtual void setPolygonModeOverrideable(bool override)
+        void setPolygonModeOverrideable(bool override)
         {
             mPolygonModeOverrideable = override;
         }
@@ -947,7 +921,7 @@ namespace Ogre {
         /** Gets whether this renderable's chosen detail level can be
             overridden (downgraded) by the camera setting.
         */
-        virtual bool getPolygonModeOverrideable(void) const
+        bool getPolygonModeOverrideable(void) const
         {
             return mPolygonModeOverrideable;
         }
@@ -1066,19 +1040,19 @@ namespace Ogre {
         */
         void setAlphaRejectSettings(CompareFunction func, unsigned char value, bool alphaToCoverageEnabled = false);
 
-        /** Sets the alpha reject function. See setAlphaRejectSettings for more information.
+        /** Sets the alpha reject function. @see setAlphaRejectSettings for more information.
          */
         void setAlphaRejectFunction(CompareFunction func);
 
-        /** Gets the alpha reject value. See setAlphaRejectSettings for more information.
+        /** Gets the alpha reject value. @see setAlphaRejectSettings for more information.
          */
         void setAlphaRejectValue(unsigned char val);
 
-        /** Gets the alpha reject function. See setAlphaRejectSettings for more information.
+        /** Gets the alpha reject function. @see setAlphaRejectSettings for more information.
          */
         CompareFunction getAlphaRejectFunction(void) const { return mAlphaRejectFunc; }
 
-        /** Gets the alpha reject value. See setAlphaRejectSettings for more information.
+        /** Gets the alpha reject value. @see setAlphaRejectSettings for more information.
          */
         unsigned char getAlphaRejectValue(void) const { return mAlphaRejectVal; }
 
@@ -1719,7 +1693,7 @@ namespace Ogre {
             exist in the render queue. The only time you can do this is either
             before you render anything, or directly after you manuall call
             RenderQueue::clear(true) to completely destroy the queue structures.
-            The default is MIN_TEXTURE_CHANGE.
+            The default is MIN_GPU_PROGRAM_CHANGE.
             @note
             You can also implement your own hash function, see the alternate version
             of this method.
@@ -1735,7 +1709,7 @@ namespace Ogre {
             RenderQueue::clear(true) to completely destroy the queue structures.
             @note
             You can also use one of the built-in hash functions, see the alternate version
-            of this method. The default is MIN_TEXTURE_CHANGE.
+            of this method. The default is MIN_GPU_PROGRAM_CHANGE.
             @see HashFunc
         */
         static void setHashFunction(HashFunc* hashFunc) { msHashFunc = hashFunc; }
@@ -1880,5 +1854,7 @@ namespace Ogre {
     /** @} */
 
 }
+
+#include "OgreHeaderSuffix.h"
 
 #endif

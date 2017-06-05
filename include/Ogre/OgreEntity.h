@@ -86,7 +86,7 @@ namespace Ogre {
         
         typedef set<Entity*>::type EntitySet;
         typedef map<unsigned short, bool>::type SchemeHardwareAnimMap;
-
+        typedef vector<SubEntity*>::type SubEntityList;
     protected:
 
         /** Private constructor (instances cannot be created directly).
@@ -102,7 +102,6 @@ namespace Ogre {
 
         /** List of SubEntities (point to SubMeshes).
         */
-        typedef vector<SubEntity*>::type SubEntityList;
         SubEntityList mSubEntityList;
 
 
@@ -366,6 +365,7 @@ namespace Ogre {
         const MeshPtr& getMesh(void) const;
 
         /** Gets a pointer to a SubEntity, ie a part of an Entity.
+         @deprecated use getSubEntities()
         */
         SubEntity* getSubEntity(unsigned int index) const;
 
@@ -376,8 +376,15 @@ namespace Ogre {
         SubEntity* getSubEntity( const String& name ) const;
 
         /** Retrieves the number of SubEntity objects making up this entity.
+        * @deprecated use getSubEntities()
         */
         unsigned int getNumSubEntities(void) const;
+
+        /** Retrieves SubEntity objects making up this entity.
+        */
+        const SubEntityList& getSubEntities() const {
+            return mSubEntityList;
+        }
 
         /** Clones this entity and returns a pointer to the clone.
         @remarks
@@ -411,29 +418,29 @@ namespace Ogre {
         */
         void setMaterial(const MaterialPtr& material);
 
-        /** @copydoc MovableObject::_releaseManualHardwareResources. */
+        /** @copydoc MovableObject::_releaseManualHardwareResources */
         void _releaseManualHardwareResources();
-        /** @copydoc MovableObject::_restoreManualHardwareResources. */
+        /** @copydoc MovableObject::_restoreManualHardwareResources */
         void _restoreManualHardwareResources();
 
-        /** @copydoc MovableObject::_notifyCurrentCamera.
+        /** @copydoc MovableObject::_notifyCurrentCamera
         */
         void _notifyCurrentCamera(Camera* cam);
 
-        /// @copydoc MovableObject::setRenderQueueGroup.
+        /// @copydoc MovableObject::setRenderQueueGroup
         void setRenderQueueGroup(uint8 queueID);
 
-        /// @copydoc MovableObject::setRenderQueueGroupAndPriority.
+        /// @copydoc MovableObject::setRenderQueueGroupAndPriority
         void setRenderQueueGroupAndPriority(uint8 queueID, ushort priority);
 
-        /** @copydoc MovableObject::getBoundingBox.
+        /** @copydoc MovableObject::getBoundingBox
         */
         const AxisAlignedBox& getBoundingBox(void) const;
 
         /// Merge all the child object Bounds a return it.
         AxisAlignedBox getChildObjectsBoundingBox(void) const;
 
-        /** @copydoc MovableObject::_updateRenderQueue.
+        /** @copydoc MovableObject::_updateRenderQueue
         */
         void _updateRenderQueue(RenderQueue* queue);
 
@@ -606,11 +613,11 @@ namespace Ogre {
         /** @copydoc MovableObject::getWorldBoundingSphere */
         const Sphere& getWorldBoundingSphere(bool derive = false) const;
 
-        /** @copydoc ShadowCaster::getEdgeList. */
+        /** @copydoc ShadowCaster::getEdgeList */
         EdgeData* getEdgeList(void);
-        /** @copydoc ShadowCaster::hasEdgeList. */
+        /** @copydoc ShadowCaster::hasEdgeList */
         bool hasEdgeList(void);
-        /** @copydoc ShadowCaster::getShadowVolumeRenderableIterator. */
+        /** @copydoc ShadowCaster::getShadowVolumeRenderableIterator */
         ShadowRenderableListIterator getShadowVolumeRenderableIterator(
             ShadowTechnique shadowTechnique, const Light* light,
             HardwareIndexBufferSharedPtr* indexBuffer, size_t* indexBufferUsedSize,

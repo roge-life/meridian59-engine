@@ -71,7 +71,7 @@ namespace Ogre {
         mLinkedObliqueProjPlane(0)
     {
         // Initialise material
-        mMaterial = MaterialManager::getSingleton().getByName("BaseWhiteNoLighting");
+        mMaterial = MaterialManager::getSingleton().getDefaultMaterial(false);
         
         // Alter superclass members
         mVisible = false;
@@ -977,8 +977,7 @@ namespace Ogre {
     const LightList& Frustum::getLights(void) const 
     {
         // N/A
-        OGRE_DEFINE_STATIC_LOCAL(LightList, ll, ());
-//        static LightList ll;
+        static LightList ll;
         return ll;
     }
     //-----------------------------------------------------------------------

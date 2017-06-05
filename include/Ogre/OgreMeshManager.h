@@ -66,14 +66,20 @@ namespace Ogre {
 
         /// Get a resource by name
         /// @see ResourceManager::getResourceByName
-        MeshPtr getByName(const String& name, const String& groupName = ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
-
+        MeshPtr
+#if OGRE_RESOURCEMANAGER_STRICT
+        getByName(const String& name, const String& groupName);
+#else
+        getByName(const String& name, const String& groupName = ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+#endif
 
         /// Create a new mesh
         /// @see ResourceManager::createResource
         MeshPtr create (const String& name, const String& group,
                             bool isManual = false, ManualResourceLoader* loader = 0,
                             const NameValuePairList* createParams = 0);
+
+        using ResourceManager::createOrRetrieve;
 
         /** Create a new mesh, or retrieve an existing one with the same
             name if it already exists.
@@ -90,8 +96,8 @@ namespace Ogre {
         ResourceCreateOrRetrieveResult createOrRetrieve(
             const String& name,
             const String& group,
-            bool isManual=false, ManualResourceLoader* loader=0,
-            const NameValuePairList* params=0,
+            bool isManual, ManualResourceLoader* loader,
+            const NameValuePairList* params,
             HardwareBuffer::Usage vertexBufferUsage = HardwareBuffer::HBU_STATIC_WRITE_ONLY, 
             HardwareBuffer::Usage indexBufferUsage = HardwareBuffer::HBU_STATIC_WRITE_ONLY, 
             bool vertexBufferShadowed = true, bool indexBufferShadowed = true);
@@ -381,37 +387,9 @@ namespace Ogre {
         /** Retrieves whether all Meshes should prepare themselves for shadow volumes. */
         bool getPrepareAllMeshesForShadowVolumes(void);
 
-        /** Override standard Singleton retrieval.
-        @remarks
-        Why do we do this? Well, it's because the Singleton
-        implementation is in a .h file, which means it gets compiled
-        into anybody who includes it. This is needed for the
-        Singleton template to work, but we actually only want it
-        compiled into the implementation of the class based on the
-        Singleton, not all of them. If we don't change this, we get
-        link errors when trying to use the Singleton-based class from
-        an outside dll.
-        @par
-        This method just delegates to the template version anyway,
-        but the implementation stays in this single compilation unit,
-        preventing link errors.
-        */
+        /// @copydoc Singleton::getSingleton()
         static MeshManager& getSingleton(void);
-        /** Override standard Singleton retrieval.
-        @remarks
-        Why do we do this? Well, it's because the Singleton
-        implementation is in a .h file, which means it gets compiled
-        into anybody who includes it. This is needed for the
-        Singleton template to work, but we actually only want it
-        compiled into the implementation of the class based on the
-        Singleton, not all of them. If we don't change this, we get
-        link errors when trying to use the Singleton-based class from
-        an outside dll.
-        @par
-        This method just delegates to the template version anyway,
-        but the implementation stays in this single compilation unit,
-        preventing link errors.
-        */
+        /// @copydoc Singleton::getSingleton()
         static MeshManager* getSingletonPtr(void);
 
         /** Gets the factor by which the bounding box of an entity is padded.

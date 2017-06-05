@@ -31,11 +31,6 @@ THE SOFTWARE.
 
 namespace Ogre
 {
-
-    ScriptParser::ScriptParser()
-    {
-    }
-
     ConcreteNodeListPtr ScriptParser::parse(const ScriptTokenListPtr &tokens)
     {
         // MEMCATEGORY_GENERAL because SharedPtr can only free using that category
@@ -486,7 +481,7 @@ namespace Ogre
                     "ScriptParser::parseChunk");
             }
 
-            if(!node.isNull())
+            if(node)
                 nodes->push_back(node);
         }
 

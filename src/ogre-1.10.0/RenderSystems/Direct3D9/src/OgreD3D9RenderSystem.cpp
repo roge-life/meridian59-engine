@@ -150,13 +150,7 @@ namespace Ogre
         static String strName( "Direct3D9 Rendering Subsystem");
         return strName;
     }
-    //---------------------------------------------------------------------
-	const String& D3D9RenderSystem::getFriendlyName(void) const
-	{
-		static String strName = mIsDirectX9Ex ? "Direct3D 9Ex" : "Direct3D 9";
-		return strName;
-	}
-	
+
     D3D9DriverList* D3D9RenderSystem::getDirect3DDrivers()
     {
         if( !mDriverList )
@@ -959,6 +953,7 @@ namespace Ogre
         rsc->setNumTextureUnits(1024);
         rsc->setCapability(RSC_ANISOTROPY);
         rsc->setCapability(RSC_AUTOMIPMAP);
+        rsc->setCapability(RSC_AUTOMIPMAP_COMPRESSED);
         rsc->setCapability(RSC_DOT3);
         rsc->setCapability(RSC_CUBEMAPPING);        
         rsc->setCapability(RSC_SCISSOR_TEST);       
@@ -1036,8 +1031,10 @@ namespace Ogre
                 rsc->unsetCapability(RSC_ANISOTROPY);
 
             // Check automatic mipmap generation.
-            if ((rkCurCaps.Caps2 & D3DCAPS2_CANAUTOGENMIPMAP) == 0)
+            if ((rkCurCaps.Caps2 & D3DCAPS2_CANAUTOGENMIPMAP) == 0) {
                 rsc->unsetCapability(RSC_AUTOMIPMAP);
+                rsc->unsetCapability(RSC_AUTOMIPMAP_COMPRESSED);
+            }
 
             // Check Dot product 3.
             if ((rkCurCaps.TextureOpCaps & D3DTEXOPCAPS_DOTPRODUCT3) == 0)
@@ -2005,8 +2002,8 @@ namespace Ogre
     void D3D9RenderSystem::_setTexture( size_t stage, bool enabled, const TexturePtr& tex )
     {
         HRESULT hr;
-        D3D9TexturePtr dt = tex.staticCast<D3D9Texture>();
-        if (enabled && !dt.isNull())
+        D3D9TexturePtr dt = static_pointer_cast<D3D9Texture>(tex);
+        if (enabled && dt)
         {
             // note used
             dt->touch();
@@ -2065,7 +2062,7 @@ namespace Ogre
     //---------------------------------------------------------------------
     void D3D9RenderSystem::_setVertexTexture(size_t stage, const TexturePtr& tex)
     {
-        if (tex.isNull())
+        if (!tex)
         {
 
             if (mTexStageDesc[stage].pVertexTex != 0)
@@ -2084,7 +2081,7 @@ namespace Ogre
         }
         else
         {
-            D3D9TexturePtr dt = tex.staticCast<D3D9Texture>();
+            D3D9TexturePtr dt = static_pointer_cast<D3D9Texture>(tex);
             // note used
             dt->touch();
 
@@ -3403,7 +3400,7 @@ namespace Ogre
         HardwareVertexBufferSharedPtr globalInstanceVertexBuffer = getGlobalInstanceVertexBuffer();
         VertexDeclaration* globalVertexDeclaration = getGlobalInstanceVertexBufferVertexDeclaration();
         bool hasInstanceData = useGlobalInstancingVertexBufferIsAvailable &&
-                    !globalInstanceVertexBuffer.isNull() && globalVertexDeclaration != NULL 
+                    globalInstanceVertexBuffer && globalVertexDeclaration != NULL 
                 || binding->getHasInstanceData();
 
 
@@ -3478,7 +3475,7 @@ namespace Ogre
         if (useGlobalInstancingVertexBufferIsAvailable)
         {
         // bind global instance buffer if exist
-        if( !globalInstanceVertexBuffer.isNull() )
+        if( globalInstanceVertexBuffer )
         {
             if ( !indexesUsed )
             {
@@ -3727,7 +3724,7 @@ namespace Ogre
         switch(gptype)
         {
         case GPT_VERTEX_PROGRAM:
-            mActiveVertexGpuProgramParameters.setNull();
+            mActiveVertexGpuProgramParameters.reset();
             hr = getActiveD3D9Device()->SetVertexShader(NULL);
             if (FAILED(hr))
             {
@@ -3736,7 +3733,7 @@ namespace Ogre
             }
             break;
         case GPT_FRAGMENT_PROGRAM:
-            mActiveFragmentGpuProgramParameters.setNull();
+            mActiveFragmentGpuProgramParameters.reset();
             hr = getActiveD3D9Device()->SetPixelShader(NULL);
             if (FAILED(hr))
             {

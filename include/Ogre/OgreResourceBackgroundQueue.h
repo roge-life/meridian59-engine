@@ -134,7 +134,7 @@ namespace Ogre {
             Listener* listener;
             BackgroundProcessResult result;
 
-            _OgreExport friend std::ostream& operator<<(std::ostream& o, const ResourceRequest& r)
+            friend std::ostream& operator<<(std::ostream& o, const ResourceRequest& r)
             { (void)r; return o; }
         };
 
@@ -151,7 +151,7 @@ namespace Ogre {
             ResourcePtr resource;
             ResourceRequest request;
 
-            _OgreExport friend std::ostream& operator<<(std::ostream& o, const ResourceResponse& r)
+            friend std::ostream& operator<<(std::ostream& o, const ResourceResponse& r)
             { (void)r; return o; }
         };
 
@@ -220,6 +220,8 @@ namespace Ogre {
         @param resType The type of the resource 
             (from ResourceManager::getResourceType())
         @param name The name of the Resource
+        @param listener Optional callback interface, take note of warnings in
+            the header and only use if you understand them.
         */
         virtual BackgroundProcessTicket unload(
             const String& resType, const String& name, 
@@ -230,6 +232,8 @@ namespace Ogre {
         @param resType The type of the resource 
             (from ResourceManager::getResourceType())
         @param handle Handle to the resource 
+        @param listener Optional callback interface, take note of warnings in
+            the header and only use if you understand them.
         */
         virtual BackgroundProcessTicket unload(
             const String& resType, ResourceHandle handle, 
@@ -238,6 +242,8 @@ namespace Ogre {
         /** Unloads a resource group in the background.
         @see ResourceGroupManager::unloadResourceGroup
         @param name The name of the resource group to load
+        @param listener Optional callback interface, take note of warnings in
+            the header and only use if you understand them.
         @return Ticket identifying the request, use isProcessComplete() to 
             determine if completed if not using listener
         */
@@ -259,6 +265,8 @@ namespace Ogre {
         @param loadParams Optional pointer to a list of name/value pairs 
             containing loading parameters for this type of resource. Remember 
             that this must have a lifespan longer than the return of this call!
+        @param listener Optional callback interface, take note of warnings in
+            the header and only use if you understand them.
         */
         virtual BackgroundProcessTicket prepare(
             const String& resType, const String& name, 
@@ -281,6 +289,8 @@ namespace Ogre {
         @param loadParams Optional pointer to a list of name/value pairs 
             containing loading parameters for this type of resource. Remember 
             that this must have a lifespan longer than the return of this call!
+        @param listener Optional callback interface, take note of warnings in
+            the header and only use if you understand them.
         */
         virtual BackgroundProcessTicket load(
             const String& resType, const String& name, 
@@ -316,37 +326,9 @@ namespace Ogre {
         /// Implementation for WorkQueue::ResponseHandler
         void handleResponse(const WorkQueue::Response* res, const WorkQueue* srcQ);
 
-        /** Override standard Singleton retrieval.
-        @remarks
-        Why do we do this? Well, it's because the Singleton
-        implementation is in a .h file, which means it gets compiled
-        into anybody who includes it. This is needed for the
-        Singleton template to work, but we actually only want it
-        compiled into the implementation of the class based on the
-        Singleton, not all of them. If we don't change this, we get
-        link errors when trying to use the Singleton-based class from
-        an outside dll.
-        @par
-        This method just delegates to the template version anyway,
-        but the implementation stays in this single compilation unit,
-        preventing link errors.
-        */
+        /// @copydoc Singleton::getSingleton()
         static ResourceBackgroundQueue& getSingleton(void);
-        /** Override standard Singleton retrieval.
-        @remarks
-        Why do we do this? Well, it's because the Singleton
-        implementation is in a .h file, which means it gets compiled
-        into anybody who includes it. This is needed for the
-        Singleton template to work, but we actually only want it
-        compiled into the implementation of the class based on the
-        Singleton, not all of them. If we don't change this, we get
-        link errors when trying to use the Singleton-based class from
-        an outside dll.
-        @par
-        This method just delegates to the template version anyway,
-        but the implementation stays in this single compilation unit,
-        preventing link errors.
-        */
+        /// @copydoc Singleton::getSingleton()
         static ResourceBackgroundQueue* getSingletonPtr(void);
 
     };

@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -135,7 +135,7 @@ namespace Ogre {
         mEmittedEmitterPoolSize(0)
     {
         setDefaultDimensions( 100, 100 );
-        setMaterialName( "BaseWhite" );
+        mMaterial = MaterialManager::getSingleton().getDefaultMaterial();
         // Default to 10 particles, expect app to specify (will only be increased, not decreased)
         setParticleQuota( 10 );
         setEmittedEmitterQuota( 3 );
@@ -286,7 +286,7 @@ namespace Ogre {
         }
         setParticleQuota(rhs.getParticleQuota());
         setEmittedEmitterQuota(rhs.getEmittedEmitterQuota());
-        setMaterialName(rhs.mMaterialName);
+        setMaterialName(rhs.getMaterialName());
         setDefaultDimensions(rhs.mDefaultWidth, rhs.mDefaultHeight);
         mCullIndividual = rhs.mCullIndividual;
         mSorted = rhs.mSorted;
@@ -1025,18 +1025,17 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     void ParticleSystem::setMaterialName( const String& name, const String& groupName /* = ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME */)
     {
-        mMaterialName = name;
+        mMaterial = static_pointer_cast<Material>(MaterialManager::getSingleton().load(name, mResourceGroupName));
         if (mIsRendererConfigured)
         {
-            MaterialPtr mat = MaterialManager::getSingleton().load(
-                mMaterialName, mResourceGroupName).staticCast<Material>();
-            mRenderer->_setMaterial(mat);
+            mMaterial->load();
+            mRenderer->_setMaterial(mMaterial);
         }
     }
     //-----------------------------------------------------------------------
     const String& ParticleSystem::getMaterialName(void) const
     {
-        return mMaterialName;
+        return mMaterial->getName();
     }
     //-----------------------------------------------------------------------
     void ParticleSystem::clear()
@@ -1105,9 +1104,8 @@ namespace Ogre {
             mRenderer->_notifyAttached(mParentNode, mParentIsTagPoint);
             mRenderer->_notifyDefaultDimensions(mDefaultWidth, mDefaultHeight);
             createVisualParticles(0, mParticlePool.size());
-            MaterialPtr mat = MaterialManager::getSingleton().load(
-                mMaterialName, mResourceGroupName).staticCast<Material>();
-            mRenderer->_setMaterial(mat);
+            mMaterial->load();
+            mRenderer->_setMaterial(mMaterial);
             if (mRenderQueueIDSet)
                 mRenderer->setRenderQueueGroup(mRenderQueueID);
             mRenderer->setKeepParticlesInLocalSpace(mLocalSpace);

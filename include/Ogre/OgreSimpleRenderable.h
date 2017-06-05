@@ -55,7 +55,6 @@ namespace Ogre {
         Matrix4 mTransform;
         AxisAlignedBox mBox;
 
-        String mMatName;
         MaterialPtr mMaterial;
 
         /// The scene manager for the current frame.
@@ -93,9 +92,6 @@ namespace Ogre {
         /// @copydoc MovableObject::visitRenderables
         void visitRenderables(Renderable::Visitor* visitor, 
             bool debugRenderables = false);
-
-        virtual ~SimpleRenderable();
-
 
         /** Overridden from MovableObject */
         virtual const String& getMovableType(void) const;

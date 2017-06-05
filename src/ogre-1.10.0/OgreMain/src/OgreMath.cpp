@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,6 @@ THE SOFTWARE.
 #include "OgreStableHeaders.h"
 
 #include "OgreMath.h"
-#include "asm_math.h"
 #include "OgreVector2.h"
 #include "OgreVector3.h"
 #include "OgreVector4.h"
@@ -118,17 +117,12 @@ namespace Ogre
         return mTanTable[idx];
     }
     //-----------------------------------------------------------------------
-    int Math::ISign (int iValue)
-    {
-        return ( iValue > 0 ? +1 : ( iValue < 0 ? -1 : 0 ) );
-    }
-    //-----------------------------------------------------------------------
     Radian Math::ACos (Real fValue)
     {
         if ( -1.0 < fValue )
         {
             if ( fValue < 1.0 )
-                return Radian(acos(fValue));
+                return Radian(std::acos(fValue));
             else
                 return Radian(0.0);
         }
@@ -143,7 +137,7 @@ namespace Ogre
         if ( -1.0 < fValue )
         {
             if ( fValue < 1.0 )
-                return Radian(asin(fValue));
+                return Radian(std::asin(fValue));
             else
                 return Radian(HALF_PI);
         }
@@ -163,37 +157,20 @@ namespace Ogre
 
         return 0.0;
     }
-    //-----------------------------------------------------------------------
-    Real Math::InvSqrt(Real fValue)
-    {
-        return Real(asm_rsq(fValue));
-    }
+
     //-----------------------------------------------------------------------
     Real Math::UnitRandom ()
     {
         if (mRandProvider)
             return mRandProvider->getRandomUnit();
-        else return asm_rand() / asm_rand_max();
+        else return Real(rand()) / RAND_MAX;
     }
     
-    //-----------------------------------------------------------------------
-    Real Math::RangeRandom (Real fLow, Real fHigh)
-    {
-        return (fHigh-fLow)*UnitRandom() + fLow;
-    }
-
-    //-----------------------------------------------------------------------
-    Real Math::SymmetricRandom ()
-    {
-        return 2.0f * UnitRandom() - 1.0f;
-    }
-
     //-----------------------------------------------------------------------
     void Math::SetRandomValueProvider(RandomValueProvider* provider)
     {
         mRandProvider = provider;
     }
-
 
    //-----------------------------------------------------------------------
     void Math::setAngleUnit(Math::AngleUnit unit)
@@ -337,15 +314,6 @@ namespace Ogre
 
         return true;
     }
-    //-----------------------------------------------------------------------
-    bool Math::RealEqual( Real a, Real b, Real tolerance )
-    {
-        if (fabs(b-a) <= tolerance)
-            return true;
-        else
-            return false;
-    }
-
     //-----------------------------------------------------------------------
     std::pair<bool, Real> Math::intersects(const Ray& ray, const Plane& plane)
     {
@@ -526,102 +494,90 @@ namespace Ogre
         if (rayorig.x <= min.x && raydir.x > 0)
         {
             t = (min.x - rayorig.x) / raydir.x;
-            if (t >= 0)
+
+            // Substitute t back into ray and check bounds and dist
+            hitpoint = rayorig + raydir * t;
+            if (hitpoint.y >= min.y && hitpoint.y <= max.y &&
+                hitpoint.z >= min.z && hitpoint.z <= max.z &&
+                (!hit || t < lowt))
             {
-                // Substitute t back into ray and check bounds and dist
-                hitpoint = rayorig + raydir * t;
-                if (hitpoint.y >= min.y && hitpoint.y <= max.y &&
-                    hitpoint.z >= min.z && hitpoint.z <= max.z &&
-					(!hit || t < lowt))
-                {
-                    hit = true;
-                    lowt = t;
-                }
+                hit = true;
+                lowt = t;
             }
         }
         // Max x
         if (rayorig.x >= max.x && raydir.x < 0)
         {
             t = (max.x - rayorig.x) / raydir.x;
-            if (t >= 0)
+
+            // Substitute t back into ray and check bounds and dist
+            hitpoint = rayorig + raydir * t;
+            if (hitpoint.y >= min.y && hitpoint.y <= max.y &&
+                hitpoint.z >= min.z && hitpoint.z <= max.z &&
+                (!hit || t < lowt))
             {
-                // Substitute t back into ray and check bounds and dist
-                hitpoint = rayorig + raydir * t;
-                if (hitpoint.y >= min.y && hitpoint.y <= max.y &&
-                    hitpoint.z >= min.z && hitpoint.z <= max.z &&
-                    (!hit || t < lowt))
-                {
-                    hit = true;
-                    lowt = t;
-                }
+                hit = true;
+                lowt = t;
             }
         }
         // Min y
         if (rayorig.y <= min.y && raydir.y > 0)
         {
             t = (min.y - rayorig.y) / raydir.y;
-            if (t >= 0)
+
+            // Substitute t back into ray and check bounds and dist
+            hitpoint = rayorig + raydir * t;
+            if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
+                hitpoint.z >= min.z && hitpoint.z <= max.z &&
+                (!hit || t < lowt))
             {
-                // Substitute t back into ray and check bounds and dist
-                hitpoint = rayorig + raydir * t;
-                if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
-                    hitpoint.z >= min.z && hitpoint.z <= max.z &&
-                    (!hit || t < lowt))
-                {
-                    hit = true;
-                    lowt = t;
-                }
+                hit = true;
+                lowt = t;
             }
         }
         // Max y
         if (rayorig.y >= max.y && raydir.y < 0)
         {
             t = (max.y - rayorig.y) / raydir.y;
-            if (t >= 0)
+
+            // Substitute t back into ray and check bounds and dist
+            hitpoint = rayorig + raydir * t;
+            if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
+                hitpoint.z >= min.z && hitpoint.z <= max.z &&
+                (!hit || t < lowt))
             {
-                // Substitute t back into ray and check bounds and dist
-                hitpoint = rayorig + raydir * t;
-                if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
-                    hitpoint.z >= min.z && hitpoint.z <= max.z &&
-                    (!hit || t < lowt))
-                {
-                    hit = true;
-                    lowt = t;
-                }
+                hit = true;
+                lowt = t;
             }
         }
         // Min z
         if (rayorig.z <= min.z && raydir.z > 0)
         {
             t = (min.z - rayorig.z) / raydir.z;
-            if (t >= 0)
+
+            // Substitute t back into ray and check bounds and dist
+            hitpoint = rayorig + raydir * t;
+            if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
+                hitpoint.y >= min.y && hitpoint.y <= max.y &&
+                (!hit || t < lowt))
             {
-                // Substitute t back into ray and check bounds and dist
-                hitpoint = rayorig + raydir * t;
-                if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
-                    hitpoint.y >= min.y && hitpoint.y <= max.y &&
-                    (!hit || t < lowt))
-                {
-                    hit = true;
-                    lowt = t;
-                }
+                hit = true;
+                lowt = t;
             }
         }
         // Max z
         if (rayorig.z >= max.z && raydir.z < 0)
         {
             t = (max.z - rayorig.z) / raydir.z;
-            if (t >= 0)
+
+            // Substitute t back into ray and check bounds and dist
+            hitpoint = rayorig + raydir * t;
+            if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
+                hitpoint.y >= min.y && hitpoint.y <= max.y &&
+                (!hit || t < lowt))
             {
-                // Substitute t back into ray and check bounds and dist
-                hitpoint = rayorig + raydir * t;
-                if (hitpoint.x >= min.x && hitpoint.x <= max.x &&
-                    hitpoint.y >= min.y && hitpoint.y <= max.y &&
-                    (!hit || t < lowt))
-                {
-                    hit = true;
-                    lowt = t;
-                }
+                hit = true;
+                lowt = t;
             }
         }
 
@@ -985,8 +941,8 @@ namespace Ogre
     //---------------------------------------------------------------------
     Real Math::boundingRadiusFromAABB(const AxisAlignedBox& aabb)
     {
-        Vector3 max = aabb.getMaximum();
-        Vector3 min = aabb.getMinimum();
+        const Vector3& max = aabb.getMaximum();
+        const Vector3& min = aabb.getMinimum();
 
         Vector3 magnitude = max;
         magnitude.makeCeil(-max);
@@ -996,4 +952,11 @@ namespace Ogre
         return magnitude.length();
     }
 
+    Real Math::boundingRadiusFromAABBCentered(const AxisAlignedBox& aabb)
+    {
+        const Vector3& max = aabb.getMaximum();
+        const Vector3& min = aabb.getMinimum();
+
+        return ((min - max) * 0.5f).length();
+    }
 }

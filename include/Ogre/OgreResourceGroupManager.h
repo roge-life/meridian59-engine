@@ -53,7 +53,7 @@ namespace Ogre {
     /** \addtogroup Resources
     *  @{
     */
-    /** This abstract class defines an interface which is called back during
+    /** This class defines an interface which is called back during
         resource group loading to indicate the progress of the load. 
     @remarks
         Resource group loading is in 2 phases - creating resources from 
@@ -97,7 +97,7 @@ namespace Ogre {
         @param groupName The name of the group 
         @param scriptCount The number of scripts which will be parsed
         */
-        virtual void resourceGroupScriptingStarted(const String& groupName, size_t scriptCount) = 0;
+        virtual void resourceGroupScriptingStarted(const String& groupName, size_t scriptCount) {}
         /** This event is fired when a script is about to be parsed.
             @param scriptName Name of the to be parsed
             @param skipThisScript A boolean passed by reference which is by default set to 
@@ -105,13 +105,13 @@ namespace Ogre {
             parsed. Note that in this case the scriptParseEnded event will not be raised
             for this script.
         */
-        virtual void scriptParseStarted(const String& scriptName, bool& skipThisScript) = 0;
+        virtual void scriptParseStarted(const String& scriptName, bool& skipThisScript) {}
 
         /** This event is fired when the script has been fully parsed.
         */
-        virtual void scriptParseEnded(const String& scriptName, bool skipped) = 0;
+        virtual void scriptParseEnded(const String& scriptName, bool skipped) {}
         /** This event is fired when a resource group finished parsing scripts. */
-        virtual void resourceGroupScriptingEnded(const String& groupName) = 0;
+        virtual void resourceGroupScriptingEnded(const String& groupName) {}
 
         /** This event is fired  when a resource group begins preparing.
         @param groupName The name of the group being prepared
@@ -152,27 +152,27 @@ namespace Ogre {
         @param resourceCount The number of resources which will be loaded, including
             a number of stages required to load any linked world geometry
         */
-        virtual void resourceGroupLoadStarted(const String& groupName, size_t resourceCount) = 0;
+        virtual void resourceGroupLoadStarted(const String& groupName, size_t resourceCount) {}
         /** This event is fired when a declared resource is about to be loaded. 
         @param resource Weak reference to the resource loaded.
         */
-        virtual void resourceLoadStarted(const ResourcePtr& resource) = 0;
+        virtual void resourceLoadStarted(const ResourcePtr& resource) {}
         /** This event is fired when the resource has been loaded. 
         */
-        virtual void resourceLoadEnded(void) = 0;
+        virtual void resourceLoadEnded(void) {}
         /** This event is fired when a stage of loading linked world geometry 
             is about to start. The number of stages required will have been 
             included in the resourceCount passed in resourceGroupLoadStarted.
         @param description Text description of what was just loaded
         */
-        virtual void worldGeometryStageStarted(const String& description) = 0;
+        virtual void worldGeometryStageStarted(const String& description){}
         /** This event is fired when a stage of loading linked world geometry 
             has been completed. The number of stages required will have been 
             included in the resourceCount passed in resourceGroupLoadStarted.
         */
-        virtual void worldGeometryStageEnded(void) = 0;
+        virtual void worldGeometryStageEnded(void) {}
         /** This event is fired when a resource group finished loading. */
-        virtual void resourceGroupLoadEnded(const String& groupName) = 0;
+        virtual void resourceGroupLoadEnded(const String& groupName) {}
         /** This event is fired when a resource was just created.
         @param resource Weak reference to the resource created.
         */
@@ -206,6 +206,8 @@ namespace Ogre {
         virtual void resourceStreamOpened(const String &name, const String &group, Resource *resource, DataStreamPtr& dataStream) = 0;
 
         /** This event is called when a resource collides with another existing one in a resource manager
+
+            return false to skip registration of the conflicting resource and continue using the previous instance.
           */
         virtual bool resourceCollision(Resource *resource, ResourceManager *resourceManager) = 0;
     };
@@ -263,13 +265,13 @@ namespace Ogre {
     public:
         OGRE_AUTO_MUTEX; // public to allow external locking
         /// Default resource group name
-        static String DEFAULT_RESOURCE_GROUP_NAME;
+        static const String DEFAULT_RESOURCE_GROUP_NAME;
         /// Internal resource group name (should be used by OGRE internal only)
-        static String INTERNAL_RESOURCE_GROUP_NAME;
+        static const String INTERNAL_RESOURCE_GROUP_NAME;
         /// Special resource group name which causes resource group to be automatically determined based on searching for the resource in all groups.
-        static String AUTODETECT_RESOURCE_GROUP_NAME;
+        static const String AUTODETECT_RESOURCE_GROUP_NAME;
         /// The number of reference counts held per resource by the resource system
-        static size_t RESOURCE_SYSTEM_NUM_REFERENCE_COUNTS;
+        static const long RESOURCE_SYSTEM_NUM_REFERENCE_COUNTS;
         /// Nested struct defining a resource declaration
         struct ResourceDeclaration
         {
@@ -334,14 +336,16 @@ namespace Ogre {
             LocationList locationList;
             /// Index of resource names to locations, built for speedy access (case sensitive archives)
             ResourceLocationIndex resourceIndexCaseSensitive;
+#if !OGRE_RESOURCEMANAGER_STRICT
             /// Index of resource names to locations, built for speedy access (case insensitive archives)
             ResourceLocationIndex resourceIndexCaseInsensitive;
+#endif
             /// Pre-declared resources, ready to be created
             ResourceDeclarationList resourceDeclarations;
             /// Created resources which are ready to be loaded / unloaded
             // Group by loading order of the type (defined by ResourceManager)
             // (e.g. skeletons and materials before meshes)
-            typedef map<Real, LoadUnloadResourceList*>::type LoadResourceOrderMap;
+            typedef map<Real, LoadUnloadResourceList>::type LoadResourceOrderMap;
             LoadResourceOrderMap loadResourceOrderMap;
             /// Linked world geometry, as passed to setWorldGeometry
             String worldGeometry;
@@ -367,58 +371,65 @@ namespace Ogre {
         @remarks
             Called as part of initialiseResourceGroup
         */
-        void parseResourceGroupScripts(ResourceGroup* grp);
+        void parseResourceGroupScripts(ResourceGroup* grp) const;
         /** Create all the pre-declared resources.
         @remarks
             Called as part of initialiseResourceGroup
         */
         void createDeclaredResources(ResourceGroup* grp);
         /** Adds a created resource to a group. */
-        void addCreatedResource(ResourcePtr& res, ResourceGroup& group);
+        void addCreatedResource(ResourcePtr& res, ResourceGroup& group) const;
         /** Get resource group */
-        ResourceGroup* getResourceGroup(const String& name);
+        ResourceGroup* getResourceGroup(const String& name) const;
         /** Drops contents of a group, leave group there, notify ResourceManagers. */
         void dropGroupContents(ResourceGroup* grp);
         /** Delete a group for shutdown - don't notify ResourceManagers. */
         void deleteGroup(ResourceGroup* grp);
         /// Internal find method for auto groups
-        ResourceGroup* findGroupContainingResourceImpl(const String& filename);
+        std::pair<Archive*, ResourceGroup*>
+        resourceExistsInAnyGroupImpl(const String& filename) const;
         /// Internal event firing method
-        void fireResourceGroupScriptingStarted(const String& groupName, size_t scriptCount);
+        void fireResourceGroupScriptingStarted(const String& groupName, size_t scriptCount) const;
         /// Internal event firing method
-        void fireScriptStarted(const String& scriptName, bool &skipScript);
+        void fireScriptStarted(const String& scriptName, bool &skipScript) const;
         /// Internal event firing method
-        void fireScriptEnded(const String& scriptName, bool skipped);
+        void fireScriptEnded(const String& scriptName, bool skipped) const;
         /// Internal event firing method
-        void fireResourceGroupScriptingEnded(const String& groupName);
+        void fireResourceGroupScriptingEnded(const String& groupName) const;
         /// Internal event firing method
-        void fireResourceGroupLoadStarted(const String& groupName, size_t resourceCount);
+        void fireResourceGroupLoadStarted(const String& groupName, size_t resourceCount) const;
         /// Internal event firing method
-        void fireResourceLoadStarted(const ResourcePtr& resource);
+        void fireResourceLoadStarted(const ResourcePtr& resource) const;
         /// Internal event firing method
-        void fireResourceLoadEnded(void);
+        void fireResourceLoadEnded(void) const;
         /// Internal event firing method
-        void fireResourceGroupLoadEnded(const String& groupName);
+        void fireResourceGroupLoadEnded(const String& groupName) const;
         /// Internal event firing method
-        void fireResourceGroupPrepareStarted(const String& groupName, size_t resourceCount);
+        void fireResourceGroupPrepareStarted(const String& groupName, size_t resourceCount) const;
         /// Internal event firing method
-        void fireResourcePrepareStarted(const ResourcePtr& resource);
+        void fireResourcePrepareStarted(const ResourcePtr& resource) const;
         /// Internal event firing method
-        void fireResourcePrepareEnded(void);
+        void fireResourcePrepareEnded(void) const;
         /// Internal event firing method
-        void fireResourceGroupPrepareEnded(const String& groupName);
+        void fireResourceGroupPrepareEnded(const String& groupName) const;
         /// Internal event firing method
-        void fireResourceCreated(const ResourcePtr& resource);
+        void fireResourceCreated(const ResourcePtr& resource) const;
         /// Internal event firing method
-        void fireResourceRemove(const ResourcePtr& resource);
+        void fireResourceRemove(const ResourcePtr& resource) const;
         /** Internal modification time retrieval */
-        time_t resourceModifiedTime(ResourceGroup* group, const String& filename);
+        time_t resourceModifiedTime(ResourceGroup* group, const String& filename) const;
 
         /** Find out if the named file exists in a group. Internal use only
          @param group Pointer to the resource group
          @param filename Fully qualified name of the file to test for
          */
-        bool resourceExists(ResourceGroup* group, const String& filename);
+        Archive* resourceExists(ResourceGroup* group, const String& filename) const;
+
+        /** Open resource with optional searching in other groups if it is not found. Internal use only */
+        DataStreamPtr openResourceImpl(const String& resourceName,
+            const String& groupName,
+            bool searchGroupsIfNotFound,
+            Resource* resourceBeingLoaded) const;
 
         /// Stored current group - optimisation for when bulk loading a group
         ResourceGroup* mCurrentGroup;
@@ -463,7 +474,7 @@ namespace Ogre {
         @param inGlobalPool if true the resource will be loaded even a different
             group was requested in the load method as a parameter.
         */
-        void createResourceGroup(const String& name, const bool inGlobalPool = true);
+        void createResourceGroup(const String& name, bool inGlobalPool = !OGRE_RESOURCEMANAGER_STRICT);
 
 
         /** Initialises a resource group.
@@ -608,7 +619,7 @@ namespace Ogre {
             group return true, otherwise return false.
         @param name The name to of the resource group to access.
         */
-        bool isResourceGroupInitialised(const String& name);
+        bool isResourceGroupInitialised(const String& name) const;
 
         /** Checks the status of a resource group.
         @remarks
@@ -617,12 +628,12 @@ namespace Ogre {
             group return true, otherwise return false.
         @param name The name to of the resource group to access.
         */
-        bool isResourceGroupLoaded(const String& name);
+        bool isResourceGroupLoaded(const String& name) const;
 
         /*** Verify if a resource group exists
         @param name The name of the resource group to look for
         */
-        bool resourceGroupExists(const String& name);
+        bool resourceGroupExists(const String& name) const;
 
         /** Method to add a resource location to for a given resource group. 
         @remarks
@@ -652,7 +663,7 @@ namespace Ogre {
             const String& resGroup = DEFAULT_RESOURCE_GROUP_NAME);
         /** Verify if a resource location exists for the given group. */ 
         bool resourceLocationExists(const String& name, 
-            const String& resGroup = DEFAULT_RESOURCE_GROUP_NAME);
+            const String& resGroup = DEFAULT_RESOURCE_GROUP_NAME) const;
 
         /** Declares a resource to be a part of a resource group, allowing you 
             to load and unload it as part of the group.
@@ -691,44 +702,12 @@ namespace Ogre {
         void declareResource(const String& name, const String& resourceType,
             const String& groupName = DEFAULT_RESOURCE_GROUP_NAME,
             const NameValuePairList& loadParameters = NameValuePairList());
-        /** Declares a resource to be a part of a resource group, allowing you
-            to load and unload it as part of the group.
-        @remarks
-            By declaring resources before you attempt to use them, you can
-            more easily control the loading and unloading of those resources
-            by their group. Declaring them also allows them to be enumerated,
-            which means events can be raised to indicate the loading progress
-            (@see ResourceGroupListener). Note that another way of declaring
-            resources is to use a script specific to the resource type, if
-            available (e.g. .material).
-        @par
-            Declared resources are not created as Resource instances (and thus
-            are not available through their ResourceManager) until initialiseResourceGroup
-            is called, at which point all declared resources will become created
-            (but unloaded) Resource instances, along with any resources declared
-            in scripts in resource locations associated with the group.
-        @param name The resource name.
-        @param resourceType The type of the resource. Ogre comes preconfigured with
-            a number of resource types:
-            <ul>
-            <li>Font</li>
-            <li>GpuProgram</li>
-            <li>HighLevelGpuProgram</li>
-            <li>Material</li>
-            <li>Mesh</li>
-            <li>Skeleton</li>
-            <li>Texture</li>
-            </ul>
-            .. but more can be added by plugin ResourceManager classes.
-        @param groupName The name of the group to which it will belong.
+        /** @overload
         @param loader Pointer to a ManualResourceLoader implementation which will
             be called when the Resource wishes to load. If supplied, the resource
             is manually loaded, otherwise it'll loading from file automatic.
             @note We don't support declare manually loaded resource without loader
                 here, since it's meaningless.
-        @param loadParameters A list of name / value pairs which supply custom
-            parameters to the resource which will be required before it can
-            be loaded. These are specific to the resource type.
         */
         void declareResource(const String& name, const String& resourceType,
             const String& groupName, ManualResourceLoader* loader,
@@ -764,9 +743,21 @@ namespace Ogre {
         @return Shared pointer to data stream containing the data, will be
             destroyed automatically when no longer referenced
         */
-        DataStreamPtr openResource(const String& resourceName, 
-            const String& groupName = DEFAULT_RESOURCE_GROUP_NAME,
-            bool searchGroupsIfNotFound = true, Resource* resourceBeingLoaded = 0);
+        DataStreamPtr openResource(const String& resourceName,
+                                   const String& groupName = DEFAULT_RESOURCE_GROUP_NAME,
+                                   Resource* resourceBeingLoaded = NULL) const
+        {
+            return openResourceImpl(resourceName, groupName, false, resourceBeingLoaded);
+        }
+
+        /// @deprecated use AUTODETECT_RESOURCE_GROUP_NAME instead of searchGroupsIfNotFound
+        OGRE_DEPRECATED DataStreamPtr openResource(const String& resourceName,
+                                                   const String& groupName,
+                                                   bool searchGroupsIfNotFound,
+                                                   Resource* resourceBeingLoaded = 0) const
+        {
+            return openResourceImpl(resourceName, groupName, searchGroupsIfNotFound, resourceBeingLoaded);
+        }
 
         /** Open all resources matching a given pattern (which can contain
             the character '*' as a wildcard), and return a collection of 
@@ -780,7 +771,7 @@ namespace Ogre {
             destroyed automatically when no longer referenced
         */
         DataStreamListPtr openResources(const String& pattern, 
-            const String& groupName = DEFAULT_RESOURCE_GROUP_NAME);
+            const String& groupName = DEFAULT_RESOURCE_GROUP_NAME) const;
         
         /** List all file or directory names in a resource group.
         @note
@@ -790,7 +781,7 @@ namespace Ogre {
         @param dirs If true, directory names will be returned instead of file names
         @return A list of filenames matching the criteria, all are fully qualified
         */
-        StringVectorPtr listResourceNames(const String& groupName, bool dirs = false);
+        StringVectorPtr listResourceNames(const String& groupName, bool dirs = false) const;
 
         /** List all files in a resource group with accompanying information.
         @param groupName The name of the group
@@ -798,7 +789,7 @@ namespace Ogre {
         @return A list of structures detailing quite a lot of information about
         all the files in the archive.
         */
-        FileInfoListPtr listResourceFileInfo(const String& groupName, bool dirs = false);
+        FileInfoListPtr listResourceFileInfo(const String& groupName, bool dirs = false) const;
 
         /** Find all file or directory names matching a given pattern in a
             resource group.
@@ -812,18 +803,18 @@ namespace Ogre {
         @return A list of filenames matching the criteria, all are fully qualified
         */
         StringVectorPtr findResourceNames(const String& groupName, const String& pattern,
-            bool dirs = false);
+            bool dirs = false) const;
 
         /** Find out if the named file exists in a group. 
         @param group The name of the resource group
         @param filename Fully qualified name of the file to test for
         */
-        bool resourceExists(const String& group, const String& filename);
+        bool resourceExists(const String& group, const String& filename) const;
         
         /** Find out if the named file exists in any group. 
         @param filename Fully qualified name of the file to test for
         */
-        bool resourceExistsInAnyGroup(const String& filename);
+        bool resourceExistsInAnyGroup(const String& filename) const;
 
         /** Find the group in which a resource exists.
         @param filename Fully qualified name of the file the resource should be
@@ -831,7 +822,7 @@ namespace Ogre {
         @return Name of the resource group the resource was found in. An
             exception is thrown if the group could not be determined.
         */
-        const String& findGroupContainingResource(const String& filename);
+        const String& findGroupContainingResource(const String& filename) const;
 
         /** Find all files or directories matching a given pattern in a group
             and get some detailed information about them.
@@ -843,15 +834,15 @@ namespace Ogre {
         the criteria.
         */
         FileInfoListPtr findResourceFileInfo(const String& group, const String& pattern,
-            bool dirs = false);
+            bool dirs = false) const;
 
         /** Retrieve the modification time of a given file */
-        time_t resourceModifiedTime(const String& group, const String& filename); 
+        time_t resourceModifiedTime(const String& group, const String& filename) const;
         /** List all resource locations in a resource group.
         @param groupName The name of the group
         @return A list of resource locations matching the criteria
         */
-        StringVectorPtr listResourceLocations(const String& groupName);
+        StringVectorPtr listResourceLocations(const String& groupName) const;
 
         /** Find all resource location names matching a given pattern in a
             resource group.
@@ -859,7 +850,7 @@ namespace Ogre {
         @param pattern The pattern to search for; wildcards (*) are allowed
         @return A list of resource locations matching the criteria
         */
-        StringVectorPtr findResourceLocation(const String& groupName, const String& pattern);
+        StringVectorPtr findResourceLocation(const String& groupName, const String& pattern) const;
 
         /** Create a new resource file in a given group.
         @remarks
@@ -949,7 +940,7 @@ namespace Ogre {
             group return true, otherwise return false.
         @param name The name to of the resource group to access.
         */
-        bool isResourceGroupInGlobalPool(const String& name);
+        bool isResourceGroupInGlobalPool(const String& name) const;
 
         /** Shutdown all ResourceManagers, performed as part of clean-up. */
         void shutdownAll(void);
@@ -994,32 +985,32 @@ namespace Ogre {
         /** Method used to directly query for registered script loaders.
         @param pattern The specific script pattern (e.g. *.material) the script loader handles
         */
-        ScriptLoader *_findScriptLoader(const String &pattern);
+        ScriptLoader *_findScriptLoader(const String &pattern) const;
 
         /** Internal method for getting a registered ResourceManager.
         @param resourceType String identifying the resource type.
         */
-        ResourceManager* _getResourceManager(const String& resourceType);
+        ResourceManager* _getResourceManager(const String& resourceType) const;
 
         /** Internal method called by ResourceManager when a resource is created.
         @param res Weak reference to resource
         */
-        void _notifyResourceCreated(ResourcePtr& res);
+        void _notifyResourceCreated(ResourcePtr& res) const;
 
         /** Internal method called by ResourceManager when a resource is removed.
         @param res Weak reference to resource
         */
-        void _notifyResourceRemoved(ResourcePtr& res);
+        void _notifyResourceRemoved(const ResourcePtr& res) const;
 
         /** Internal method to notify the group manager that a resource has
             changed group (only applicable for autodetect group) */
-        void _notifyResourceGroupChanged(const String& oldGroup, Resource* res);
+        void _notifyResourceGroupChanged(const String& oldGroup, Resource* res) const;
 
         /** Internal method called by ResourceManager when all resources 
             for that manager are removed.
         @param manager Pointer to the manager for which all resources are being removed
         */
-        void _notifyAllResourcesRemoved(ResourceManager* manager);
+        void _notifyAllResourcesRemoved(ResourceManager* manager) const;
 
         /** Notify this manager that one stage of world geometry loading has been 
             started.
@@ -1028,7 +1019,7 @@ namespace Ogre {
             method the number of times equal to the value they return from 
             SceneManager::estimateWorldGeometry while loading their geometry.
         */
-        void _notifyWorldGeometryStageStarted(const String& description);
+        void _notifyWorldGeometryStageStarted(const String& description) const;
         /** Notify this manager that one stage of world geometry loading has been 
             completed.
         @remarks
@@ -1036,64 +1027,36 @@ namespace Ogre {
             method the number of times equal to the value they return from 
             SceneManager::estimateWorldGeometry while loading their geometry.
         */
-        void _notifyWorldGeometryStageEnded(void);
+        void _notifyWorldGeometryStageEnded(void) const;
 
         /** Get a list of the currently defined resource groups. 
         @note This method intentionally returns a copy rather than a reference in
             order to avoid any contention issues in multithreaded applications.
         @return A copy of list of currently defined groups.
         */
-        StringVector getResourceGroups(void);
+        StringVector getResourceGroups(void) const;
         /** Get the list of resource declarations for the specified group name. 
         @note This method intentionally returns a copy rather than a reference in
             order to avoid any contention issues in multithreaded applications.
         @param groupName The name of the group
         @return A copy of list of currently defined resources.
         */
-        ResourceDeclarationList getResourceDeclarationList(const String& groupName);
+        ResourceDeclarationList getResourceDeclarationList(const String& groupName) const;
 
         /** Get the list of resource locations for the specified group name.
         @param groupName The name of the group
         @return The list of resource locations associated with the given group.
         */      
-        const LocationList& getResourceLocationList(const String& groupName);
+        const LocationList& getResourceLocationList(const String& groupName) const;
 
         /// Sets a new loading listener
         void setLoadingListener(ResourceLoadingListener *listener);
         /// Returns the current loading listener
-        ResourceLoadingListener *getLoadingListener();
+        ResourceLoadingListener *getLoadingListener() const;
 
-        /** Override standard Singleton retrieval.
-        @remarks
-        Why do we do this? Well, it's because the Singleton
-        implementation is in a .h file, which means it gets compiled
-        into anybody who includes it. This is needed for the
-        Singleton template to work, but we actually only want it
-        compiled into the implementation of the class based on the
-        Singleton, not all of them. If we don't change this, we get
-        link errors when trying to use the Singleton-based class from
-        an outside dll.
-        @par
-        This method just delegates to the template version anyway,
-        but the implementation stays in this single compilation unit,
-        preventing link errors.
-        */
+        /// @copydoc Singleton::getSingleton()
         static ResourceGroupManager& getSingleton(void);
-        /** Override standard Singleton retrieval.
-        @remarks
-        Why do we do this? Well, it's because the Singleton
-        implementation is in a .h file, which means it gets compiled
-        into anybody who includes it. This is needed for the
-        Singleton template to work, but we actually only want it
-        compiled into the implementation of the class based on the
-        Singleton, not all of them. If we don't change this, we get
-        link errors when trying to use the Singleton-based class from
-        an outside dll.
-        @par
-        This method just delegates to the template version anyway,
-        but the implementation stays in this single compilation unit,
-        preventing link errors.
-        */
+        /// @copydoc Singleton::getSingleton()
         static ResourceGroupManager* getSingletonPtr(void);
 
     };

@@ -47,6 +47,10 @@ namespace Ogre {
     */
     class _OgreExport GpuProgramManager : public ResourceManager, public Singleton<GpuProgramManager>
     {
+        // silence warnings
+        using ResourceManager::createImpl;
+        using ResourceManager::load;
+        using ResourceManager::getResourceByName;
     public:
 
         typedef set<String>::type SyntaxCodes;
@@ -74,7 +78,12 @@ namespace Ogre {
 
         /// Get a resource by name
         /// @see GpuProgramManager::getResourceByName
-        GpuProgramPtr getByName(const String& name, const String& group = ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME, bool preferHighLevelPrograms = true);
+        GpuProgramPtr
+#if OGRE_RESOURCEMANAGER_STRICT
+        getByName(const String& name, const String& group, bool preferHighLevelPrograms = true);
+#else
+        getByName(const String& name, const String& group = ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME, bool preferHighLevelPrograms = true);
+#endif
 
         /** Loads a GPU program from a file of assembly. 
         @remarks
@@ -168,8 +177,12 @@ namespace Ogre {
         @param preferHighLevelPrograms If set to true (the default), high level programs will be
             returned in preference to low-level programs.
         */
-        ResourcePtr getResourceByName(const String& name, const String& group = ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME, bool preferHighLevelPrograms = true);
-
+        ResourcePtr
+#if OGRE_RESOURCEMANAGER_STRICT
+        getResourceByName(const String& name, const String& group, bool preferHighLevelPrograms = true);
+#else
+        getResourceByName(const String& name, const String& group = ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME, bool preferHighLevelPrograms = true);
+#endif
 
         /** Create a new set of shared parameters, which can be used across many 
             GpuProgramParameters objects of different structures.
@@ -234,37 +247,9 @@ namespace Ogre {
         
 
 
-        /** Override standard Singleton retrieval.
-        @remarks
-        Why do we do this? Well, it's because the Singleton
-        implementation is in a .h file, which means it gets compiled
-        into anybody who includes it. This is needed for the
-        Singleton template to work, but we actually only want it
-        compiled into the implementation of the class based on the
-        Singleton, not all of them. If we don't change this, we get
-        link errors when trying to use the Singleton-based class from
-        an outside dll.
-        @par
-        This method just delegates to the template version anyway,
-        but the implementation stays in this single compilation unit,
-        preventing link errors.
-        */
+        /// @copydoc Singleton::getSingleton()
         static GpuProgramManager& getSingleton(void);
-        /** Override standard Singleton retrieval.
-        @remarks
-        Why do we do this? Well, it's because the Singleton
-        implementation is in a .h file, which means it gets compiled
-        into anybody who includes it. This is needed for the
-        Singleton template to work, but we actually only want it
-        compiled into the implementation of the class based on the
-        Singleton, not all of them. If we don't change this, we get
-        link errors when trying to use the Singleton-based class from
-        an outside dll.
-        @par
-        This method just delegates to the template version anyway,
-        but the implementation stays in this single compilation unit,
-        preventing link errors.
-        */
+        /// @copydoc Singleton::getSingleton()
         static GpuProgramManager* getSingletonPtr(void);
     
 

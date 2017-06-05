@@ -69,6 +69,9 @@ namespace Ogre {
         case ZZIP_DIR_EDH_MISSING:
             errorMsg = "Zip-file's central directory record missing. Is this a 7z file?";
             break;
+        case ZZIP_ENOENT:
+            errorMsg = "File not in archive.";
+            break;
         default:
             errorMsg = "Unknown error.";
             break;            
@@ -117,10 +120,12 @@ namespace Ogre {
                     // the compressed size of a folder, and if he does, its useless anyway
                     info.compressedSize = size_t (-1);
                 }
+#if !OGRE_RESOURCEMANAGER_STRICT
                 else
                 {
                     info.filename = info.basename;
                 }
+#endif
                 mFileList.push_back(info);
 
             }
@@ -140,40 +145,49 @@ namespace Ogre {
     
     }
     //-----------------------------------------------------------------------
-    DataStreamPtr ZipArchive::open(const String& filename, bool readOnly)
+    DataStreamPtr ZipArchive::open(const String& filename, bool readOnly) const
     {
         // zziplib is not threadsafe
         OGRE_LOCK_AUTO_MUTEX;
         String lookUpFileName = filename;
 
+#if OGRE_RESOURCEMANAGER_STRICT
+        const int flags = 0;
+#else
+        const int flags = ZZIP_CASELESS;
+#endif
+
         // Format not used here (always binary)
-        ZZIP_FILE* zzipFile = 
-            zzip_file_open(mZzipDir, lookUpFileName.c_str(), ZZIP_ONLYZIP | ZZIP_CASELESS);
+        ZZIP_FILE* zzipFile =
+            zzip_file_open(mZzipDir, lookUpFileName.c_str(), ZZIP_ONLYZIP | flags);
+
+#if !OGRE_RESOURCEMANAGER_STRICT
         if (!zzipFile) // Try if we find the file
         {
-            const Ogre::FileInfoListPtr fileNfo = findFileInfo(lookUpFileName, true);
+            String basename, path;
+            StringUtil::splitFilename(lookUpFileName, basename, path);
+            const FileInfoListPtr fileNfo = findFileInfo(basename, true);
             if (fileNfo->size() == 1) // If there are more files with the same do not open anyone
             {
                 Ogre::FileInfo info = fileNfo->at(0);
                 lookUpFileName = info.path + info.basename;
-                zzipFile = zzip_file_open(mZzipDir, lookUpFileName.c_str(), ZZIP_ONLYZIP | ZZIP_CASELESS); // When an error happens here we will catch it below
+                zzipFile = zzip_file_open(mZzipDir, lookUpFileName.c_str(), ZZIP_ONLYZIP | flags); // When an error happens here we will catch it below
             }
         }
+#endif
 
         if (!zzipFile)
         {
             int zerr = zzip_error(mZzipDir);
             String zzDesc = getZzipErrorDescription((zzip_error_t)zerr);
-            LogManager::getSingleton().logMessage(
-                mName + " - Unable to open file " + lookUpFileName + ", error was '" + zzDesc + "'", LML_CRITICAL);
-                
-            // return null pointer
-            return DataStreamPtr();
+
+            OGRE_EXCEPT(Exception::ERR_FILE_NOT_FOUND,
+                    mName+ " Cannot open file: " + lookUpFileName + " - "+zzDesc, "ZipArchive::open");
         }
 
         // Get uncompressed size too
         ZZIP_STAT zstat;
-        zzip_dir_stat(mZzipDir, lookUpFileName.c_str(), &zstat, ZZIP_CASEINSENSITIVE);
+        zzip_dir_stat(mZzipDir, lookUpFileName.c_str(), &zstat, flags);
 
         // Construct & return stream
         return DataStreamPtr(OGRE_NEW ZipDataStream(lookUpFileName, zzipFile, static_cast<size_t>(zstat.st_size)));
@@ -195,12 +209,12 @@ namespace Ogre {
             "ZipArchive::remove");
     }
     //-----------------------------------------------------------------------
-    StringVectorPtr ZipArchive::list(bool recursive, bool dirs)
+    StringVectorPtr ZipArchive::list(bool recursive, bool dirs) const
     {
         OGRE_LOCK_AUTO_MUTEX;
         StringVectorPtr ret = StringVectorPtr(OGRE_NEW_T(StringVector, MEMCATEGORY_GENERAL)(), SPFM_DELETE_T);
 
-        FileInfoList::iterator i, iend;
+        FileInfoList::const_iterator i, iend;
         iend = mFileList.end();
         for (i = mFileList.begin(); i != iend; ++i)
             if ((dirs == (i->compressedSize == size_t (-1))) &&
@@ -210,7 +224,7 @@ namespace Ogre {
         return ret;
     }
     //-----------------------------------------------------------------------
-    FileInfoListPtr ZipArchive::listFileInfo(bool recursive, bool dirs)
+    FileInfoListPtr ZipArchive::listFileInfo(bool recursive, bool dirs) const
     {
         OGRE_LOCK_AUTO_MUTEX;
         FileInfoList* fil = OGRE_NEW_T(FileInfoList, MEMCATEGORY_GENERAL)();
@@ -224,7 +238,7 @@ namespace Ogre {
         return FileInfoListPtr(fil, SPFM_DELETE_T);
     }
     //-----------------------------------------------------------------------
-    StringVectorPtr ZipArchive::find(const String& pattern, bool recursive, bool dirs)
+    StringVectorPtr ZipArchive::find(const String& pattern, bool recursive, bool dirs) const
     {
         OGRE_LOCK_AUTO_MUTEX;
         StringVectorPtr ret = StringVectorPtr(OGRE_NEW_T(StringVector, MEMCATEGORY_GENERAL)(), SPFM_DELETE_T);
@@ -233,7 +247,7 @@ namespace Ogre {
                           (pattern.find ('\\') != String::npos);
         bool wildCard = pattern.find("*") != String::npos;
             
-        FileInfoList::iterator i, iend;
+        FileInfoList::const_iterator i, iend;
         iend = mFileList.end();
         for (i = mFileList.begin(); i != iend; ++i)
             if ((dirs == (i->compressedSize == size_t (-1))) &&
@@ -246,7 +260,7 @@ namespace Ogre {
     }
     //-----------------------------------------------------------------------
     FileInfoListPtr ZipArchive::findFileInfo(const String& pattern, 
-        bool recursive, bool dirs)
+        bool recursive, bool dirs) const
     {
         OGRE_LOCK_AUTO_MUTEX;
         FileInfoListPtr ret = FileInfoListPtr(OGRE_NEW_T(FileInfoList, MEMCATEGORY_GENERAL)(), SPFM_DELETE_T);
@@ -275,20 +289,22 @@ namespace Ogre {
         }
     };
     //-----------------------------------------------------------------------
-    bool ZipArchive::exists(const String& filename)
+    bool ZipArchive::exists(const String& filename) const
     {       
         OGRE_LOCK_AUTO_MUTEX;
         String cleanName = filename;
+#if !OGRE_RESOURCEMANAGER_STRICT
         if(filename.rfind("/") != String::npos)
         {
             StringVector tokens = StringUtil::split(filename, "/");
             cleanName = tokens[tokens.size() - 1];
         }
+#endif
 
         return std::find_if (mFileList.begin(), mFileList.end(), std::bind2nd<FileNameCompare>(FileNameCompare(), cleanName)) != mFileList.end();
     }
     //---------------------------------------------------------------------
-    time_t ZipArchive::getModifiedTime(const String& filename)
+    time_t ZipArchive::getModifiedTime(const String& filename) const
     {
         // Zziplib doesn't yet support getting the modification time of individual files
         // so just check the mod time of the zip itself

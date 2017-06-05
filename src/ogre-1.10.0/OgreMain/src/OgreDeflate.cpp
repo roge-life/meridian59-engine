@@ -142,7 +142,7 @@ namespace Ogre
             if(mTempFileName.empty())
             {
                 // Write to temp file
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_WINRT
                 char* tmpname = _tempnam(".", "ogre");
                 if (!tmpname)
                 {
@@ -157,8 +157,8 @@ namespace Ogre
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS || OGRE_PLATFORM == OGRE_PLATFORM_APPLE
                 mTempFileName = macTempFileName();
 #else
-                char tmpname[L_tmpnam];
-                if (!tmpnam(tmpname))
+                char tmpname[] = "/tmp/ogreXXXXXX";
+                if (mkstemp(tmpname) == -1)
                     OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, "Temporary file name generation failed.", "DeflateStream::init");
 
                 mTempFileName = tmpname;

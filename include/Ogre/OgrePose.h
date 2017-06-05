@@ -60,7 +60,6 @@ namespace Ogre {
             @param name Optional name
         */
         Pose(ushort target, const String& name = BLANKSTRING);
-        virtual ~Pose();
         /// Return the name of the pose (may be blank)
         const String& getName(void) const { return mName; }
         /// Return the target geometry index of the pose

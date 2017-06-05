@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -155,7 +155,9 @@ namespace Ogre {
         bool newMaterialCreated = false;
         // if submesh has texture aliases
         // ask the material manager if the current summesh material exists
-        if (hasTextureAliases() && MaterialManager::getSingleton().resourceExists(mMaterialName))
+        if (hasTextureAliases() &&
+            MaterialManager::getSingleton().resourceExists(
+                mMaterialName, ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME))
         {
             // get the current submesh material
             MaterialPtr material = MaterialManager::getSingleton().getByName( mMaterialName );
@@ -189,7 +191,7 @@ namespace Ogre {
                     
                 // Reuse the material if it's already been created. This decreases batch
                 // count and keeps material explosion under control.
-                if(!MaterialManager::getSingleton().resourceExists(newMaterialName))
+                if(!MaterialManager::getSingleton().resourceExists(newMaterialName, material->getGroup()))
                 {
                     Ogre::MaterialPtr newMaterial = Ogre::MaterialManager::getSingleton().create(
                         newMaterialName, material->getGroup());

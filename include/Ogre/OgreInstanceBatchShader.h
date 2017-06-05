@@ -65,7 +65,7 @@ namespace Ogre
      */
     class _OgreExport InstanceBatchShader : public InstanceBatch
     {
-        unsigned short  mNumWorldMatrices;
+        size_t  mNumWorldMatrices;
 
         void setupVertices( const SubMesh* baseSubMesh );
         void setupIndices( const SubMesh* baseSubMesh );
@@ -82,7 +82,6 @@ namespace Ogre
         InstanceBatchShader( InstanceManager *creator, MeshPtr &meshReference, const MaterialPtr &material,
                             size_t instancesPerBatch, const Mesh::IndexMap *indexToBoneMap,
                             const String &batchName );
-        virtual ~InstanceBatchShader();
 
         /** @see InstanceBatch::calculateMaxNumInstances */
         size_t calculateMaxNumInstances( const SubMesh *baseSubMesh, uint16 flags ) const;

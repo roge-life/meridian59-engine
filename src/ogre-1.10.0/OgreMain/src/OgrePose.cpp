@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
- Copyright (c) 2000-2016 Torus Knot Software Ltd
+ Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,10 +36,6 @@ namespace Ogre {
     {
     }
     //---------------------------------------------------------------------
-    Pose::~Pose()
-    {
-    }
-    //---------------------------------------------------------------------
     void Pose::addVertex(size_t index, const Vector3& offset)
     {
         if (!mNormalsMap.empty())
@@ -53,7 +49,7 @@ namespace Ogre {
         }
 
         mVertexOffsetMap[index] = offset;
-        mBuffer.setNull();
+        mBuffer.reset();
     }
     //---------------------------------------------------------------------
     void Pose::addVertex(size_t index, const Vector3& offset, const Vector3& normal)
@@ -70,7 +66,7 @@ namespace Ogre {
 
         mVertexOffsetMap[index] = offset;
         mNormalsMap[index] = normal;
-        mBuffer.setNull();
+        mBuffer.reset();
     }
     //---------------------------------------------------------------------
     void Pose::removeVertex(size_t index)
@@ -79,7 +75,7 @@ namespace Ogre {
         if (i != mVertexOffsetMap.end())
         {
             mVertexOffsetMap.erase(i);
-            mBuffer.setNull();
+            mBuffer.reset();
         }
         NormalsMap::iterator j = mNormalsMap.find(index);
         if (j != mNormalsMap.end())
@@ -92,7 +88,7 @@ namespace Ogre {
     {
         mVertexOffsetMap.clear();
         mNormalsMap.clear();
-        mBuffer.setNull();
+        mBuffer.reset();
     }
     //---------------------------------------------------------------------
     Pose::ConstVertexOffsetIterator 
@@ -121,7 +117,7 @@ namespace Ogre {
     {
         size_t numVertices = origData->vertexCount;
         
-        if (mBuffer.isNull())
+        if (!mBuffer)
         {
             // Create buffer
             size_t vertexSize = VertexElement::getTypeSize(VET_FLOAT3);

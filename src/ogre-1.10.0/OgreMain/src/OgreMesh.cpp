@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -76,7 +76,7 @@ namespace Ogre {
         lod.userValue = 0; // User value not used for base LOD level
         lod.value = getLodStrategy()->getBaseValue();
         lod.edgeData = NULL;
-        lod.manualMesh.setNull();
+        lod.manualMesh.reset();
         mMeshLodUsageList.push_back(lod);
     }
     //-----------------------------------------------------------------------
@@ -154,12 +154,6 @@ namespace Ogre {
         unsigned short index = _getSubMeshIndex(name);
         destroySubMesh(index);
     }
-    //-----------------------------------------------------------------------
-    unsigned short Mesh::getNumSubMeshes() const
-    {
-        return static_cast< unsigned short >( mSubMeshList.size() );
-    }
-
     //---------------------------------------------------------------------
     void Mesh::nameSubMesh(const String& name, ushort index)
     {
@@ -178,18 +172,6 @@ namespace Ogre {
     {
         ushort index = _getSubMeshIndex(name);
         return getSubMesh(index);
-    }
-    //-----------------------------------------------------------------------
-    SubMesh* Mesh::getSubMesh(unsigned short index) const
-    {
-        if (index >= mSubMeshList.size())
-        {
-            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
-                "Index out of bounds.",
-                "Mesh::getSubMesh");
-        }
-
-        return mSubMeshList[index];
     }
     //-----------------------------------------------------------------------
     void Mesh::postLoadImpl(void)
@@ -227,7 +209,7 @@ namespace Ogre {
 
         mFreshFromDisk =
             ResourceGroupManager::getSingleton().openResource(
-                mName, mGroup, true, this);
+                mName, mGroup, this);
  
         // fully prebuffer into host RAM
         mFreshFromDisk = DataStreamPtr(OGRE_NEW MemoryDataStream(mName,mFreshFromDisk));
@@ -235,7 +217,7 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     void Mesh::unprepareImpl()
     {
-        mFreshFromDisk.setNull();
+        mFreshFromDisk.reset();
     }
     void Mesh::loadImpl()
     {
@@ -245,9 +227,9 @@ namespace Ogre {
         // If the only copy is local on the stack, it will be cleaned
         // up reliably in case of exceptions, etc
         DataStreamPtr data(mFreshFromDisk);
-        mFreshFromDisk.setNull();
+        mFreshFromDisk.reset();
 
-        if (data.isNull()) {
+        if (!data) {
             OGRE_EXCEPT(Exception::ERR_INVALID_STATE,
                         "Data doesn't appear to have been prepared in " + mName,
                         "Mesh::loadImpl()");
@@ -523,17 +505,17 @@ namespace Ogre {
             if (skelName.empty())
             {
                 // No skeleton
-                mSkeleton.setNull();
+                mSkeleton.reset();
             }
             else
             {
                 // Load skeleton
                 try {
-                    mSkeleton = SkeletonManager::getSingleton().load(skelName, mGroup).staticCast<Skeleton>();
+                    mSkeleton = static_pointer_cast<Skeleton>(SkeletonManager::getSingleton().load(skelName, mGroup));
                 }
                 catch (...)
                 {
-                    mSkeleton.setNull();
+                    mSkeleton.reset();
                     // Log this error
                     String msg = "Unable to load skeleton ";
                     msg += skelName + " for Mesh " + mName
@@ -576,7 +558,7 @@ namespace Ogre {
     void Mesh::_initAnimationState(AnimationStateSet* animSet)
     {
         // Animation states for skeletal animation
-        if (!mSkeleton.isNull())
+        if (mSkeleton)
         {
             // Delegate to Skeleton
             mSkeleton->_initAnimationState(animSet);
@@ -606,7 +588,7 @@ namespace Ogre {
     //---------------------------------------------------------------------
     void Mesh::_refreshAnimationState(AnimationStateSet* animSet)
     {
-        if (!mSkeleton.isNull())
+        if (mSkeleton)
         {
             mSkeleton->_refreshAnimationState(animSet);
         }
@@ -990,7 +972,7 @@ namespace Ogre {
     //---------------------------------------------------------------------
     void Mesh::_computeBoneBoundingRadius()
     {
-        if (mBoneBoundingRadius == Real(0) && ! mSkeleton.isNull())
+        if (mBoneBoundingRadius == Real(0) && mSkeleton)
         {
             Real radius = Real(0);
             vector<Vector3>::type bonePositions;
@@ -1073,7 +1055,7 @@ namespace Ogre {
     {
 #if !OGRE_NO_MESHLOD
         index = std::min(index, (ushort)(mMeshLodUsageList.size() - 1));
-        if (this->_isManualLodLevel(index) && index > 0 && mMeshLodUsageList[index].manualMesh.isNull())
+        if (this->_isManualLodLevel(index) && index > 0 && !mMeshLodUsageList[index].manualMesh)
         {
             // Load the mesh now
             try {
@@ -1125,7 +1107,7 @@ namespace Ogre {
         MeshLodUsage* lod = &(mMeshLodUsageList[index]);
 
         lod->manualName = meshName;
-        lod->manualMesh.setNull();
+        lod->manualMesh.reset();
         OGRE_DELETE lod->edgeData;
         lod->edgeData = 0;
     }
@@ -1441,11 +1423,10 @@ namespace Ogre {
                 // Update poses (some vertices might have been duplicated)
                 // we will just check which vertices have been split and copy
                 // the offset for the original vertex to the corresponding new vertex
-                PoseIterator pose_it = getPoseIterator();
-
-                while( pose_it.hasMoreElements() )
+                PoseList::iterator pose_it;
+                for( pose_it = mPoseList.begin(); pose_it != mPoseList.end(); ++pose_it)
                 {
-                    Pose* current_pose = pose_it.getNext();
+                    Pose* current_pose = *pose_it;
                     const Pose::VertexOffsetMap& offset_map = current_pose->getVertexOffsets();
 
                     for( TangentSpaceCalc::VertexSplits::iterator it = res.vertexSplits.begin();
@@ -1636,7 +1617,7 @@ namespace Ogre {
             {
                 // Delegate edge building to manual mesh
                 // It should have already built it's own edge list while loading
-                if (!usage.manualMesh.isNull())
+                if (usage.manualMesh)
                 {
                     usage.edgeData = usage.manualMesh->getEdgeList(0);
                 }
@@ -1890,7 +1871,7 @@ namespace Ogre {
             sourceVertexData->vertexDeclaration->findElementBySemantic(VES_BLEND_INDICES);
         const VertexElement* srcElemBlendWeights =
             sourceVertexData->vertexDeclaration->findElementBySemantic(VES_BLEND_WEIGHTS);
-        assert (srcElemPos && srcElemBlendIndices && srcElemBlendWeights &&
+        OgreAssert(srcElemPos && srcElemBlendIndices && srcElemBlendWeights,
             "You must supply at least positions, blend indices and blend weights");
         // Get elements for target
         const VertexElement* destElemPos =
@@ -2152,7 +2133,7 @@ namespace Ogre {
                         ->getBuffer(i)->getSizeInBytes();
                 }
             }
-            if (!(*si)->indexData->indexBuffer.isNull())
+            if ((*si)->indexData->indexBuffer)
             {
                 // Index data
                 ret += (*si)->indexData->indexBuffer->getSizeInBytes();
@@ -2384,7 +2365,7 @@ namespace Ogre {
     //---------------------------------------------------------------------
     Pose* Mesh::getPose(ushort index)
     {
-        if (index >= getPoseCount())
+        if (index >= mPoseList.size())
         {
             OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
                 "Index out of bounds",
@@ -2412,7 +2393,7 @@ namespace Ogre {
     //---------------------------------------------------------------------
     void Mesh::removePose(ushort index)
     {
-        if (index >= getPoseCount())
+        if (index >= mPoseList.size())
         {
             OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
                 "Index out of bounds",

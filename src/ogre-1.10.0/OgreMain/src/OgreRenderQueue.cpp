@@ -90,20 +90,20 @@ namespace Ogre {
         Technique* pTech;
 
         // tell material it's been used
-        if (!pRend->getMaterial().isNull())
+        if (pRend->getMaterial())
             pRend->getMaterial()->touch();
 
         // Check material & technique supplied (the former since the default implementation
         // of getTechnique is based on it for backwards compatibility
-        if(pRend->getMaterial().isNull() || !pRend->getTechnique())
+        if(!pRend->getMaterial() || !pRend->getTechnique())
         {
             // Use default base white, with lighting only if vertices has normals
             RenderOperation op;
             pRend->getRenderOperation(op);
             bool useLighting = (NULL != op.vertexData->vertexDeclaration->findElementBySemantic(VES_NORMAL));
-            MaterialPtr baseWhite = MaterialManager::getSingleton().getByName(useLighting ? "BaseWhite" : "BaseWhiteNoLighting");
-            baseWhite->load();
-            pTech = baseWhite->getBestTechnique();
+            MaterialPtr defaultMat = MaterialManager::getSingleton().getDefaultMaterial(useLighting);
+            defaultMat->load();
+            pTech = defaultMat->getBestTechnique();
         }
         else
             pTech = pRend->getTechnique();

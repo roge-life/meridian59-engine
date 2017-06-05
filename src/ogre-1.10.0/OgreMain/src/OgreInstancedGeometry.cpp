@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -67,7 +67,7 @@ namespace Ogre {
         mSkeletonInstance(0),
         mAnimationState(0)
     {
-        mBaseSkeleton.setNull();
+        mBaseSkeleton.reset();
     }
     //--------------------------------------------------------------------------
     InstancedGeometry::~InstancedGeometry()
@@ -323,7 +323,7 @@ namespace Ogre {
         }
 
         //get the skeleton of the entity, if that's not already done
-        if(!ent->getMesh()->getSkeleton().isNull()&&mBaseSkeleton.isNull())
+        if(!ent->getMesh()->getSkeleton()&&mBaseSkeleton)
         {
             mBaseSkeleton=ent->getMesh()->getSkeleton();
             mSkeletonInstance= OGRE_NEW SkeletonInstance(mBaseSkeleton);
@@ -666,7 +666,7 @@ namespace Ogre {
             InstancedObject* instancedObject = ret->isInstancedObjectPresent(objIt->first);
             if(instancedObject == NULL)
             {
-                if(mBaseSkeleton.isNull())
+                if(!mBaseSkeleton)
                 {
                     instancedObject= OGRE_NEW InstancedObject(objIt->first);
                 }
@@ -924,10 +924,10 @@ namespace Ogre {
             mAnimationState = OGRE_NEW AnimationStateSet();
             mNumBoneMatrices = mSkeletonInstance->getNumBones();
             mBoneMatrices = OGRE_ALLOC_T(Matrix4, mNumBoneMatrices, MEMCATEGORY_ANIMATION);
-            AnimationStateIterator it=animations->getAnimationStateIterator();
-            while (it.hasMoreElements())
+            AnimationStateMap::const_iterator it;
+            for (it=animations->getAnimationStates().begin(); it != animations->getAnimationStates().end(); ++it)
             {
-                AnimationState*anim= it.getNext();
+                AnimationState*anim=it->second;
                 mAnimationState->createAnimationState(anim->getAnimationName(),anim->getTimePosition(),anim->getLength(),
                 anim->getWeight());
 
@@ -1606,7 +1606,7 @@ namespace Ogre {
     {
         mTechnique = 0;
         mMaterial = MaterialManager::getSingleton().getByName(mMaterialName);
-        if (mMaterial.isNull())
+        if (!mMaterial)
         {
             OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND,
                 "Material '" + mMaterialName + "' not found.",
@@ -1762,7 +1762,7 @@ namespace Ogre {
     void InstancedGeometry::GeometryBucket::_initGeometryBucket(const VertexData* vData, const IndexData* iData)
     {
         mBatch=mParent->getParent()->getParent()->getParent();
-        if(!mBatch->getBaseSkeleton().isNull())
+        if(mBatch->getBaseSkeleton())
             setCustomParameter(0,Vector4(mBatch->getBaseSkeleton()->getNumBones(),0,0,0));
         //mRenderOperation=OGRE_NEW RenderOperation();
         // Clone the structure from the example
@@ -1824,7 +1824,7 @@ namespace Ogre {
     {
 
         mBatch=mParent->getParent()->getParent()->getParent();
-        if(!mBatch->getBaseSkeleton().isNull())
+        if(mBatch->getBaseSkeleton())
             setCustomParameter(0,Vector4(mBatch->getBaseSkeleton()->getNumBones(),0,0,0));
         bucket->getRenderOperation(mRenderOp);
         mVertexData=mRenderOp.vertexData;
@@ -1858,7 +1858,7 @@ namespace Ogre {
     {
             // Should be the identity transform, but lets allow transformation of the
         // nodes the BatchInstances are attached to for kicks
-        if(mBatch->getBaseSkeleton().isNull())
+        if(!mBatch->getBaseSkeleton())
         {
             BatchInstance::ObjectsMap::iterator it,itbegin,itend,newit;
             itbegin=mParent->getParent()->getParent()->getInstancesMap().begin();
@@ -1926,7 +1926,7 @@ namespace Ogre {
     {
         bool bSendInverseXfrm = mParent->getParent()->getParent()->getParent()->getProvideWorldInverses();
 
-        if(mBatch->getBaseSkeleton().isNull())
+        if(!mBatch->getBaseSkeleton())
         {
             BatchInstance* batch=mParent->getParent()->getParent();
             return static_cast<ushort>(batch->getInstancesMap().size() * (bSendInverseXfrm ? 2 : 1));
@@ -2061,7 +2061,7 @@ namespace Ogre {
             InstancedObject* instancedObject = mParent->getParent()->getParent()->isInstancedObjectPresent(index);
             if(instancedObject == NULL)
             {
-                if(mBatch->getBaseSkeleton().isNull())
+                if(!mBatch->getBaseSkeleton())
                 {
                     instancedObject= OGRE_NEW InstancedObject(index);
                 }

@@ -334,13 +334,13 @@ bool CompositionPass::_isSupported(void)
 
     if (mType == PT_RENDERQUAD)
     {
-        if (mMaterial.isNull())
+        if (!mMaterial)
         {
             return false;
         }
 
         mMaterial->compile();
-        if (mMaterial->getNumSupportedTechniques() == 0)
+        if (mMaterial->getSupportedTechniques().empty())
         {
             return false;
         }

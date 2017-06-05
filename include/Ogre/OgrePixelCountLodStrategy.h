@@ -50,7 +50,6 @@ namespace Ogre {
     class _OgreExport PixelCountLodStrategyBase : public LodStrategy
     {
     protected:
-        /// @copydoc LodStrategy::getValueImpl
         virtual Real getValueImpl(const MovableObject *movableObject, const Camera *camera) const = 0;
 
     public:
@@ -84,40 +83,11 @@ namespace Ogre {
         /** Default constructor. */
         AbsolutePixelCountLodStrategy();
 
-        /// @copydoc LodStrategy::getValueImpl
         Real getValueImpl(const MovableObject *movableObject, const Camera *camera) const;
 
-        /** Override standard Singleton retrieval.
-        @remarks
-        Why do we do this? Well, it's because the Singleton
-        implementation is in a .h file, which means it gets compiled
-        into anybody who includes it. This is needed for the
-        Singleton template to work, but we actually only want it
-        compiled into the implementation of the class based on the
-        Singleton, not all of them. If we don't change this, we get
-        link errors when trying to use the Singleton-based class from
-        an outside dll.
-        @par
-        This method just delegates to the template version anyway,
-        but the implementation stays in this single compilation unit,
-        preventing link errors.
-        */
+        /// @copydoc Singleton::getSingleton()
         static AbsolutePixelCountLodStrategy& getSingleton(void);
-        /** Override standard Singleton retrieval.
-        @remarks
-        Why do we do this? Well, it's because the Singleton
-        implementation is in a .h file, which means it gets compiled
-        into anybody who includes it. This is needed for the
-        Singleton template to work, but we actually only want it
-        compiled into the implementation of the class based on the
-        Singleton, not all of them. If we don't change this, we get
-        link errors when trying to use the Singleton-based class from
-        an outside dll.
-        @par
-        This method just delegates to the template version anyway,
-        but the implementation stays in this single compilation unit,
-        preventing link errors.
-        */
+        /// @copydoc Singleton::getSingleton()
         static AbsolutePixelCountLodStrategy* getSingletonPtr(void);
     };
     /** @} */
@@ -129,40 +99,11 @@ namespace Ogre {
         /** Default constructor. */
         ScreenRatioPixelCountLodStrategy();
 
-        /// @copydoc LodStrategy::getValueImpl
         Real getValueImpl(const MovableObject *movableObject, const Camera *camera) const;
 
-        /** Override standard Singleton retrieval.
-        @remarks
-        Why do we do this? Well, it's because the Singleton
-        implementation is in a .h file, which means it gets compiled
-        into anybody who includes it. This is needed for the
-        Singleton template to work, but we actually only want it
-        compiled into the implementation of the class based on the
-        Singleton, not all of them. If we don't change this, we get
-        link errors when trying to use the Singleton-based class from
-        an outside dll.
-        @par
-        This method just delegates to the template version anyway,
-        but the implementation stays in this single compilation unit,
-        preventing link errors.
-        */
+        /// @copydoc Singleton::getSingleton()
         static ScreenRatioPixelCountLodStrategy& getSingleton(void);
-        /** Override standard Singleton retrieval.
-        @remarks
-        Why do we do this? Well, it's because the Singleton
-        implementation is in a .h file, which means it gets compiled
-        into anybody who includes it. This is needed for the
-        Singleton template to work, but we actually only want it
-        compiled into the implementation of the class based on the
-        Singleton, not all of them. If we don't change this, we get
-        link errors when trying to use the Singleton-based class from
-        an outside dll.
-        @par
-        This method just delegates to the template version anyway,
-        but the implementation stays in this single compilation unit,
-        preventing link errors.
-        */
+        /// @copydoc Singleton::getSingleton()
         static ScreenRatioPixelCountLodStrategy* getSingletonPtr(void);
     };
     /** @} */

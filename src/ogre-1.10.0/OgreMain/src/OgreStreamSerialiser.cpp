@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -46,6 +46,69 @@ THE SOFTWARE.
 
 namespace Ogre
 {
+    /** General hash function, derived from here
+    http://www.azillionmonkeys.com/qed/hash.html
+    Original by Paul Hsieh
+    */
+    static uint32 SuperFastHash (const char * data, int len, uint32 hashSoFar)
+    {
+#if OGRE_ENDIAN == OGRE_ENDIAN_LITTLE
+#  define OGRE_GET16BITS(d) (*((const uint16 *) (d)))
+#else
+    // Cast to uint16 in little endian means first byte is least significant
+    // replicate that here
+#  define OGRE_GET16BITS(d) (*((const uint8 *) (d)) + (*((const uint8 *) (d+1))<<8))
+#endif
+        uint32 hash;
+        int rem;
+
+        if (hashSoFar)
+            hash = hashSoFar;
+        else
+            hash = len;
+
+        if (len <= 0 || data == NULL) return 0;
+
+        rem = len & 3;
+        len >>= 2;
+
+        /* Main loop */
+        for (;len > 0; len--) {
+            hash  += OGRE_GET16BITS (data);
+            uint32 tmp    = (OGRE_GET16BITS (data+2) << 11) ^ hash;
+            hash   = (hash << 16) ^ tmp;
+            data  += 2*sizeof (uint16);
+            hash  += hash >> 11;
+        }
+
+        /* Handle end cases */
+        switch (rem) {
+        case 3: hash += OGRE_GET16BITS (data);
+            hash ^= hash << 16;
+            hash ^= data[sizeof (uint16)] << 18;
+            hash += hash >> 11;
+            break;
+        case 2: hash += OGRE_GET16BITS (data);
+            hash ^= hash << 11;
+            hash += hash >> 17;
+            break;
+        case 1: hash += *data;
+            hash ^= hash << 10;
+            hash += hash >> 1;
+        }
+
+        /* Force "avalanching" of final 127 bits */
+        hash ^= hash << 3;
+        hash += hash >> 5;
+        hash ^= hash << 4;
+        hash += hash >> 17;
+        hash ^= hash << 25;
+        hash += hash >> 6;
+
+        return hash;
+#undef OGRE_GET16BITS
+    }
+
     //---------------------------------------------------------------------
     uint32 StreamSerialiser::HEADER_ID = 0x00000001;
     uint32 StreamSerialiser::REVERSE_HEADER_ID = 0x10000000;
@@ -286,7 +349,7 @@ namespace Ogre
     //---------------------------------------------------------------------
     void StreamSerialiser::checkStream(bool failOnEof, bool validateReadable, bool validateWriteable) const
     {
-        if (mStream.isNull())
+        if (!mStream)
             OGRE_EXCEPT(Exception::ERR_INVALID_STATE, 
             "Invalid operation, stream is null", "StreamSerialiser::checkStream");
 
@@ -786,9 +849,11 @@ namespace Ogre
 		Bitwise::bswapBuffer(&version, sizeof(uint16));
 		Bitwise::bswapBuffer(&length, sizeof(uint32));
 #endif
-        uint32 hashVal = FastHash((const char*)&id, sizeof(uint32));
-        hashVal = FastHash((const char*)&version, sizeof(uint16), hashVal);
-        hashVal = FastHash((const char*)&length, sizeof(uint32), hashVal);
+
+		// we cannot switch to murmur3 like everywhere else to allow loading legacy files
+        uint32 hashVal = SuperFastHash((const char*)&id, sizeof(uint32), 0);
+        hashVal = SuperFastHash((const char*)&version, sizeof(uint16), hashVal);
+        hashVal = SuperFastHash((const char*)&length, sizeof(uint32), hashVal);
 
         return hashVal;
     }
@@ -812,7 +877,7 @@ namespace Ogre
     void StreamSerialiser::startDeflate(size_t avail_in)
     {
 #if OGRE_NO_ZIP_ARCHIVE == 0
-        assert( mOriginalStream.isNull() && "Don't start (un)compressing twice!" );
+        OgreAssert( !mOriginalStream , "Don't start (un)compressing twice!" );
         DataStreamPtr deflateStream(OGRE_NEW DeflateStream(mStream,"",avail_in));
         mOriginalStream = mStream;
         mStream = deflateStream;
@@ -824,9 +889,9 @@ namespace Ogre
     void StreamSerialiser::stopDeflate()
     {
 #if OGRE_NO_ZIP_ARCHIVE == 0
-        assert( !mOriginalStream.isNull() && "Must start (un)compressing first!" );
+        OgreAssert( mOriginalStream , "Must start (un)compressing first!" );
         mStream = mOriginalStream;
-        mOriginalStream.setNull();
+        mOriginalStream.reset();
 #else
         OGRE_EXCEPT(Exception::ERR_NOT_IMPLEMENTED,
                     "Ogre was not built with Zip file support!", "StreamSerialiser::stopDeflate");

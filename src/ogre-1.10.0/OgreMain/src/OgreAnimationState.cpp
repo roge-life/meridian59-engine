@@ -47,10 +47,6 @@ namespace Ogre
         mParent->_notifyDirty();
     }
     //---------------------------------------------------------------------
-    AnimationState::~AnimationState()
-    {
-    }
-    //---------------------------------------------------------------------
     AnimationState::AnimationState(const String& animName, 
         AnimationStateSet *parent, Real timePos, Real length, Real weight, 
         bool enabled)
@@ -250,8 +246,7 @@ namespace Ogre
             i != rhs.mAnimationStates.end(); ++i)
         {
             AnimationState* src = i->second;
-            mAnimationStates[src->getAnimationName()] = 
-                OGRE_NEW AnimationState(this, *src);
+            mAnimationStates[src->getAnimationName()] = OGRE_NEW AnimationState(this, *src);
         }
 
         // Clone enabled animation state list
@@ -294,7 +289,6 @@ namespace Ogre
         }
         mAnimationStates.clear();
         mEnabledAnimationStates.clear();
-
     }
     //---------------------------------------------------------------------
     AnimationState* AnimationStateSet::createAnimationState(const String& name,  
@@ -313,7 +307,6 @@ namespace Ogre
         AnimationState* newState = OGRE_NEW AnimationState(name, this, timePos, 
             length, weight, enabled);
         mAnimationStates[name] = newState;
-
         return newState;
 
     }
@@ -421,18 +414,5 @@ namespace Ogre
         return ConstEnabledAnimationStateIterator(
             mEnabledAnimationStates.begin(), mEnabledAnimationStates.end());
     }
-    //---------------------------------------------------------------------
-    //---------------------------------------------------------------------
-    Real AnimationStateControllerValue::getValue(void) const
-    {
-        return mTargetAnimationState->getTimePosition() / mTargetAnimationState->getLength();
-    }
-    //---------------------------------------------------------------------
-    void AnimationStateControllerValue::setValue(Real value)
-    {
-        mTargetAnimationState->setTimePosition(value * mTargetAnimationState->getLength());
-    }
-
-
 }
 

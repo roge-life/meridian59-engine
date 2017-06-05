@@ -214,7 +214,7 @@ namespace Ogre
         }
 
         // Make sure streams prepared.
-        if (mLoadedStreams.isNull())
+        if (!mLoadedStreams)
         {
             prepareImpl();
         }
@@ -291,7 +291,7 @@ namespace Ogre
             // find & load resource data
             DataStreamPtr dstream = 
                 ResourceGroupManager::getSingleton().openResource(
-                    mName, mGroup, true, this);
+                    mName, mGroup, this);
             loadedStreams->push_back(MemoryDataStreamPtr(OGRE_NEW MemoryDataStream(dstream)));
         }
         else
@@ -303,11 +303,10 @@ namespace Ogre
             baseName = mName.substr(0, pos);
             if ( pos != String::npos )
                 ext = mName.substr(pos+1);
-            static const String suffixes[6] = {"_rt", "_lf", "_up", "_dn", "_fr", "_bk"};
 
             for(size_t i = 0; i < 6; i++)
             {
-                String fullName = baseName + suffixes[i];
+                String fullName = baseName + CUBEMAP_SUFFIXES[i];
                 if (!ext.empty())
                     fullName = fullName + "." + ext;
 
@@ -315,7 +314,7 @@ namespace Ogre
                 // group changes if required
                 DataStreamPtr dstream = 
                     ResourceGroupManager::getSingleton().openResource(
-                        fullName, mGroup, true, this);
+                        fullName, mGroup, this);
 
                 loadedStreams->push_back(MemoryDataStreamPtr(OGRE_NEW MemoryDataStream(dstream)));
             }
@@ -331,7 +330,7 @@ namespace Ogre
         // find & load resource data
         DataStreamPtr dstream = 
             ResourceGroupManager::getSingleton().openResource(
-                mName, mGroup, true, this);
+                mName, mGroup, this);
 
         LoadedStreams loadedStreams = LoadedStreams(OGRE_NEW_T (vector<MemoryDataStreamPtr>::type, MEMCATEGORY_GENERAL), SPFM_DELETE_T);
         loadedStreams->push_back(MemoryDataStreamPtr(OGRE_NEW MemoryDataStream(dstream)));
@@ -345,7 +344,7 @@ namespace Ogre
         // find & load resource data
         DataStreamPtr dstream = 
             ResourceGroupManager::getSingleton().openResource(
-                mName, mGroup, true, this);
+                mName, mGroup, this);
 
         LoadedStreams loadedStreams = LoadedStreams(OGRE_NEW_T (vector<MemoryDataStreamPtr>::type, MEMCATEGORY_GENERAL), SPFM_DELETE_T);
         loadedStreams->push_back(MemoryDataStreamPtr(OGRE_NEW MemoryDataStream(dstream)));
@@ -364,7 +363,7 @@ namespace Ogre
     void D3D9Texture::postLoadImpl(void)
     {
         D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-        mLoadedStreams.setNull();
+        mLoadedStreams.reset();
     }   
 
     /****************************************************************************************/
@@ -1063,7 +1062,7 @@ namespace Ogre
                 if (mMipmapsHardwareGenerated)
                 {
                     usage |= D3DUSAGE_AUTOGENMIPMAP;
-                    //numMips = 0;
+                    numMips = 0;
                 }
             }
         }
@@ -1222,7 +1221,6 @@ namespace Ogre
                 if (mMipmapsHardwareGenerated)
                 {
                     usage |= D3DUSAGE_AUTOGENMIPMAP;
-                    numMips = 0;
                 }
             }
         }
@@ -1658,33 +1656,20 @@ namespace Ogre
         const D3DCAPS9& rkCurCaps = device->getD3D9DeviceCaps();                        
         D3DFORMAT eBackBufferFormat = device->getBackBufferFormat();
 
-
-        // Hacky override - many (all?) cards seem to not be able to autogen on 
-        // textures which are not a power of two
-        // Can we even mipmap on 3D textures? Well
-        //if ((mWidth & mWidth-1) || (mHeight & mHeight-1) || (mDepth & mDepth-1))
-        //    return false;
-
-        if (rkCurCaps.Caps2 & D3DCAPS2_CANAUTOGENMIPMAP)
-        {
-            HRESULT hr;
-            // check for auto gen. mip maps support
-            hr = pD3D->CheckDeviceFormat(
-                    rkCurCaps.AdapterOrdinal, 
-                    rkCurCaps.DeviceType, 
-                    eBackBufferFormat, 
-                    srcUsage | D3DUSAGE_AUTOGENMIPMAP,
-                    srcType,
-                    srcFormat);
-            // this HR could a SUCCES
-            // but mip maps will not be generated
-            if (hr == D3D_OK)
-                return true;
-            else
-                return false;
-        }
-        else
+        if ((rkCurCaps.Caps2 & D3DCAPS2_CANAUTOGENMIPMAP) == 0)
             return false;
+
+        // check for auto gen. mip maps support
+        hr = pD3D->CheckDeviceFormat(
+                rkCurCaps.AdapterOrdinal,
+                rkCurCaps.DeviceType,
+                eBackBufferFormat,
+                srcUsage | D3DUSAGE_AUTOGENMIPMAP,
+                srcType,
+                srcFormat);
+        // this HR could a SUCCES
+        // but mip maps will not be generated
+        return hr == D3D_OK;
     }
     /****************************************************************************************/
     D3DFORMAT D3D9Texture::_chooseD3DFormat(IDirect3DDevice9* d3d9Device)
@@ -1715,7 +1700,7 @@ namespace Ogre
         assert(textureResources != NULL);
         assert(textureResources->pBaseTex);
         // Make sure number of mips is right
-        mNumMipmaps = static_cast<uint8>(textureResources->pBaseTex->GetLevelCount() - 1);
+        mNumMipmaps = static_cast<uint32>(textureResources->pBaseTex->GetLevelCount() - 1);
         // Need to know static / dynamic
         unsigned int bufusage;
         if ((mUsage & TU_DYNAMIC) && mDynamicTextures)

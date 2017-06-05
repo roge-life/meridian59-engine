@@ -29,6 +29,7 @@ THE SOFTWARE.
 #define __Platform_H_
 
 #include "OgreConfig.h"
+#include "OgreExports.h"
 
 namespace Ogre {
 /* Initial platform/compiler-related stuff to set.
@@ -54,12 +55,6 @@ namespace Ogre {
 
 #define OGRE_ARCHITECTURE_32 1
 #define OGRE_ARCHITECTURE_64 2
-
-#define OGRE_CPP_VER_UNDEFINED 0L
-#define OGRE_CPP_VER_98 199711L
-#define OGRE_CPP_VER_11 201103L
-#define OGRE_CPP_VER_14 201402L
-
 
 /* Finds the compiler type and version.
 */
@@ -97,38 +92,13 @@ namespace Ogre {
 
 #define OGRE_COMPILER_MIN_VERSION(COMPILER, VERSION) (OGRE_COMPILER == (COMPILER) && OGRE_COMP_VER >= (VERSION))
 
-/* Finds the c++ version.*/
-#ifdef  __cplusplus
-    #if __cplusplus >= OGRE_CPP_VER_14 
-        #define OGRE_CPP_VER OGRE_CPP_VER_14
-    #elif __cplusplus >= OGRE_CPP_VER_11
-        #define OGRE_CPP_VER OGRE_CPP_VER_11
-    #elif __cplusplus >= OGRE_CPP_VER_98
-        #define OGRE_CPP_VER OGRE_CPP_VER_98
-    #else
-        #define OGRE_CPP_VER OGRE_CPP_VER_UNDEFINED
-    #endif
-#endif
-
-
-/* define OGRE_OVERRIDE macro */
-#if OGRE_CPP_VER >= OGRE_CPP_VER_11 || OGRE_COMPILER_MIN_VERSION(OGRE_COMPILER_MSVC, 1600)
-    #define OGRE_OVERRIDE override
-#else
-    #define OGRE_OVERRIDE 
-#endif
-
 /* See if we can use __forceinline or if we need to use __inline instead */
-#if OGRE_COMPILER == OGRE_COMPILER_MSVC
-#   if OGRE_COMP_VER >= 1200
-#       define FORCEINLINE __forceinline
-#   endif
-#elif defined(__MINGW32__)
-#   if !defined(FORCEINLINE)
-#       define FORCEINLINE __inline
-#   endif
+#if OGRE_COMPILER_MIN_VERSION(OGRE_COMPILER_MSVC, 1200)
+    #define OGRE_FORCE_INLINE __forceinline
+#elif OGRE_COMPILER_MIN_VERSION(OGRE_COMPILER_GNUC, 340)
+    #define OGRE_FORCE_INLINE inline __attribute__((always_inline))
 #else
-#   define FORCEINLINE __inline
+        #define OGRE_FORCE_INLINE __inline
 #endif
 
 /* define OGRE_NORETURN macro */
@@ -209,51 +179,16 @@ namespace Ogre {
 #define OGRE_QUOTE(x) OGRE_QUOTE_INPLACE(x)
 #define OGRE_WARN( x )  message( __FILE__ "(" QUOTE( __LINE__ ) ") : " x "\n" )
 
-/* define OGRE_DEPRECATED macro */
-#if OGRE_CPP_VER >= OGRE_CPP_VER_14
-#   define OGRE_DEPRECATED [[deprecated()]]
-#elif OGRE_COMPILER == OGRE_COMPILER_MSVC
-#   define OGRE_DEPRECATED __declspec(deprecated)
-#elif OGRE_COMPILER == OGRE_COMPILER_GNUC || OGRE_COMPILER == OGRE_COMPILER_CLANG
-#   define OGRE_DEPRECATED __attribute__ ((deprecated))
-#else
-#   pragma message("WARNING: You need to implement OGRE_DEPRECATED for this compiler")
-#   define OGRE_DEPRECATED
-#endif
-
-/* define OGRE_DEPRECATED_EX(msg) macro */
-#if OGRE_CPP_VER >= OGRE_CPP_VER_14
-    #define OGRE_DEPRECATED_EX(message) [[deprecated(message)]]
-#elif OGRE_COMPILER == OGRE_COMPILER_MSVC
-    #define OGRE_DEPRECATED_EX(message) __declspec(deprecated(message))
-#elif OGRE_COMPILER == OGRE_COMPILER_GNUC || OGRE_COMPILER == OGRE_COMPILER_CLANG
-#   define OGRE_DEPRECATED_EX(message) __attribute__ ((deprecated))
-#else
-#   define OGRE_DEPRECATED_EX(message)
-#endif
-
 //----------------------------------------------------------------------------
 // Windows Settings
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_WINRT
 
-// If we're not including this from a client build, specify that the stuff
-// should get exported. Otherwise, import it.
-#   if defined( OGRE_STATIC_LIB )
-        // Linux compilers don't have symbol import/export directives.
-#       define _OgreExport
-#       define _OgrePrivate
-#   else
-#       if defined( OGRE_NONCLIENT_BUILD )
-#           define _OgreExport __declspec( dllexport )
-#       else
-#           if defined( __MINGW32__ )
-#               define _OgreExport
-#           else
-#               define _OgreExport __declspec( dllimport )
-#           endif
-#       endif
-#       define _OgrePrivate
-#   endif
+// on windows we override OgreBuildSettings.h for convenience
+// see https://bitbucket.org/sinbad/ogre/pull-requests/728
+#ifdef OGRE_DEBUG_MODE
+#undef OGRE_DEBUG_MODE
+#endif
+
 // Win32 compilers use _DEBUG for specifying debug builds.
 // for MinGW, we set DEBUG
 #   if defined(_DEBUG) || defined(DEBUG)
@@ -292,24 +227,6 @@ namespace Ogre {
 #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX || OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS || \
     OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_NACL || OGRE_PLATFORM == OGRE_PLATFORM_EMSCRIPTEN
 
-// Enable GCC symbol visibility
-#   if defined( OGRE_GCC_VISIBILITY )
-#       define _OgreExport  __attribute__ ((visibility("default")))
-#       define _OgrePrivate __attribute__ ((visibility("hidden")))
-#   else
-#       define _OgreExport
-#       define _OgrePrivate
-#   endif
-
-// A quick define to overcome different names for the same function
-#   define stricmp strcasecmp
-
-#   ifdef DEBUG
-#       define OGRE_DEBUG_MODE 1
-#   else
-#       define OGRE_DEBUG_MODE 0
-#   endif
-
 // Always enable unicode support for the moment
 // Perhaps disable in old versions of gcc if necessary
 #define OGRE_UNICODE_SUPPORT 1
@@ -319,17 +236,6 @@ namespace Ogre {
 //----------------------------------------------------------------------------
 // Android Settings
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-#   ifdef OGRE_UNICODE_SUPPORT
-#       undef OGRE_UNICODE_SUPPORT
-#   endif
-#   define OGRE_UNICODE_SUPPORT 1
-    // A quick define to overcome different names for the same function
-#   define stricmp strcasecmp
-#   ifdef DEBUG
-#       define OGRE_DEBUG_MODE 1
-#   else
-#       define OGRE_DEBUG_MODE 0
-#   endif
 #   ifndef CLOCKS_PER_SEC
 #       define CLOCKS_PER_SEC  1000
 #   endif
@@ -418,53 +324,6 @@ typedef signed char int8;
     typedef unsigned long long uint64;
     typedef long long int64;
 #endif
-
-// Disable these warnings (too much noise)
-#if OGRE_COMPILER == OGRE_COMPILER_MSVC
-#ifndef _CRT_SECURE_NO_WARNINGS
-#   define _CRT_SECURE_NO_WARNINGS
-#endif
-#ifndef _SCL_SECURE_NO_WARNINGS
-#   define _SCL_SECURE_NO_WARNINGS
-#endif
-// Turn off warnings generated by long std templates
-// This warns about truncation to 255 characters in debug/browse info
-#   pragma warning (disable : 4786)
-// Turn off warnings generated by long std templates
-// This warns about truncation to 255 characters in debug/browse info
-#   pragma warning (disable : 4503)
-// disable: "<type> needs to have dll-interface to be used by clients'
-// Happens on STL member variables which are not public therefore is ok
-#   pragma warning (disable : 4251)
-// disable: "non dll-interface class used as base for dll-interface class"
-// Happens when deriving from Singleton because bug in compiler ignores
-// template export
-#   pragma warning (disable : 4275)
-// disable: "C++ Exception Specification ignored"
-// This is because MSVC 6 did not implement all the C++ exception
-// specifications in the ANSI C++ draft.
-#   pragma warning( disable : 4290 )
-// disable: "no suitable definition provided for explicit template
-// instantiation request" Occurs in VC7 for no justifiable reason on all
-// #includes of Singleton
-#   pragma warning( disable: 4661)
-// disable: deprecation warnings when using CRT calls in VC8
-// These show up on all C runtime lib code in VC8, disable since they clutter
-// the warnings with things we may not be able to do anything about (e.g.
-// generated code from nvparse etc). I doubt very much that these calls
-// will ever be actually removed from VC anyway, it would break too much code.
-#   pragma warning( disable: 4996)
-// disable: "conditional expression constant", always occurs on 
-// OGRE_MUTEX_CONDITIONAL when no threading enabled
-#   pragma warning (disable : 201)
-// disable: "unreferenced formal parameter"
-// Many versions of VC have bugs which generate this error in cases where they shouldn't
-#   pragma warning (disable : 4100)
-// disable: "behavior change: an object of POD type constructed with an initializer of the form () will be default-initialized"
-// We have this issue in OgreMemorySTLAlloc.h - so we see it over and over
-#   pragma warning (disable : 4345)
-#endif
-
 }
 
 #endif

@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -133,11 +133,6 @@ namespace Ogre {
             }
         }
 
-    }
-    //-----------------------------------------------------------------------
-    Node* Node::getParent(void) const
-    {
-        return mParent;
     }
 
     //-----------------------------------------------------------------------
@@ -318,8 +313,8 @@ namespace Ogre {
     Node* Node::createChild(const Vector3& inTranslate, const Quaternion& inRotate)
     {
         Node* newNode = createChildImpl();
-        newNode->translate(inTranslate);
-        newNode->rotate(inRotate);
+        newNode->setPosition(inTranslate);
+        newNode->setOrientation(inRotate);
         this->addChild(newNode);
 
         return newNode;
@@ -328,8 +323,8 @@ namespace Ogre {
     Node* Node::createChild(const String& name, const Vector3& inTranslate, const Quaternion& inRotate)
     {
         Node* newNode = createChildImpl(name);
-        newNode->translate(inTranslate);
-        newNode->rotate(inRotate);
+        newNode->setPosition(inTranslate);
+        newNode->setOrientation(inRotate);
         this->addChild(newNode);
 
         return newNode;
@@ -348,11 +343,6 @@ namespace Ogre {
         mChildren.insert(ChildNodeMap::value_type(child->getName(), child));
         child->setParent(this);
 
-    }
-    //-----------------------------------------------------------------------
-    unsigned short Node::numChildren(void) const
-    {
-        return static_cast< unsigned short >( mChildren.size() );
     }
     //-----------------------------------------------------------------------
     Node* Node::getChild(unsigned short index) const
@@ -408,16 +398,11 @@ namespace Ogre {
         }
         return child;
     }
-    //-----------------------------------------------------------------------
-    const Quaternion& Node::getOrientation() const
-    {
-        return mOrientation;
-    }
 
     //-----------------------------------------------------------------------
     void Node::setOrientation( const Quaternion & q )
     {
-        assert(!q.isNaN() && "Invalid orientation supplied as parameter");
+        OgreAssertDbg(!q.isNaN(), "Invalid orientation supplied as parameter");
         mOrientation = q;
         mOrientation.normalise();
         needUpdate();
@@ -450,11 +435,6 @@ namespace Ogre {
         setPosition(v);
     }
 
-    //-----------------------------------------------------------------------
-    const Vector3 & Node::getPosition(void) const
-    {
-        return mPosition;
-    }
     //-----------------------------------------------------------------------
     Matrix3 Node::getLocalAxes(void) const
     {
@@ -702,11 +682,7 @@ namespace Ogre {
     {
         setScale(Vector3(x, y, z));
     }
-    //-----------------------------------------------------------------------
-    const Vector3 & Node::getScale(void) const
-    {
-        return mScale;
-    }
+
     //-----------------------------------------------------------------------
     void Node::setInheritOrientation(bool inherit)
     {
@@ -714,20 +690,10 @@ namespace Ogre {
         needUpdate();
     }
     //-----------------------------------------------------------------------
-    bool Node::getInheritOrientation(void) const
-    {
-        return mInheritOrientation;
-    }
-    //-----------------------------------------------------------------------
     void Node::setInheritScale(bool inherit)
     {
         mInheritScale = inherit;
         needUpdate();
-    }
-    //-----------------------------------------------------------------------
-    bool Node::getInheritScale(void) const
-    {
-        return mInheritScale;
     }
     //-----------------------------------------------------------------------
     void Node::scale(const Vector3& inScale)
@@ -746,11 +712,6 @@ namespace Ogre {
 
     }
     //-----------------------------------------------------------------------
-    const String& Node::getName(void) const
-    {
-        return mName;
-    }
-    //-----------------------------------------------------------------------
     void Node::setInitialState(void)
     {
         mInitialPosition = mPosition;
@@ -765,22 +726,6 @@ namespace Ogre {
         mScale = mInitialScale;
 
         needUpdate();
-    }
-    //-----------------------------------------------------------------------
-    const Vector3& Node::getInitialPosition(void) const
-    {
-        return mInitialPosition;
-    }
-    //-----------------------------------------------------------------------
-    const Quaternion& Node::getInitialOrientation(void) const
-    {
-        return mInitialOrientation;
-
-    }
-    //-----------------------------------------------------------------------
-    const Vector3& Node::getInitialScale(void) const
-    {
-        return mInitialScale;
     }
     //-----------------------------------------------------------------------
     Node* Node::getChild(const String& name) const
@@ -923,8 +868,8 @@ namespace Ogre {
         : mParent(parent)
     {
         String matName = "Ogre/Debug/AxesMat";
-        mMat = MaterialManager::getSingleton().getByName(matName);
-        if (mMat.isNull())
+        mMat = MaterialManager::getSingleton().getByName(matName, ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+        if (!mMat)
         {
             mMat = MaterialManager::getSingleton().create(matName, ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
             Pass* p = mMat->getTechnique(0)->getPass(0);
@@ -937,8 +882,8 @@ namespace Ogre {
         }
 
         String meshName = "Ogre/Debug/AxesMesh";
-        mMeshPtr = MeshManager::getSingleton().getByName(meshName);
-        if (mMeshPtr.isNull())
+        mMeshPtr = MeshManager::getSingleton().getByName(meshName, ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME);
+        if (!mMeshPtr)
         {
             ManualObject mo("tmp");
             mo.begin(mMat->getName());

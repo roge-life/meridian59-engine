@@ -171,6 +171,10 @@ namespace Ogre {
         /// @see ResourceManager::getResourceByName
         MaterialPtr getByName(const String& name, const String& groupName = ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
 
+        /// Get a default material that is always available even when no resources were loaded
+        /// @param useLighting whether the material should be lit
+        MaterialPtr getDefaultMaterial(bool useLighting = true);
+
         /** Default constructor.
         */
         MaterialManager();
@@ -297,37 +301,9 @@ namespace Ogre {
 		virtual void _notifyBeforeIlluminationPassesCleared(Technique* mat);
 
 
-        /** Override standard Singleton retrieval.
-        @remarks
-        Why do we do this? Well, it's because the Singleton
-        implementation is in a .h file, which means it gets compiled
-        into anybody who includes it. This is needed for the
-        Singleton template to work, but we actually only want it
-        compiled into the implementation of the class based on the
-        Singleton, not all of them. If we don't change this, we get
-        link errors when trying to use the Singleton-based class from
-        an outside dll.
-        @par
-        This method just delegates to the template version anyway,
-        but the implementation stays in this single compilation unit,
-        preventing link errors.
-        */
+		/// @copydoc Singleton::getSingleton()
         static MaterialManager& getSingleton(void);
-        /** Override standard Singleton retrieval.
-        @remarks
-        Why do we do this? Well, it's because the Singleton
-        implementation is in a .h file, which means it gets compiled
-        into anybody who includes it. This is needed for the
-        Singleton template to work, but we actually only want it
-        compiled into the implementation of the class based on the
-        Singleton, not all of them. If we don't change this, we get
-        link errors when trying to use the Singleton-based class from
-        an outside dll.
-        @par
-        This method just delegates to the template version anyway,
-        but the implementation stays in this single compilation unit,
-        preventing link errors.
-        */
+        /// @copydoc Singleton::getSingleton()
         static MaterialManager* getSingletonPtr(void);
 
     };

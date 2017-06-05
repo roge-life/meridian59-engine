@@ -30,6 +30,7 @@ THE SOFTWARE.
 
 #include "OgrePrerequisites.h"
 #include "OgreGpuProgram.h"
+#include "OgreHeaderPrefix.h"
 
 namespace Ogre {
 
@@ -113,7 +114,7 @@ namespace Ogre {
         */
         GpuProgramParametersSharedPtr createParameters(void);
         /** @copydoc GpuProgram::_getBindingDelegate */
-        GpuProgram* _getBindingDelegate(void) { return mAssemblerProgram.getPointer(); }
+        GpuProgram* _getBindingDelegate(void) { return mAssemblerProgram.get(); }
 
         /** Get the full list of GpuConstantDefinition instances.
         @note
@@ -131,4 +132,7 @@ namespace Ogre {
     /** @} */
 
 }
+
+#include "OgreHeaderSuffix.h"
+
 #endif

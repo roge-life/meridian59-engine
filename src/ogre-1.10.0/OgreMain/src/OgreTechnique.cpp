@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -79,7 +79,11 @@ namespace Ogre {
     {
         StringStream errors;
 
-        mIsSupported = checkGPURules(errors) && checkHardwareSupport(autoManageTextureUnits, errors);
+        if(!Root::getSingleton().getRenderSystem()) {
+            errors << "NULL RenderSystem";
+        } else {
+            mIsSupported = checkGPURules(errors) && checkHardwareSupport(autoManageTextureUnits, errors);
+        }
 
         // Compile for categorised illumination on demand
         clearIlluminationPasses();
@@ -139,11 +143,11 @@ namespace Ogre {
                 }
 
                 // Check a few fixed-function options in texture layers
-                Pass::TextureUnitStateIterator texi = currPass->getTextureUnitStateIterator();
                 size_t texUnit = 0;
-                while (texi.hasMoreElements())
+                Pass::TextureUnitStates::const_iterator it;
+                for(it = currPass->getTextureUnitStates().begin(); it != currPass->getTextureUnitStates().end(); ++it)
                 {
-                    TextureUnitState* tex = texi.getNext();
+                    TextureUnitState* tex = *it;
                     // Any Cube textures? NB we make the assumption that any
                     // card capable of running fragment programs can support
                     // cubic textures, which has to be true, surely?
@@ -577,7 +581,7 @@ namespace Ogre {
                 (*il)->pass->_load();
         }
 
-        if (!mShadowCasterMaterial.isNull())
+        if (mShadowCasterMaterial)
         {
             mShadowCasterMaterial->load();
         }
@@ -585,10 +589,10 @@ namespace Ogre {
         {
             // in case we could not get material as it wasn't yet parsed/existent at that time.
             mShadowCasterMaterial = MaterialManager::getSingleton().getByName(mShadowCasterMaterialName);
-            if (!mShadowCasterMaterial.isNull())
+            if (mShadowCasterMaterial)
                 mShadowCasterMaterial->load();
         }
-        if (!mShadowReceiverMaterial.isNull())
+        if (mShadowReceiverMaterial)
         {
             mShadowReceiverMaterial->load();
         }
@@ -596,7 +600,7 @@ namespace Ogre {
         {
             // in case we could not get material as it wasn't yet parsed/existent at that time.
             mShadowReceiverMaterial = MaterialManager::getSingleton().getByName(mShadowReceiverMaterialName);
-            if (!mShadowReceiverMaterial.isNull())
+            if (mShadowReceiverMaterial)
                 mShadowReceiverMaterial->load();
         }
     }
@@ -976,10 +980,10 @@ namespace Ogre {
                             {
                                 // Alpha rejection passes must retain their transparency, so
                                 // we allow the texture units, but override the colour functions
-                                Pass::TextureUnitStateIterator tusi = newPass->getTextureUnitStateIterator();
-                                while (tusi.hasMoreElements())
+                                Pass::TextureUnitStates::const_iterator it;
+                                for(it = newPass->getTextureUnitStates().begin(); it != newPass->getTextureUnitStates().end(); ++it)
                                 {
-                                    TextureUnitState* tus = tusi.getNext();
+                                    TextureUnitState* tus = *it;
                                     tus->setColourOperationEx(LBX_SOURCE1, LBS_CURRENT);
                                 }
                             }
@@ -1062,10 +1066,10 @@ namespace Ogre {
                             {
                                 // Alpha rejection passes must retain their transparency, so
                                 // we allow the texture units, but override the colour functions
-                                Pass::TextureUnitStateIterator tusi = newPass->getTextureUnitStateIterator();
-                                while (tusi.hasMoreElements())
+                                Pass::TextureUnitStates::const_iterator it;
+                                for(it = newPass->getTextureUnitStates().begin(); it != newPass->getTextureUnitStates().end(); ++it)
                                 {
-                                    TextureUnitState* tus = tusi.getNext();
+                                    TextureUnitState* tus = *it;
                                     tus->setColourOperationEx(LBX_SOURCE1, LBS_CURRENT);
                                 }
                             }
@@ -1175,8 +1179,8 @@ namespace Ogre {
         mIlluminationPasses.clear();
     }
     //-----------------------------------------------------------------------
-    const Technique::IlluminationPassIterator
-    Technique::getIlluminationPassIterator(void)
+    const IlluminationPassList&
+    Technique::getIlluminationPasses(void)
     {
         IlluminationPassesState targetState = IPS_COMPILED;
         if(mIlluminationPassesCompilationPhase != targetState
@@ -1193,8 +1197,7 @@ namespace Ogre {
             mIlluminationPassesCompilationPhase = targetState;
         }
 
-        return IlluminationPassIterator(mIlluminationPasses.begin(),
-            mIlluminationPasses.end());
+        return mIlluminationPasses;
     }
     //-----------------------------------------------------------------------
     const String& Technique::getResourceGroup(void) const
@@ -1226,9 +1229,9 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     void  Technique::setShadowCasterMaterial(Ogre::MaterialPtr val) 
     { 
-        if (val.isNull())
+        if (!val)
         {
-            mShadowCasterMaterial.setNull();
+            mShadowCasterMaterial.reset();
             mShadowCasterMaterialName.clear();
         }
         else
@@ -1251,9 +1254,9 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     void  Technique::setShadowReceiverMaterial(Ogre::MaterialPtr val) 
     { 
-        if (val.isNull())
+        if (!val)
         {
-            mShadowReceiverMaterial.setNull();
+            mShadowReceiverMaterial.reset();
             mShadowReceiverMaterialName.clear();
         }
         else

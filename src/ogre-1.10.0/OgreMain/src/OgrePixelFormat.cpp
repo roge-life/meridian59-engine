@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,7 @@ namespace Ogre {
     {
         return PixelUtil::getMemorySize(getWidth(), getHeight(), getDepth(), format);
     }
-    PixelBox PixelBox::getSubVolume(const Box &def) const
+    PixelBox PixelBox::getSubVolume(const Box &def, bool resetOrigin /* = true */) const
     {
         if(PixelUtil::isCompressed(format))
         {
@@ -58,19 +58,18 @@ namespace Ogre {
         if(!contains(def))
             OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Bounds out of range", "PixelBox::getSubVolume");
 
-        const size_t elemSize = PixelUtil::getNumElemBytes(format);
-        // Calculate new data origin
-        // Notice how we do not propagate left/top/front from the incoming box, since
-        // the returned pointer is already offset
-        PixelBox rval(def.getWidth(), def.getHeight(), def.getDepth(), format, 
-            ((uint8*)data) + ((def.left-left)*elemSize)
-            + ((def.top-top)*rowPitch*elemSize)
-            + ((def.front-front)*slicePitch*elemSize)
-        );
-
+        // Calculate new pixelbox and optionally reset origin.
+        PixelBox rval(def, format, data);
         rval.rowPitch = rowPitch;
         rval.slicePitch = slicePitch;
-        rval.format = format;
+        if(resetOrigin)
+        {
+            rval.data = rval.getTopLeftFrontPixelPtr();
+            rval.right -= rval.left;
+            rval.bottom -= rval.top;
+            rval.back -= rval.front;
+            rval.front = rval.top = rval.left = 0;
+        }
 
         return rval;
     }
@@ -258,7 +257,7 @@ namespace Ogre {
         rgba[3] = des.ashift;
     }
     //-----------------------------------------------------------------------
-    String PixelUtil::getFormatName(PixelFormat srcformat)
+    const String& PixelUtil::getFormatName(PixelFormat srcformat)
     {
         return getDescriptionFor(srcformat).name;
     }
@@ -723,7 +722,7 @@ namespace Ogre {
             // Everything consecutive?
             if(src.isConsecutive() && dst.isConsecutive())
             {
-                memcpy(dst.data, src.data, src.getConsecutiveSize());
+                memcpy(dst.getTopLeftFrontPixelPtr(), src.getTopLeftFrontPixelPtr(), src.getConsecutiveSize());
                 return;
             }
 

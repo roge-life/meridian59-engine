@@ -52,7 +52,7 @@ namespace Ogre
             // create low-level implementation
             createLowLevelImpl();
             // load constructed assembler program (if it exists)
-            if (!mAssemblerProgram.isNull() && mAssemblerProgram.getPointer() != this)
+            if (mAssemblerProgram && mAssemblerProgram.get() != this)
             {
                 mAssemblerProgram->load();
             }
@@ -62,10 +62,10 @@ namespace Ogre
     //---------------------------------------------------------------------------
     void HighLevelGpuProgram::unloadImpl()
     {   
-        if (!mAssemblerProgram.isNull() && mAssemblerProgram.getPointer() != this)
+        if (mAssemblerProgram && mAssemblerProgram.get() != this)
         {
-            mAssemblerProgram->getCreator()->remove(mAssemblerProgram->getHandle());
-            mAssemblerProgram.setNull();
+            mAssemblerProgram->getCreator()->remove(mAssemblerProgram);
+            mAssemblerProgram.reset();
         }
 
         unloadHighLevel();
@@ -96,7 +96,7 @@ namespace Ogre
             }
         }
         // Copy in default parameters if present
-        if (!mDefaultParams.isNull())
+        if (mDefaultParams)
             params->copyConstantsFrom(*(mDefaultParams.get()));
         return params;
     }
@@ -104,7 +104,7 @@ namespace Ogre
     {
         size_t memSize = 0;
         memSize += sizeof(bool);
-        if(!mAssemblerProgram.isNull() && (mAssemblerProgram.getPointer() != this) )
+        if(mAssemblerProgram && (mAssemblerProgram.get() != this) )
             memSize += mAssemblerProgram->calculateSize();
 
         memSize += GpuProgram::calculateSize();
@@ -121,12 +121,12 @@ namespace Ogre
             {
                 loadHighLevelImpl();
                 mHighLevelLoaded = true;
-                if (!mDefaultParams.isNull())
+                if (mDefaultParams)
                 {
                     // Keep a reference to old ones to copy
                     GpuProgramParametersSharedPtr savedParams = mDefaultParams;
                     // reset params to stop them being referenced in the next create
-                    mDefaultParams.setNull();
+                    mDefaultParams.reset();
 
                     // Create new params
                     mDefaultParams = createParameters();
@@ -138,13 +138,16 @@ namespace Ogre
                 }
 
             }
+            catch (const RuntimeAssertionException&)
+            {
+                throw;
+            }
             catch (const Exception& e)
             {
                 // will already have been logged
-                LogManager::getSingleton().stream()
-                    << "High-level program " << mName << " encountered an error "
-                    << "during loading and is thus not supported.\n"
-                    << e.getFullDescription();
+                LogManager::getSingleton().stream(LML_CRITICAL)
+                    << "High-level program '" << mName << "' is not supported: "
+                    << e.getDescription();
 
                 mCompileError = true;
             }
@@ -171,7 +174,7 @@ namespace Ogre
             // find & load source code
             DataStreamPtr stream = 
                 ResourceGroupManager::getSingleton().openResource(
-                    mFilename, mGroup, true, this);
+                    mFilename, mGroup, this);
 
             mSource = stream->getAsString();
         }

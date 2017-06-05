@@ -40,6 +40,9 @@ THE SOFTWARE.
 #include "OgreD3D11StereoDriverBridge.h"
 #endif
 #include <iomanip>
+#if OGRE_PLATFORM == OGRE_PLATFORM_WINRT && defined(_WIN32_WINNT_WINBLUE) && _WIN32_WINNT >= _WIN32_WINNT_WINBLUE
+#include <dxgi1_3.h> // for IDXGISwapChain2::SetMatrixTransform used in D3D11RenderWindowSwapChainPanel
+#endif
 
 #define OGRE_D3D11_WIN_CLASS_NAME "OgreD3D11Wnd"
 
@@ -125,24 +128,6 @@ namespace Ogre
 
         mActive = true;
         mClosed = false;
-    }
-    //---------------------------------------------------------------------
-    DXGI_FORMAT D3D11RenderWindowBase::_getGammaFormat(DXGI_FORMAT format, bool appendSRGB)
-    {
-        if(appendSRGB)
-        {
-            switch(format)
-            {
-            case DXGI_FORMAT_R8G8B8A8_UNORM:       return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-            case DXGI_FORMAT_B8G8R8A8_UNORM:       return DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
-            case DXGI_FORMAT_B8G8R8X8_UNORM:       return DXGI_FORMAT_B8G8R8X8_UNORM_SRGB;
-            case DXGI_FORMAT_BC1_UNORM:            return DXGI_FORMAT_BC1_UNORM_SRGB;
-            case DXGI_FORMAT_BC2_UNORM:            return DXGI_FORMAT_BC2_UNORM_SRGB;
-            case DXGI_FORMAT_BC3_UNORM:            return DXGI_FORMAT_BC3_UNORM_SRGB;
-            case DXGI_FORMAT_BC7_UNORM:            return DXGI_FORMAT_BC7_UNORM_SRGB;
-            }
-        }
-        return format;
     }
     //---------------------------------------------------------------------
     void D3D11RenderWindowBase::_createSizeDependedD3DResources(void)
@@ -330,13 +315,12 @@ namespace Ogre
         RenderWindow::getCustomAttribute(name, pData);
     }
     //---------------------------------------------------------------------
-    void D3D11RenderWindowBase::copyContentsToMemory(const PixelBox &dst, FrameBuffer buffer)
+    void D3D11RenderWindowBase::copyContentsToMemory(const Box& src, const PixelBox &dst, FrameBuffer buffer)
     {
-        if (dst.getWidth() > mWidth ||
-            dst.getHeight() > mHeight ||
-            dst.front != 0 || dst.back != 1)
+        if(src.right > mWidth || src.bottom > mHeight || src.front != 0 || src.back != 1
+        || dst.getWidth() != src.getWidth() || dst.getHeight() != dst.getHeight() || dst.getDepth() != 1)
         {
-            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Invalid box.", "D3D11RenderWindowBase::copyContentsToMemory" );
+            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Invalid box.", "D3D11RenderWindowBase::copyContentsToMemory");
         }
 
         if(!mpBackBuffer)
@@ -345,6 +329,8 @@ namespace Ogre
         // get the backbuffer desc
         D3D11_TEXTURE2D_DESC BBDesc;
         mpBackBuffer->GetDesc( &BBDesc );
+        UINT srcSubresource = 0;
+        D3D11_BOX srcBoxDx11 = { src.left, src.top, 0, src.right, src.bottom, 1 };
 
         // We need data from backbuffer without MSAA
         ComPtr<ID3D11Texture2D> backbufferNoMSAA;
@@ -356,6 +342,7 @@ namespace Ogre
         {
             backbufferNoMSAA = mpBackBufferNoMSAA;
             mDevice.GetImmediateContext()->ResolveSubresource(backbufferNoMSAA.Get(), 0, mpBackBuffer.Get(), 0, BBDesc.Format);
+            mDevice.throwIfFailed("Error resolving MSAA subresource", "D3D11RenderWindowBase::copyContentsToMemory");
         }
         else
         {
@@ -367,17 +354,11 @@ namespace Ogre
             desc.CPUAccessFlags = 0;
 
             HRESULT hr = mDevice->CreateTexture2D(&desc, NULL, backbufferNoMSAA.ReleaseAndGetAddressOf());
-            if (FAILED(hr) || mDevice.isError())
-            {
-                String errorDescription = mDevice.getErrorDescription(hr);
-                OGRE_EXCEPT_EX(Exception::ERR_RENDERINGAPI_ERROR, hr,
-                    "Error creating texture\nError Description:" + errorDescription, 
-                    "D3D11RenderWindow::copyContentsToMemory" );
-            }
+            mDevice.throwIfFailed(hr, "Error creating texture without MSAA", "D3D11RenderWindowBase::copyContentsToMemory");
 
             mDevice.GetImmediateContext()->ResolveSubresource(backbufferNoMSAA.Get(), 0, mpBackBuffer.Get(), 0, BBDesc.Format);
+            mDevice.throwIfFailed("Error resolving MSAA subresource", "D3D11RenderWindowBase::copyContentsToMemory");
         }
-
 
         // change the parameters of the texture so we can read it
         BBDesc.SampleDesc.Count = 1;
@@ -386,30 +367,28 @@ namespace Ogre
         BBDesc.BindFlags = 0;
         BBDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 
-        // create a temp buffer to copy to
-        ComPtr<ID3D11Texture2D> backbufferStaging;
-        HRESULT hr = mDevice->CreateTexture2D(&BBDesc, NULL, backbufferStaging.ReleaseAndGetAddressOf());
+        // Create the staging texture
+        ComPtr<ID3D11Texture2D> stagingTexture;
+        HRESULT hr = mDevice->CreateTexture2D(&BBDesc, NULL, stagingTexture.ReleaseAndGetAddressOf());
+        mDevice.throwIfFailed(hr, "Error creating staging texture", "D3D11RenderWindowBase::copyContentsToMemory");
 
-        if (FAILED(hr) || mDevice.isError())
-        {
-                String errorDescription = mDevice.getErrorDescription(hr);
-                OGRE_EXCEPT_EX(Exception::ERR_RENDERINGAPI_ERROR, hr,
-                        "Error creating texture\nError Description:" + errorDescription, 
-                        "D3D11RenderWindow::copyContentsToMemory" );
-        }
-        // copy the back buffer
-        mDevice.GetImmediateContext()->CopyResource(backbufferStaging.Get(), backbufferNoMSAA.Get());
+        // Copy the back buffer into the staging texture
+        mDevice.GetImmediateContext()->CopySubresourceRegion(
+            stagingTexture.Get(), srcSubresource, srcBoxDx11.left, srcBoxDx11.top, srcBoxDx11.front,
+            backbufferNoMSAA.Get(), srcSubresource, &srcBoxDx11);
+        mDevice.throwIfFailed("Error while copying to staging texture", "D3D11RenderWindowBase::copyContentsToMemory");
 
-        // map the copied texture
-        D3D11_MAPPED_SUBRESOURCE mappedTex2D;
-        mDevice.GetImmediateContext()->Map(backbufferStaging.Get(), 0, D3D11_MAP_READ, 0, &mappedTex2D);
+        // Map the subresource of the staging texture
+        D3D11_MAPPED_SUBRESOURCE mapped = {0};
+        hr = mDevice.GetImmediateContext()->Map(stagingTexture.Get(), srcSubresource, D3D11_MAP_READ, 0, &mapped);
+        mDevice.throwIfFailed(hr, "Error while mapping staging texture", "D3D11RenderWindowBase::copyContentsToMemory");
 
-        // copy the texture to the dest
-        PixelBox src = D3D11Mappings::getPixelBoxWithMapping(dst.getWidth(), dst.getHeight(), 1, D3D11Mappings::_getPF(BBDesc.Format), mappedTex2D);
-        PixelUtil::bulkPixelConversion(src, dst);
+        // Read the data out of the texture
+        PixelBox locked = D3D11Mappings::getPixelBoxWithMapping(srcBoxDx11, BBDesc.Format, mapped);
+        PixelUtil::bulkPixelConversion(locked, dst);
 
-        // unmap the temp buffer
-        mDevice.GetImmediateContext()->Unmap(backbufferStaging.Get(), 0);
+        // Release the staging texture
+        mDevice.GetImmediateContext()->Unmap(stagingTexture.Get(), srcSubresource);
     }
 	//---------------------------------------------------------------------
 #if OGRE_NO_QUAD_BUFFER_STEREO == 0
@@ -1320,6 +1299,8 @@ namespace Ogre
             opt = miscParams->find("externalWindowHandle");
             if(opt != miscParams->end())
                 externalHandle = reinterpret_cast<Windows::UI::Core::CoreWindow^>((void*)StringConverter::parseSizeT(opt->second));
+            else
+                externalHandle = Windows::UI::Core::CoreWindow::GetForCurrentThread();
         }
 
         // Reset current window if any
@@ -1420,6 +1401,189 @@ namespace Ogre
         mHeight = (int)(rc.Height * scale + 0.5f);
 
         _resizeSwapChainBuffers(0, 0);      // pass zero to autodetect size
+    }
+
+#endif
+#pragma endregion
+
+    //---------------------------------------------------------------------
+    // class D3D11RenderWindowSwapChainPanel
+    //---------------------------------------------------------------------
+#pragma region D3D11RenderWindowSwapChainPanel
+#if OGRE_PLATFORM == OGRE_PLATFORM_WINRT && defined(_WIN32_WINNT_WINBLUE) && _WIN32_WINNT >= _WIN32_WINNT_WINBLUE
+	D3D11RenderWindowSwapChainPanel::D3D11RenderWindowSwapChainPanel(D3D11Device& device)
+        : D3D11RenderWindowSwapChainBased(device)
+        , mCompositionScale(1.0f, 1.0f)
+    {
+        mUseFlipSequentialMode = true;
+    }
+
+    float D3D11RenderWindowSwapChainPanel::getViewPointToPixelScale()
+    {
+        return std::max(mCompositionScale.Width, mCompositionScale.Height);
+    }
+
+    void D3D11RenderWindowSwapChainPanel::create(const String& name, unsigned int widthPt, unsigned int heightPt,
+        bool fullScreen, const NameValuePairList *miscParams)
+    {
+        D3D11RenderWindowSwapChainBased::create(name, widthPt, heightPt, fullScreen, miscParams);
+
+        Windows::UI::Xaml::Controls::SwapChainPanel^ externalHandle = nullptr;
+
+        if(miscParams)
+        {
+            // Get variable-length params
+            NameValuePairList::const_iterator opt;
+            // externalWindowHandle     -> externalHandle
+            opt = miscParams->find("externalWindowHandle");
+            if(opt != miscParams->end())
+                externalHandle = reinterpret_cast<Windows::UI::Xaml::Controls::SwapChainPanel^>((void*)StringConverter::parseSizeT(opt->second));
+        }
+
+        // Reset current control if any
+        mSwapChainPanel = nullptr;
+
+        if (!externalHandle)
+        {
+            OGRE_EXCEPT( Exception::ERR_INVALIDPARAMS, "External window handle is not specified.", "D3D11RenderWindow::create" );
+        }
+        else
+        {
+            mSwapChainPanel = externalHandle;
+            mIsExternal = true;
+
+            // subscribe to important notifications
+            compositionScaleChangedToken = (mSwapChainPanel->CompositionScaleChanged +=
+                ref new Windows::Foundation::TypedEventHandler<Windows::UI::Xaml::Controls::SwapChainPanel^, Platform::Object^>([this](Windows::UI::Xaml::Controls::SwapChainPanel^ sender, Platform::Object^ e)
+            {
+                windowMovedOrResized();
+            }));
+            sizeChangedToken = (mSwapChainPanel->SizeChanged +=
+                ref new Windows::UI::Xaml::SizeChangedEventHandler([this](Platform::Object^ sender, Windows::UI::Xaml::SizeChangedEventArgs^ e)
+            {
+                windowMovedOrResized();
+            }));
+        }
+
+        Windows::Foundation::Size sz = Windows::Foundation::Size(static_cast<float>(mSwapChainPanel->ActualWidth), static_cast<float>(mSwapChainPanel->ActualHeight));
+        mCompositionScale = Windows::Foundation::Size(mSwapChainPanel->CompositionScaleX, mSwapChainPanel->CompositionScaleY);
+        mLeft = 0;
+        mTop = 0;
+        mWidth = (int)(sz.Width * mCompositionScale.Width + 0.5f);
+        mHeight = (int)(sz.Height * mCompositionScale.Height + 0.5f);
+
+        // Prevent zero size DirectX content from being created.
+        mWidth = std::max(mWidth, 1U);
+        mHeight = std::max(mHeight, 1U);
+
+        LogManager::getSingleton().stream() << std::fixed << std::setprecision(1) 
+            << "D3D11: Created D3D11 SwapChainPanel Rendering Window \"" << mName << "\", " << sz.Width << " x " << sz.Height
+            << ", with backing store " << mWidth << "x" << mHeight << ", " << mColourDepth << "bpp, "
+            << "using content scaling factor { " << mCompositionScale.Width << ", " << mCompositionScale.Height << " }";
+
+        _createSwapChain();
+        _createSizeDependedD3DResources();
+    }
+
+    //---------------------------------------------------------------------
+    void D3D11RenderWindowSwapChainPanel::destroy()
+    {
+        D3D11RenderWindowSwapChainBased::destroy();
+
+        if (mSwapChainPanel && !mIsExternal)
+        {
+            OGRE_EXCEPT( Exception::ERR_INVALIDPARAMS, "Only external window handles are supported."
+                , "D3D11RenderWindow::destroy" );
+        }
+        mSwapChainPanel->CompositionScaleChanged -= compositionScaleChangedToken; compositionScaleChangedToken.Value = 0;
+        mSwapChainPanel->SizeChanged -= sizeChangedToken; sizeChangedToken.Value = 0;
+        mSwapChainPanel = nullptr;
+    }
+    //---------------------------------------------------------------------
+    HRESULT D3D11RenderWindowSwapChainPanel::_createSwapChainImpl(IDXGIDeviceN* pDXGIDevice)
+    {
+#if !__OGRE_WINRT_PHONE
+        D3D11RenderSystem* rsys = static_cast<D3D11RenderSystem*>(Root::getSingleton().getRenderSystem());
+        rsys->determineFSAASettings(mFSAA, mFSAAHint, _getRenderFormat(), &mFSAAType);
+#endif
+
+        mSwapChainDesc.Width                = mWidth;                                    // Use automatic sizing.
+        mSwapChainDesc.Height               = mHeight;
+        mSwapChainDesc.Format               = _getSwapChainFormat();
+        mSwapChainDesc.Stereo               = false;
+
+        assert(mUseFlipSequentialMode);                                             // i.e. no FSAA for swapchain, but can be enabled in separate backbuffer
+        mSwapChainDesc.SampleDesc.Count     = 1;
+        mSwapChainDesc.SampleDesc.Quality   = 0;
+
+        mSwapChainDesc.BufferUsage          = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        mSwapChainDesc.BufferCount          = 2;                                    // Use two buffers to enable flip effect.
+        mSwapChainDesc.Scaling              = DXGI_SCALING_STRETCH;                 // Required for CreateSwapChainForComposition.
+        mSwapChainDesc.SwapEffect           = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;     // MS recommends using this swap effect for all applications.
+        mSwapChainDesc.AlphaMode            = DXGI_ALPHA_MODE_UNSPECIFIED;
+
+        // Create swap chain
+        HRESULT hr = mDevice.GetDXGIFactory()->CreateSwapChainForComposition(pDXGIDevice, &mSwapChainDesc, NULL, mpSwapChain.ReleaseAndGetAddressOf());
+        if (FAILED(hr))
+            return hr;
+
+        // Associate swap chain with SwapChainPanel
+        // Get backing native interface for SwapChainPanel
+        ComPtr<ISwapChainPanelNative> panelNative;
+        hr = reinterpret_cast<IUnknown*>(mSwapChainPanel)->QueryInterface(IID_PPV_ARGS(panelNative.ReleaseAndGetAddressOf()));
+        if(FAILED(hr))
+            return hr;
+        hr = panelNative->SetSwapChain(mpSwapChain.Get());
+        if(FAILED(hr))
+            return hr;
+
+        // Ensure that DXGI does not queue more than one frame at a time. This both reduces 
+        // latency and ensures that the application will only render after each VSync, minimizing 
+        // power consumption.
+        hr = pDXGIDevice->SetMaximumFrameLatency(1);
+        if(FAILED(hr))
+            return hr;
+
+        hr = _compensateSwapChainCompositionScale();
+        return hr;
+    }
+    //---------------------------------------------------------------------
+    bool D3D11RenderWindowSwapChainPanel::isVisible() const
+    {
+        return (mSwapChainPanel && mSwapChainPanel->Visibility == Windows::UI::Xaml::Visibility::Visible);
+    }
+    //---------------------------------------------------------------------
+    void D3D11RenderWindowSwapChainPanel::windowMovedOrResized()
+    {
+        Windows::Foundation::Size sz = Windows::Foundation::Size(static_cast<float>(mSwapChainPanel->ActualWidth), static_cast<float>(mSwapChainPanel->ActualHeight));
+        mCompositionScale = Windows::Foundation::Size(mSwapChainPanel->CompositionScaleX, mSwapChainPanel->CompositionScaleY);
+        mLeft = 0;
+        mTop = 0;
+        mWidth = (int)(sz.Width * mCompositionScale.Width + 0.5f);
+        mHeight = (int)(sz.Height * mCompositionScale.Height + 0.5f);
+
+        // Prevent zero size DirectX content from being created.
+        mWidth = std::max(mWidth, 1U);
+        mHeight = std::max(mHeight, 1U);
+
+        _resizeSwapChainBuffers(mWidth, mHeight);
+
+        _compensateSwapChainCompositionScale();
+    }
+
+    HRESULT D3D11RenderWindowSwapChainPanel::_compensateSwapChainCompositionScale()
+    {
+        // Setup inverse scale on the swap chain
+        DXGI_MATRIX_3X2_F inverseScale = { 0 };
+        inverseScale._11 = 1.0f / mCompositionScale.Width;
+        inverseScale._22 = 1.0f / mCompositionScale.Height;
+        ComPtr<IDXGISwapChain2> spSwapChain2;
+        HRESULT hr = mpSwapChain.As<IDXGISwapChain2>(&spSwapChain2);
+        if(FAILED(hr))
+            return hr;
+
+        hr = spSwapChain2->SetMatrixTransform(&inverseScale);
+        return hr;
     }
 
 #endif
@@ -1568,7 +1732,7 @@ namespace Ogre
             return;
 
         ComPtr<IDXGISurface> dxgiSurface;
-        RECT updateRect = { 0, 0, mWidth, mHeight };
+        RECT updateRect = { 0, 0, (LONG)mWidth, (LONG)mHeight };
         POINT offset = { 0, 0 };
 
         HRESULT hr = mImageSourceNative->BeginDraw(updateRect, dxgiSurface.ReleaseAndGetAddressOf(), &offset);

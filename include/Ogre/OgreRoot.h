@@ -38,6 +38,7 @@ THE SOFTWARE.
 #endif
 
 #include <exception>
+#include "OgreHeaderPrefix.h"
 
 namespace Ogre
 {
@@ -251,13 +252,22 @@ namespace Ogre
                 RenderSystem::setConfigOption and Root::saveConfig with the
                 user's choices. This is the easiest way to get the system
                 configured.
+            @param dialog ConfigDialog implementation to use.
+                If NULL, the first available render system with the default options
+                will be selected.
             @return
                 If the user clicked 'Ok', <b>true</b> is returned.
             @par
                 If they clicked 'Cancel' (in which case the app should
                 strongly consider terminating), <b>false</b> is returned.
          */
-        bool showConfigDialog(void);
+        bool showConfigDialog(ConfigDialog* dialog);
+
+        /** @overload
+
+            @deprecated use showConfigDialog(ConfigDialog* dialog);
+         */
+        OGRE_DEPRECATED bool showConfigDialog(void);
 
         /** Adds a new rendering subsystem to the list of available renderers.
             @remarks
@@ -447,8 +457,9 @@ namespace Ogre
 
         /** Utility function for getting a better description of an error
             code.
+            @deprecated obsolete API
         */
-        String getErrorDescription(long errorNumber);
+        OGRE_DEPRECATED String getErrorDescription(long errorNumber);
 
         /** Registers a FrameListener which will be called back every frame.
             @remarks
@@ -590,8 +601,9 @@ namespace Ogre
                 with the same name are still unique.
             @see
                 Archive
+            @deprecated use ResourceGroupManager::addResourceLocation
         */
-        void addResourceLocation(const String& name, const String& locType, 
+        OGRE_DEPRECATED void addResourceLocation(const String& name, const String& locType,
             const String& groupName = ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, 
             bool recursive = false);
 
@@ -600,8 +612,9 @@ namespace Ogre
         @param name The name of the resource location as specified in addResourceLocation
         @param groupName The name of the resource group to which this location 
             was assigned.
+        @deprecated use ResourceGroupManager::removeResourceLocation
         */
-        void removeResourceLocation(const String& name, 
+        OGRE_DEPRECATED void removeResourceLocation(const String& name,
             const String& groupName = ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
         /** Helper method to assist you in creating writeable file streams.
@@ -625,8 +638,9 @@ namespace Ogre
             only locations which match that pattern (as determined by StringUtil::match)
             will be considered candidates for creation.
         */
-        DataStreamPtr createFileStream(const String& filename, const String& groupName = ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, 
-            bool overwrite = false, const String& locationPattern = BLANKSTRING);
+        static DataStreamPtr createFileStream(const String& filename,
+                const String& groupName = ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                bool overwrite = false, const String& locationPattern = BLANKSTRING);
 
         /** Helper method to assist you in accessing readable file streams.
         @remarks
@@ -642,8 +656,9 @@ namespace Ogre
             only locations which match that pattern (as determined by StringUtil::match)
             will be considered candidates for creation.
         */      
-        DataStreamPtr openFileStream(const String& filename, const String& groupName = ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, 
-            const String& locationPattern = BLANKSTRING);
+        static DataStreamPtr openFileStream(const String& filename,
+                const String& groupName = ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                const String& locationPattern = BLANKSTRING);
 
         /** Generates a packed data version of the passed in ColourValue suitable for
             use with the current RenderSystem.
@@ -924,37 +939,9 @@ namespace Ogre
         */
         void destroyAllRenderQueueInvocationSequences(void);
 
-        /** Override standard Singleton retrieval.
-            @remarks
-                Why do we do this? Well, it's because the Singleton
-                implementation is in a .h file, which means it gets compiled
-                into anybody who includes it. This is needed for the
-                Singleton template to work, but we actually only want it
-                compiled into the implementation of the class based on the
-                Singleton, not all of them. If we don't change this, we get
-                link errors when trying to use the Singleton-based class from
-                an outside dll.
-            @par
-                This method just delegates to the template version anyway,
-                but the implementation stays in this single compilation unit,
-                preventing link errors.
-        */
+        /// @copydoc Singleton::getSingleton()
         static Root& getSingleton(void);
-        /** Override standard Singleton retrieval.
-            @remarks
-                Why do we do this? Well, it's because the Singleton
-                implementation is in a .h file, which means it gets compiled
-                into anybody who includes it. This is needed for the
-                Singleton template to work, but we actually only want it
-                compiled into the implementation of the class based on the
-                Singleton, not all of them. If we don't change this, we get
-                link errors when trying to use the Singleton-based class from
-                an outside dll.
-            @par
-                This method just delegates to the template version anyway,
-                but the implementation stays in this single compilation unit,
-                preventing link errors.
-        */
+        /// @copydoc Singleton::getSingleton()
         static Root* getSingletonPtr(void);
 
         /** Clears the history of all event times. 
@@ -1095,4 +1082,7 @@ namespace Ogre
     /** @} */
     /** @} */
 } // Namespace Ogre
+
+#include "OgreHeaderSuffix.h"
+
 #endif

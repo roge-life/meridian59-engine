@@ -235,7 +235,7 @@ namespace Ogre {
     Image& Image::loadDynamicImage( uchar* pData, uint32 uWidth, uint32 uHeight,
         uint32 depth,
         PixelFormat eFormat, bool autoDelete, 
-        size_t numFaces, uint8 numMipMaps)
+        size_t numFaces, uint32 numMipMaps)
     {
 
         freeMemory();
@@ -272,7 +272,7 @@ namespace Ogre {
         DataStreamPtr& stream, 
         uint32 uWidth, uint32 uHeight, uint32 uDepth,
         PixelFormat eFormat,
-        size_t numFaces, uint8 numMipMaps)
+        size_t numFaces, uint32 numMipMaps)
     {
 
         size_t size = calculateSize(numMipMaps, numFaces, uWidth, uHeight, uDepth, eFormat);
@@ -409,7 +409,7 @@ namespace Ogre {
         Codec::DecodeResult res = pCodec->decode(stream);
 
         ImageCodec::ImageData* pData = 
-            static_cast<ImageCodec::ImageData*>(res.second.getPointer());
+            static_cast<ImageCodec::ImageData*>(res.second.get());
 
         mWidth = pData->width;
         mHeight = pData->height;
@@ -467,7 +467,7 @@ namespace Ogre {
     }
 
     //-----------------------------------------------------------------------------
-    uint8 Image::getNumMipmaps() const
+    uint32 Image::getNumMipmaps() const
     {
         return mNumMipmaps;
     }
@@ -597,7 +597,7 @@ namespace Ogre {
             {
                 // Allocate temporary buffer of destination size in source format 
                 temp = PixelBox(scaled.getWidth(), scaled.getHeight(), scaled.getDepth(), src.format);
-                buf.bind(OGRE_NEW MemoryDataStream(temp.getConsecutiveSize()));
+                buf.reset(OGRE_NEW MemoryDataStream(temp.getConsecutiveSize()));
                 temp.data = buf->getPtr();
             }
             // super-optimized: no conversion
@@ -640,7 +640,7 @@ namespace Ogre {
                 {
                     // Allocate temp buffer of destination size in source format 
                     temp = PixelBox(scaled.getWidth(), scaled.getHeight(), scaled.getDepth(), src.format);
-                    buf.bind(OGRE_NEW MemoryDataStream(temp.getConsecutiveSize()));
+                    buf.reset(OGRE_NEW MemoryDataStream(temp.getConsecutiveSize()));
                     temp.data = buf->getPtr();
                 }
                 // super-optimized: byte-oriented math, no conversion

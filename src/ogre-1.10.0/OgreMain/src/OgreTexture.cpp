@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,7 @@ THE SOFTWARE.
 #include "OgreTextureManager.h"
 
 namespace Ogre {
+    const char* Texture::CUBEMAP_SUFFIXES[] = {"_rt", "_lf", "_up", "_dn", "_fr", "_bk"};
     //--------------------------------------------------------------------------
     Texture::Texture(ResourceManager* creator, const String& name, 
         ResourceHandle handle, const String& group, bool isManual, 
@@ -85,7 +86,7 @@ namespace Ogre {
         ushort uWidth, ushort uHeight, PixelFormat eFormat)
     {
         Image img;
-        img.loadRawData(stream, uWidth, uHeight, eFormat);
+        img.loadRawData(stream, uWidth, uHeight, 1, eFormat);
         loadImage(img);
     }
     //--------------------------------------------------------------------------    
@@ -213,7 +214,7 @@ namespace Ogre {
         }
 
         // The custom mipmaps in the image have priority over everything
-        uint8 imageMips = images[0]->getNumMipmaps();
+        uint32 imageMips = images[0]->getNumMipmaps();
 
         if(imageMips > 0)
         {
@@ -307,7 +308,7 @@ namespace Ogre {
                     // Apply gamma correction
                     // Do not overwrite original image but do gamma correction in temporary buffer
                     MemoryDataStreamPtr buf; // for scoped deletion of conversion buffer
-                    buf.bind(OGRE_NEW MemoryDataStream(
+                    buf.reset(OGRE_NEW MemoryDataStream(
                         PixelUtil::getMemorySize(
                             src.getWidth(), src.getHeight(), src.getDepth(), src.format)));
                     
@@ -397,25 +398,25 @@ namespace Ogre {
             try
             {
                 dstream = ResourceGroupManager::getSingleton().openResource(
-                        mName, mGroup, true, 0);
+                        mName, mGroup);
             }
-            catch (Exception&)
+            catch (FileNotFoundException&)
             {
             }
-            if (dstream.isNull() && getTextureType() == TEX_TYPE_CUBE_MAP)
+            if (!dstream && getTextureType() == TEX_TYPE_CUBE_MAP)
             {
                 // try again with one of the faces (non-dds)
                 try
                 {
                     dstream = ResourceGroupManager::getSingleton().openResource(
-                        mName + "_rt", mGroup, true, 0);
+                        mName + "_rt", mGroup);
                 }
-                catch (Exception&)
+                catch (FileNotFoundException&)
                 {
                 }
             }
 
-            if (!dstream.isNull())
+            if (dstream)
             {
                 return Image::getFileExtFromMagic(dstream);
             }

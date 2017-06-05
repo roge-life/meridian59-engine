@@ -71,7 +71,8 @@ namespace Ogre {
         mBillboardDataChanged(true)
     {
         setDefaultDimensions( 100, 100 );
-        setMaterialName( "BaseWhite" );
+        mMaterial = MaterialManager::getSingleton().getDefaultMaterial();
+        mMaterial->load();
         mCastShadows = false;
         setTextureStacksAndSlices( 1, 1 );
     }
@@ -105,7 +106,8 @@ namespace Ogre {
         mBillboardDataChanged(true)
     {
         setDefaultDimensions( 100, 100 );
-        setMaterialName( "BaseWhite" );
+        mMaterial = MaterialManager::getSingleton().getDefaultMaterial();
+        mMaterial->load();
         setPoolSize( poolSize );
         mCastShadows = false;
         setTextureStacksAndSlices( 1, 1 );
@@ -302,11 +304,9 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     void BillboardSet::setMaterialName( const String& name , const String& groupName /* = ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME */ )
     {
-        mMaterialName = name;
-
         mMaterial = MaterialManager::getSingleton().getByName(name, groupName);
 
-        if (mMaterial.isNull())
+        if (!mMaterial)
             OGRE_EXCEPT( Exception::ERR_ITEM_NOT_FOUND, "Could not find material " + name,
                 "BillboardSet::setMaterialName" );
 
@@ -319,7 +319,7 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     const String& BillboardSet::getMaterialName(void) const
     {
-        return mMaterialName;
+        return mMaterial->getName();
     }
 
     //-----------------------------------------------------------------------
@@ -647,26 +647,16 @@ namespace Ogre {
     {
         mMaterial = material;
         
-        if (mMaterial.isNull())
+        if (!mMaterial)
         {
-            LogManager::getSingleton().logMessage("Can't assign material "  
+            LogManager::getSingleton().logMessage("Can't assign material " + material->getName()+
                                                   " to BillboardSet of " + getName() + " because this "
-                                                  "Material does not exist. Have you forgotten to define it in a "
+                                                  "Material does not exist in group "+material->getGroup()+". Have you forgotten to define it in a "
                                                   ".material script?", LML_CRITICAL);
-            
-            mMaterial = MaterialManager::getSingleton().getByName("BaseWhite");
-            
-            if (mMaterial.isNull())
-            {
-                OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, "Can't assign default material "
-                            "to BillboardSet " + getName() + ". Did "
-                            "you forget to call MaterialManager::initialise()?",
-                            "BillboardSet::setMaterial");
-            }
+
+            mMaterial = MaterialManager::getSingleton().getDefaultMaterial();
         }
-        
-        mMaterialName = mMaterial->getName();
-        
+
         // Ensure new material loaded (will not load again if already loaded)
         mMaterial->load();
     }
@@ -882,7 +872,7 @@ namespace Ogre {
             mIndexData = 0;
         }
 
-        mMainBuf.setNull();
+        mMainBuf.reset();
 
         mBuffersCreated = false;
 

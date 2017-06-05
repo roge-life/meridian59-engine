@@ -47,18 +47,26 @@ namespace Ogre {
      */
     enum TextureUsage
     {
-        /// @copydoc HardwareBuffer::Usage
+        /// same as HardwareBuffer::HBU_STATIC
         TU_STATIC = HardwareBuffer::HBU_STATIC,
+        /// same as HardwareBuffer::HBU_DYNAMIC
         TU_DYNAMIC = HardwareBuffer::HBU_DYNAMIC,
+        /// same as HardwareBuffer::HBU_WRITE_ONLY
         TU_WRITE_ONLY = HardwareBuffer::HBU_WRITE_ONLY,
-        TU_STATIC_WRITE_ONLY = HardwareBuffer::HBU_STATIC_WRITE_ONLY, 
+        /// same as HardwareBuffer::HBU_STATIC_WRITE_ONLY
+        TU_STATIC_WRITE_ONLY = HardwareBuffer::HBU_STATIC_WRITE_ONLY,
+        /// same as HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY
         TU_DYNAMIC_WRITE_ONLY = HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY,
+        /// same as HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE
         TU_DYNAMIC_WRITE_ONLY_DISCARDABLE = HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE,
-        /// Mipmaps will be automatically generated for this texture
+        /// Mipmaps will be automatically generated for this texture. The exact algorithm used is not
+        /// defined, but you can assume it to be a 2x2 box filter.
         TU_AUTOMIPMAP = 16,
         /** This texture will be a render target, i.e. used as a target for render to texture
-            setting this flag will ignore all other texture usages except TU_AUTOMIPMAP */
+            setting this flag will ignore all other texture usages except TU_AUTOMIPMAP and TU_NOTSHADERRESOURCE */
         TU_RENDERTARGET = 32,
+        /// Hint, that could be combined with TU_RENDERTARGET to remove possible limitations on some hardware
+        TU_NOTSHADERRESOURCE = 64,
         /// Default to automatic mipmap generation static textures
         TU_DEFAULT = TU_AUTOMIPMAP | TU_STATIC_WRITE_ONLY
     };
@@ -82,7 +90,8 @@ namespace Ogre {
         TEX_TYPE_2D = 2,
         /// 3D volume texture, used in combination with 3D texture coordinates
         TEX_TYPE_3D = 3,
-        /// 3D cube map, used in combination with 3D texture coordinates
+        /// cube map (six two dimensional textures, one for each cube face), used in combination with 3D
+        /// texture coordinates
         TEX_TYPE_CUBE_MAP = 4,
         /// 2D texture array
         TEX_TYPE_2D_ARRAY = 5,
@@ -127,13 +136,13 @@ namespace Ogre {
 
         /** Gets the number of mipmaps to be used for this texture.
         */
-        virtual uint8 getNumMipmaps(void) const {return mNumMipmaps;}
+        virtual uint32 getNumMipmaps(void) const {return mNumMipmaps;}
 
         /** Sets the number of mipmaps to be used for this texture.
             @note
                 Must be set before calling any 'load' method.
         */
-        virtual void setNumMipmaps(uint8 num) {mNumRequestedMipmaps = mNumMipmaps = num;}
+        virtual void setNumMipmaps(uint32 num) {mNumRequestedMipmaps = mNumMipmaps = num;}
 
         /** Are mipmaps hardware generated?
         @remarks
@@ -411,8 +420,8 @@ namespace Ogre {
         uint32 mWidth;
         uint32 mDepth;
 
-        uint8 mNumRequestedMipmaps;
-        uint8 mNumMipmaps;
+        uint32 mNumRequestedMipmaps;
+        uint32 mNumMipmaps;
         bool mMipmapsHardwareGenerated;
         float mGamma;
         bool mHwGamma;
@@ -453,6 +462,7 @@ namespace Ogre {
         */
         String getSourceFileType() const;
 
+        static const char* CUBEMAP_SUFFIXES[6];
     };
     /** @} */
     /** @} */

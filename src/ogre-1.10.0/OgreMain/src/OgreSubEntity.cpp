@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -52,7 +52,7 @@ namespace Ogre {
         mHardwarePoseCount = 0;
         mIndexStart = 0;
         mIndexEnd = 0;
-        setMaterialName("BaseWhite");
+        setMaterial(MaterialManager::getSingleton().getDefaultMaterial());
     }
     //-----------------------------------------------------------------------
     SubEntity::~SubEntity()
@@ -69,29 +69,21 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     const String& SubEntity::getMaterialName(void) const
     {
-        return !mMaterialPtr.isNull() ? mMaterialPtr->getName() : BLANKSTRING;
+        return mMaterialPtr ? mMaterialPtr->getName() : BLANKSTRING;
     }
     //-----------------------------------------------------------------------
     void SubEntity::setMaterialName( const String& name, const String& groupName /* = ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME */)
     {
         MaterialPtr material = MaterialManager::getSingleton().getByName(name, groupName);
 
-        if( material.isNull() )
+        if( !material )
         {
             LogManager::getSingleton().logMessage("Can't assign material " + name +
                 " to SubEntity of " + mParentEntity->getName() + " because this "
-                "Material does not exist. Have you forgotten to define it in a "
+                "Material does not exist in group "+groupName+". Have you forgotten to define it in a "
                 ".material script?", LML_CRITICAL);
 
-            material = MaterialManager::getSingleton().getByName("BaseWhite");
-
-            if (material.isNull())
-            {
-                OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, "Can't assign default material "
-                    "to SubEntity of " + mParentEntity->getName() + ". Did "
-                    "you forget to call MaterialManager::initialise()?",
-                    "SubEntity::setMaterialName");
-            }
+            material = MaterialManager::getSingleton().getDefaultMaterial();
         }
 
         setMaterial( material );
@@ -101,22 +93,14 @@ namespace Ogre {
     {
         mMaterialPtr = material;
         
-        if (mMaterialPtr.isNull())
+        if (!mMaterialPtr)
         {
             LogManager::getSingleton().logMessage("Can't assign material "  
                 " to SubEntity of " + mParentEntity->getName() + " because this "
                 "Material does not exist. Have you forgotten to define it in a "
                 ".material script?", LML_CRITICAL);
             
-            mMaterialPtr = MaterialManager::getSingleton().getByName("BaseWhite");
-            
-            if (mMaterialPtr.isNull())
-            {
-                OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, "Can't assign default material "
-                    "to SubEntity of " + mParentEntity->getName() + ". Did "
-                    "you forget to call MaterialManager::initialise()?",
-                    "SubEntity::setMaterial");
-            }
+            mMaterialPtr = MaterialManager::getSingleton().getDefaultMaterial();
         }
         
         // Ensure new material loaded (will not load again if already loaded)

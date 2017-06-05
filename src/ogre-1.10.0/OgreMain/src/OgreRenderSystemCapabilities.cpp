@@ -54,10 +54,7 @@ namespace Ogre {
         mCategoryRelevant[CAPS_CATEGORY_D3D9] = false;
         mCategoryRelevant[CAPS_CATEGORY_GL] = false;
     }
-    //-----------------------------------------------------------------------
-    RenderSystemCapabilities::~RenderSystemCapabilities()
-    {
-    }
+
     //-----------------------------------------------------------------------
     void RenderSystemCapabilities::log(Log* pLog)
     {
@@ -70,17 +67,8 @@ namespace Ogre {
         pLog->logMessage(" * Fixed function pipeline: " 
             + StringConverter::toString(hasCapability(RSC_FIXED_FUNCTION), true));
         pLog->logMessage(
-            " * Hardware generation of mipmaps: "
-            + StringConverter::toString(hasCapability(RSC_AUTOMIPMAP), true));
-        pLog->logMessage(
-            " * Texture blending: "
-            + StringConverter::toString(hasCapability(RSC_BLENDING), true));
-        pLog->logMessage(
             " * Anisotropic texture filtering: "
             + StringConverter::toString(hasCapability(RSC_ANISOTROPY), true));
-        pLog->logMessage(
-            " * Dot product texture operation: "
-            + StringConverter::toString(hasCapability(RSC_DOT3), true));
         pLog->logMessage(
             " * Cube mapping: "
             + StringConverter::toString(hasCapability(RSC_CUBEMAPPING), true));
@@ -99,9 +87,6 @@ namespace Ogre {
                 "   - Wrap stencil values: "
                 + StringConverter::toString(hasCapability(RSC_STENCIL_WRAP), true));
         }
-        pLog->logMessage(
-            " * Hardware vertex / index buffers: "
-            + StringConverter::toString(hasCapability(RSC_VBO), true));
         if(hasCapability(RSC_VBO))
         {
             pLog->logMessage(
@@ -217,11 +202,11 @@ namespace Ogre {
             pLog->logMessage(
                  "   - BC6H/BC7: "
                  + StringConverter::toString(hasCapability(RSC_TEXTURE_COMPRESSION_BC6H_BC7), true));
+            pLog->logMessage(
+                "   - Mipmaps for compressed formats: "
+                + StringConverter::toString(hasCapability(RSC_AUTOMIPMAP_COMPRESSED), true));
         }
 
-        pLog->logMessage(
-            " * Scissor Rectangle: "
-            + StringConverter::toString(hasCapability(RSC_SCISSOR_TEST), true));
         pLog->logMessage(
             " * Hardware Occlusion Query: "
             + StringConverter::toString(hasCapability(RSC_HWOCCLUSION), true));
@@ -258,6 +243,9 @@ namespace Ogre {
         pLog->logMessage(
             " * Point Sprites: "
             + StringConverter::toString(hasCapability(RSC_POINT_SPRITES), true));
+        pLog->logMessage(
+            " * Hardware Gamma: "
+            + StringConverter::toString(hasCapability(RSC_HW_GAMMA), true));
         pLog->logMessage(
             " * Extended point parameters: "
             + StringConverter::toString(hasCapability(RSC_POINT_EXTENDED_PARAMETERS), true));
@@ -302,30 +290,17 @@ namespace Ogre {
         if (mCategoryRelevant[CAPS_CATEGORY_GL])
         {
             pLog->logMessage(
-                " * GL 1.5 without VBO workaround: "
-                + StringConverter::toString(hasCapability(RSC_GL1_5_NOVBO), true));
-
-            pLog->logMessage(
-                " * Frame Buffer objects: "
-                + StringConverter::toString(hasCapability(RSC_FBO), true));
-            pLog->logMessage(
-                " * Frame Buffer objects (ARB extension): "
-                + StringConverter::toString(hasCapability(RSC_FBO_ARB), true));
-            pLog->logMessage(
-                " * Frame Buffer objects (ATI extension): "
-                + StringConverter::toString(hasCapability(RSC_FBO_ATI), true));
-            pLog->logMessage(
                 " * PBuffer support: "
                 + StringConverter::toString(hasCapability(RSC_PBUFFER), true));
-            pLog->logMessage(
-                " * GL 1.5 without HW-occlusion workaround: "
-                + StringConverter::toString(hasCapability(RSC_GL1_5_NOHWOCCLUSION), true));
             pLog->logMessage(
                 " * Vertex Array Objects: "
                 + StringConverter::toString(hasCapability(RSC_VAO), true));
             pLog->logMessage(
                 " * Separate shader objects: "
                 + StringConverter::toString(hasCapability(RSC_SEPARATE_SHADER_OBJECTS), true));
+            pLog->logMessage(
+                " * GLSL SSO redeclare interface block: "
+                + StringConverter::toString(hasCapability(RSC_GLSL_SSO_REDECLARE), true));
         }
 
         if (mCategoryRelevant[CAPS_CATEGORY_D3D9])
@@ -336,7 +311,7 @@ namespace Ogre {
         }
     }
     //---------------------------------------------------------------------
-    StringVector RenderSystemCapabilities::msGPUVendorStrings;
+    String RenderSystemCapabilities::msGPUVendorStrings[GPU_VENDOR_COUNT];
     //---------------------------------------------------------------------
     GPUVendor RenderSystemCapabilities::vendorFromString(const String& vendorString)
     {
@@ -358,7 +333,7 @@ namespace Ogre {
         
     }
     //---------------------------------------------------------------------
-    String RenderSystemCapabilities::vendorToString(GPUVendor v)
+    const String& RenderSystemCapabilities::vendorToString(GPUVendor v)
     {
         initVendorStrings();
         return msGPUVendorStrings[v];
@@ -366,10 +341,9 @@ namespace Ogre {
     //---------------------------------------------------------------------
     void RenderSystemCapabilities::initVendorStrings()
     {
-        if (msGPUVendorStrings.empty())
+        if (msGPUVendorStrings[0].empty())
         {
             // Always lower case!
-            msGPUVendorStrings.resize(GPU_VENDOR_COUNT);
             msGPUVendorStrings[GPU_UNKNOWN] = "unknown";
             msGPUVendorStrings[GPU_NVIDIA] = "nvidia";
             msGPUVendorStrings[GPU_AMD] = "amd";

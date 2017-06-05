@@ -249,7 +249,9 @@ namespace Ogre
         static inline int IAbs (int iValue) { return ( iValue >= 0 ? iValue : -iValue ); }
         static inline int ICeil (float fValue) { return int(ceil(fValue)); }
         static inline int IFloor (float fValue) { return int(floor(fValue)); }
-        static int ISign (int iValue);
+        static int ISign (int iValue) {
+            return ( iValue > 0 ? +1 : ( iValue < 0 ? -1 : 0 ) );
+        }
 
         /** Absolute value function
             @param
@@ -361,15 +363,20 @@ namespace Ogre
             return Degree(Sign(dValue.valueDegrees()));
         }
 
-        //Simulate the shader function saturate that clamps a parameter value between 0 and 1
+        /// Simulate the shader function saturate that clamps a parameter value between 0 and 1
         static inline float saturate(float t) { return (t < 0) ? 0 : ((t > 1) ? 1 : t); }
         static inline double saturate(double t) { return (t < 0) ? 0 : ((t > 1) ? 1 : t); }
-        
-        //Simulate the shader function lerp which performers linear interpolation
-        //given 3 parameters v0, v1 and t the function returns the value of (1 – t)* v0 + t * v1. 
-        //where v0 and v1 are matching vector or scalar types and t can be either a scalar or a vector of the same type as a and b.
-        template<typename V, typename T> static V lerp(const V& v0, const V& v1, const T& t) { 
-            return v0 * (1 - t) + v1 * t; }
+
+        /** Simulate the shader function lerp which performers linear interpolation
+
+           given 3 parameters v0, v1 and t the function returns the value of (1 - t)* v0 + t * v1.
+           where v0 and v1 are matching vector or scalar types and t can be either a scalar or a
+           vector of the same type as a and b.
+        */
+        template <typename V, typename T> static V lerp(const V& v0, const V& v1, const T& t)
+        {
+            return v0 * (1 - t) + v1 * t;
+        }
 
         /** Sine function.
             @param fValue
@@ -425,7 +432,9 @@ namespace Ogre
             @param fValue
                 The value whose inverse square root will be calculated.
         */
-        static Real InvSqrt (Real fValue);
+        static Real InvSqrt (Real fValue) {
+            return Real(1.) / std::sqrt(fValue);
+        }
 
         /** Generate a random number of unit length.
             @return
@@ -441,13 +450,17 @@ namespace Ogre
             @return
                 A random number in the range from [fLow,fHigh].
          */
-        static Real RangeRandom (Real fLow, Real fHigh);
+        static Real RangeRandom (Real fLow, Real fHigh) {
+            return (fHigh-fLow)*UnitRandom() + fLow;
+        }
 
         /** Generate a random number in the range [-1,1].
             @return
                 A random number in the range from [-1,1].
          */
-        static Real SymmetricRandom ();
+        static Real SymmetricRandom () {
+            return 2.0f * UnitRandom() - 1.0f;
+        }
 
         static void SetRandomValueProvider(RandomValueProvider* provider);
        
@@ -662,7 +675,9 @@ namespace Ogre
         /** Compare 2 reals, using tolerance for inaccuracies.
         */
         static bool RealEqual(Real a, Real b,
-            Real tolerance = std::numeric_limits<Real>::epsilon());
+            Real tolerance = std::numeric_limits<Real>::epsilon()) {
+            return std::abs(b-a) <= tolerance;
+        }
 
         /** Calculates the tangent space vector for a given set of positions / texture coords. */
         static Vector3 calculateTangentSpaceVector(
@@ -696,9 +711,11 @@ namespace Ogre
         static Matrix4 makeViewMatrix(const Vector3& position, const Quaternion& orientation, 
             const Matrix4* reflectMatrix = 0);
 
-        /** Get a bounding radius value from a bounding box. */
+        /** Get the radius of the origin-centered bounding sphere from the bounding box. */
         static Real boundingRadiusFromAABB(const AxisAlignedBox& aabb);
 
+        /** Get the radius of the bbox-centered bounding sphere from the bounding box. */
+        static Real boundingRadiusFromAABBCentered(const AxisAlignedBox &aabb);
 
 
         static const Real POS_INFINITY;

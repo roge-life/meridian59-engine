@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -215,7 +215,7 @@ namespace Ogre {
             mFrames.resize(1);
             mFramePtrs.resize(1);
             mFrames[0] = name;
-            mFramePtrs[0].setNull();
+            mFramePtrs[0].reset();
             // defer load until used, so don't grab pointer yet
             mCurrentFrame = 0;
             mCubic = false;
@@ -242,7 +242,7 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     void TextureUnitState::setTexture( const TexturePtr& texPtr)
     {
-        if (texPtr.isNull())
+        if (!texPtr)
         {
             OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND,
                 "Texture Pointer is empty.",
@@ -301,7 +301,7 @@ namespace Ogre {
             mFrames.clear();
             // One reference space, set manually through _setTexturePtr
             mFramePtrs.resize(1);
-            mFramePtrs[0].setNull();
+            mFramePtrs[0].reset();
         }
     }
     //-----------------------------------------------------------------------
@@ -321,19 +321,12 @@ namespace Ogre {
             setContentType(CONTENT_NAMED);
             mTextureLoadFailed = false;
             String ext;
-            String suffixes[6] = {"_fr", "_bk", "_lf", "_rt", "_up", "_dn"};
             String baseName;
+            StringUtil::splitBaseFilename(name, baseName, ext);
+            ext = "."+ext;
+
             String fullNames[6];
-
-            size_t pos = name.find_last_of(".");
-            if( pos != String::npos )
-            {
-                baseName = name.substr(0, pos);
-                ext = name.substr(pos);
-            }
-            else
-                baseName = name;
-
+            static const char* suffixes[6] = {"_fr", "_bk", "_lf", "_rt", "_up", "_dn"};
             for (int i = 0; i < 6; ++i)
             {
                 fullNames[i] = baseName + suffixes[i] + ext;
@@ -358,7 +351,7 @@ namespace Ogre {
         for (unsigned int i = 0; i < mFrames.size(); ++i)
         {
             mFrames[i] = names[i];
-            mFramePtrs[i].setNull();
+            mFramePtrs[i].reset();
         }
         // Tell parent we need recompiling, will cause reload too
         mParent->_notifyNeedsRecompile();
@@ -409,7 +402,7 @@ namespace Ogre {
         {
             mFrames[frameNumber] = name;
             // reset pointer (don't populate until requested)
-            mFramePtrs[frameNumber].setNull();  
+            mFramePtrs[frameNumber].reset();  
 
             if (isLoaded())
             {
@@ -501,7 +494,7 @@ namespace Ogre {
             StringStream str;
             str << baseName << "_" << i << ext;
             mFrames[i] = str.str();
-            mFramePtrs[i].setNull();
+            mFramePtrs[i].reset();
         }
 
         // Load immediately if Material loaded
@@ -532,7 +525,7 @@ namespace Ogre {
         for (unsigned int i = 0; i < mFrames.size(); ++i)
         {
             mFrames[i] = names[i];
-            mFramePtrs[i].setNull();
+            mFramePtrs[i].reset();
         }
 
         // Load immediately if Material loaded
@@ -551,7 +544,7 @@ namespace Ogre {
     {
         
         TexturePtr tex = _getTexturePtr(frame);
-        if (tex.isNull())
+        if (!tex)
             OGRE_EXCEPT( Exception::ERR_ITEM_NOT_FOUND, "Could not find texture " + mFrames[ frame ],
             "TextureUnitState::getTextureDimensions" );
 
@@ -1153,7 +1146,7 @@ namespace Ogre {
         {
             // Ensure texture is loaded, specified number of mipmaps and
             // priority
-            if (mFramePtrs[frame].isNull())
+            if (!mFramePtrs[frame])
             {
                 try {
                     mFramePtrs[frame] = 
@@ -1163,9 +1156,8 @@ namespace Ogre {
                 }
                 catch (Exception &e) {
                     String msg;
-                    msg = msg + "Error loading texture " + mFrames[frame]  + 
-                        ". Texture layer will be blank. Loading the texture "
-                        "failed with the following exception: " 
+                    msg = msg + "Error preparing texture " + mFrames[frame]  +
+                        ". Texture layer will be blank: "
                         + e.getFullDescription();
                     LogManager::getSingleton().logMessage(msg, LML_CRITICAL);
                     mTextureLoadFailed = true;
@@ -1185,7 +1177,7 @@ namespace Ogre {
         {
             // Ensure texture is loaded, specified number of mipmaps and
             // priority
-            if (mFramePtrs[frame].isNull())
+            if (!mFramePtrs[frame])
             {
                 try {
                     mFramePtrs[frame] = 
@@ -1196,8 +1188,7 @@ namespace Ogre {
                 catch (Exception &e) {
                     String msg;
                     msg = msg + "Error loading texture " + mFrames[frame]  + 
-                        ". Texture layer will be blank. Loading the texture "
-                        "failed with the following exception: " 
+                        ". Texture layer will be blank: "
                         + e.getFullDescription();
                     LogManager::getSingleton().logMessage(msg, LML_CRITICAL);
                     mTextureLoadFailed = true;
@@ -1401,7 +1392,7 @@ namespace Ogre {
         tiend = mFramePtrs.end();
         for (ti = mFramePtrs.begin(); ti != tiend; ++ti)
         {
-            ti->setNull();
+            ti->reset();
         }
     }
     //-----------------------------------------------------------------------
@@ -1429,7 +1420,7 @@ namespace Ogre {
         tiend = mFramePtrs.end();
         for (ti = mFramePtrs.begin(); ti != tiend; ++ti)
         {
-            ti->setNull();
+            ti->reset();
         }
     }
     //-----------------------------------------------------------------------------

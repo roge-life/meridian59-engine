@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,112 +30,42 @@ THE SOFTWARE.
 #include "OgreException.h"
 #include "OgrePlatform.h"
 
+#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_WINRT
+#   define LC_NUMERIC_MASK LC_NUMERIC
+#   define newlocale(cat, loc, base) _create_locale(cat, loc)
+#endif
+
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID || OGRE_PLATFORM == OGRE_PLATFORM_EMSCRIPTEN
+#   define newlocale(cat, loc, base) 0
+#endif
+
 namespace Ogre {
+    locale_t StringConverter::_numLocale = newlocale(LC_NUMERIC_MASK, OGRE_DEFAULT_LOCALE, NULL);
 
-    String StringConverter::msDefaultStringLocale = OGRE_DEFAULT_LOCALE;
-    std::locale StringConverter::msLocale = std::locale(msDefaultStringLocale.c_str());
-    bool StringConverter::msUseLocale = false;
-
-    //-----------------------------------------------------------------------
-    String StringConverter::toString(Real val, unsigned short precision, 
-        unsigned short width, char fill, std::ios::fmtflags flags)
+    template<typename T>
+    String StringConverter::_toString(T val, uint16 width, char fill, std::ios::fmtflags flags)
     {
         StringStream stream;
-        if (msUseLocale)
-            stream.imbue(msLocale);
-        stream.precision(precision);
         stream.width(width);
         stream.fill(fill);
-        if (flags)
+        if (flags & std::ios::basefield) {
+            stream.setf(flags, std::ios::basefield);
+            stream.setf((flags & ~std::ios::basefield) | std::ios::showbase);
+        }
+        else if (flags)
             stream.setf(flags);
+
         stream << val;
 
         return stream.str();
     }
-#if OGRE_DOUBLE_PRECISION == 1
+
     //-----------------------------------------------------------------------
     String StringConverter::toString(float val, unsigned short precision,
                                      unsigned short width, char fill, std::ios::fmtflags flags)
     {
         StringStream stream;
-        if (msUseLocale)
-            stream.imbue(msLocale);
         stream.precision(precision);
-        stream.width(width);
-        stream.fill(fill);
-        if (flags)
-            stream.setf(flags);
-        stream << val;
-        return stream.str();
-    }
-#else
-    //-----------------------------------------------------------------------
-    String StringConverter::toString(double val, unsigned short precision,
-                                     unsigned short width, char fill, std::ios::fmtflags flags)
-    {
-        StringStream stream;
-        if (msUseLocale)
-            stream.imbue(msLocale);
-        stream.precision(precision);
-        stream.width(width);
-        stream.fill(fill);
-        if (flags)
-            stream.setf(flags);
-        stream << val;
-        return stream.str();
-    }
-#endif
-    //-----------------------------------------------------------------------
-    String StringConverter::toString(int val, 
-        unsigned short width, char fill, std::ios::fmtflags flags)
-    {
-        StringStream stream;
-        if (msUseLocale)
-            stream.imbue(msLocale);
-        stream.width(width);
-        stream.fill(fill);
-        if (flags)
-            stream.setf(flags);
-        stream << val;
-        return stream.str();
-    }
-    //-----------------------------------------------------------------------
-#if OGRE_PLATFORM != OGRE_PLATFORM_NACL &&  ( OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_64 || OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS )
-    String StringConverter::toString(unsigned int val, 
-        unsigned short width, char fill, std::ios::fmtflags flags)
-    {
-        StringStream stream;
-        if (msUseLocale)
-            stream.imbue(msLocale);
-        stream.width(width);
-        stream.fill(fill);
-        if (flags)
-            stream.setf(flags);
-        stream << val;
-        return stream.str();
-    }
-    //-----------------------------------------------------------------------
-    String StringConverter::toString(size_t val, 
-        unsigned short width, char fill, std::ios::fmtflags flags)
-    {
-        StringStream stream;
-        if (msUseLocale)
-            stream.imbue(msLocale);
-        stream.width(width);
-        stream.fill(fill);
-        if (flags)
-            stream.setf(flags);
-        stream << val;
-        return stream.str();
-    }
-#if OGRE_COMPILER == OGRE_COMPILER_MSVC || defined(__MINGW32__)
-    //-----------------------------------------------------------------------
-    String StringConverter::toString(unsigned long val, 
-        unsigned short width, char fill, std::ios::fmtflags flags)
-    {
-        StringStream stream;
-        if (msUseLocale)
-            stream.imbue(msLocale);
         stream.width(width);
         stream.fill(fill);
         if (flags)
@@ -144,57 +74,65 @@ namespace Ogre {
         return stream.str();
     }
 
-#endif
     //-----------------------------------------------------------------------
+    String StringConverter::toString(double val, unsigned short precision,
+                                     unsigned short width, char fill, std::ios::fmtflags flags)
+    {
+        StringStream stream;
+        stream.precision(precision);
+        stream.width(width);
+        stream.fill(fill);
+        if (flags)
+            stream.setf(flags);
+        stream << val;
+        return stream.str();
+    }
+
+    //-----------------------------------------------------------------------
+    String StringConverter::toString(int val,
+        unsigned short width, char fill, std::ios::fmtflags flags)
+    {
+        return _toString(val, width, fill, flags);
+    }
+#if OGRE_PLATFORM != OGRE_PLATFORM_NACL &&  ( OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_64 || OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS )
+    //-----------------------------------------------------------------------
+    String StringConverter::toString(unsigned int val,
+        unsigned short width, char fill, std::ios::fmtflags flags)
+    {
+        return _toString(val, width, fill, flags);
+    }
+#if OGRE_COMPILER == OGRE_COMPILER_MSVC || defined(__MINGW32__)
+    //-----------------------------------------------------------------------
+    String StringConverter::toString(unsigned long val,
+        unsigned short width, char fill, std::ios::fmtflags flags)
+    {
+        return _toString(val, width, fill, flags);
+    }
+#endif
 #else
-    String StringConverter::toString(size_t val, 
+    //-----------------------------------------------------------------------
+    String StringConverter::toString(unsigned long val,
         unsigned short width, char fill, std::ios::fmtflags flags)
     {
-        StringStream stream;
-        if (msUseLocale)
-            stream.imbue(msLocale);
-        stream.width(width);
-        stream.fill(fill);
-        if (flags)
-            stream.setf(flags);
-        stream << val;
-        return stream.str();
+        return _toString(val, width, fill, flags);
     }
-    //-----------------------------------------------------------------------
-    String StringConverter::toString(unsigned long val, 
-        unsigned short width, char fill, std::ios::fmtflags flags)
-    {
-        StringStream stream;
-        if (msUseLocale)
-            stream.imbue(msLocale);
-        stream.width(width);
-        stream.fill(fill);
-        if (flags)
-            stream.setf(flags);
-        stream << val;
-        return stream.str();
-    }
-    //-----------------------------------------------------------------------
 #endif
-    String StringConverter::toString(long val, 
+    //-----------------------------------------------------------------------
+    String StringConverter::toString(size_t val,
         unsigned short width, char fill, std::ios::fmtflags flags)
     {
-        StringStream stream;
-        if (msUseLocale)
-            stream.imbue(msLocale);
-        stream.width(width);
-        stream.fill(fill);
-        if (flags)
-            stream.setf(flags);
-        stream << val;
-        return stream.str();
+        return _toString(val, width, fill, flags);
+    }
+    //-----------------------------------------------------------------------
+    String StringConverter::toString(long val,
+        unsigned short width, char fill, std::ios::fmtflags flags)
+    {
+        return _toString(val, width, fill, flags);
     }
     //-----------------------------------------------------------------------
     String StringConverter::toString(const Vector2& val)
     {
         StringStream stream;
-        if (msUseLocale)
-            stream.imbue(msLocale);
         stream << val.x << " " << val.y;
         return stream.str();
     }
@@ -202,8 +140,6 @@ namespace Ogre {
     String StringConverter::toString(const Vector3& val)
     {
         StringStream stream;
-        if (msUseLocale)
-            stream.imbue(msLocale);
         stream << val.x << " " << val.y << " " << val.z;
         return stream.str();
     }
@@ -211,8 +147,6 @@ namespace Ogre {
     String StringConverter::toString(const Vector4& val)
     {
         StringStream stream;
-        if (msUseLocale)
-            stream.imbue(msLocale);
         stream << val.x << " " << val.y << " " << val.z << " " << val.w;
         return stream.str();
     }
@@ -220,7 +154,6 @@ namespace Ogre {
     String StringConverter::toString(const Matrix3& val)
     {
         StringStream stream;
-        stream.imbue(msLocale);
         stream << val[0][0] << " "
             << val[0][1] << " "             
             << val[0][2] << " "             
@@ -260,7 +193,6 @@ namespace Ogre {
     String StringConverter::toString(const Matrix4& val)
     {
         StringStream stream;
-        stream.imbue(msLocale);
         stream << val[0][0] << " "
             << val[0][1] << " "             
             << val[0][2] << " "             
@@ -283,8 +215,6 @@ namespace Ogre {
     String StringConverter::toString(const Quaternion& val)
     {
         StringStream stream;
-        if (msUseLocale)
-            stream.imbue(msLocale);
         stream  << val.w << " " << val.x << " " << val.y << " " << val.z;
         return stream.str();
     }
@@ -292,8 +222,6 @@ namespace Ogre {
     String StringConverter::toString(const ColourValue& val)
     {
         StringStream stream;
-        if (msUseLocale)
-            stream.imbue(msLocale);
         stream << val.r << " " << val.g << " " << val.b << " " << val.a;
         return stream.str();
     }
@@ -301,8 +229,6 @@ namespace Ogre {
     String StringConverter::toString(const StringVector& val)
     {
         StringStream stream;
-        if (msUseLocale)
-            stream.imbue(msLocale);
         StringVector::const_iterator i, iend, ibegin;
         ibegin = val.begin();
         iend = val.end();
@@ -315,83 +241,53 @@ namespace Ogre {
         }
         return stream.str();
     }
+
     //-----------------------------------------------------------------------
     Real StringConverter::parseReal(const String& val, Real defaultValue)
     {
-        // Use iStringStream for direct correspondence with toString
-        StringStream str(val);
-        if (msUseLocale)
-            str.imbue(msLocale);
-        Real ret = defaultValue;
-        if( !(str >> ret) )
-            return defaultValue;
-
-        return ret;
+        char* end;
+        Real ret = (Real)strtod_l(val.c_str(), &end, _numLocale);
+        return val.c_str() == end ? defaultValue : ret;
     }
     //-----------------------------------------------------------------------
     int StringConverter::parseInt(const String& val, int defaultValue)
     {
-        // Use iStringStream for direct correspondence with toString
-        StringStream str(val);
-        if (msUseLocale)
-            str.imbue(msLocale);
-        int ret = defaultValue;
-        if( !(str >> ret) )
-            return defaultValue;
-
-        return ret;
+        char* end;
+        int ret = (int)strtol_l(val.c_str(), &end, 0, _numLocale);
+        return val.c_str() == end ? defaultValue : ret;
     }
     //-----------------------------------------------------------------------
     unsigned int StringConverter::parseUnsignedInt(const String& val, unsigned int defaultValue)
     {
-        // Use iStringStream for direct correspondence with toString
-        StringStream str(val);
-        if (msUseLocale)
-            str.imbue(msLocale);
-        unsigned int ret = defaultValue;
-        if( !(str >> ret) )
-            return defaultValue;
-
-        return ret;
+        char* end;
+        unsigned int ret = (unsigned int)strtoul_l(val.c_str(), &end, 0, _numLocale);
+        return val.c_str() == end ? defaultValue : ret;
     }
     //-----------------------------------------------------------------------
     long StringConverter::parseLong(const String& val, long defaultValue)
     {
-        // Use iStringStream for direct correspondence with toString
-        StringStream str(val);
-        if (msUseLocale)
-            str.imbue(msLocale);
-        long ret = defaultValue;
-        if( !(str >> ret) )
-            return defaultValue;
-
-        return ret;
+        char* end;
+        long ret = strtol_l(val.c_str(), &end, 0, _numLocale);
+        return val.c_str() == end ? defaultValue : ret;
     }
     //-----------------------------------------------------------------------
     unsigned long StringConverter::parseUnsignedLong(const String& val, unsigned long defaultValue)
     {
-        // Use iStringStream for direct correspondence with toString
-        StringStream str(val);
-        if (msUseLocale)
-            str.imbue(msLocale);
-        unsigned long ret = defaultValue;
-        if( !(str >> ret) )
-            return defaultValue;
-
-        return ret;
+        char* end;
+        unsigned long ret = strtoul_l(val.c_str(), &end, 0, _numLocale);
+        return val.c_str() == end ? defaultValue : ret;
     }
     //-----------------------------------------------------------------------
     size_t StringConverter::parseSizeT(const String& val, size_t defaultValue)
     {
-        // Use iStringStream for direct correspondence with toString
-        StringStream str(val);
-        if (msUseLocale)
-            str.imbue(msLocale);
-        size_t ret = defaultValue;
-        if( !(str >> ret) )
-            return defaultValue;
-
-        return ret;
+        size_t ret;
+        return sscanf(val.c_str(),
+#if OGRE_COMPILER == OGRE_COMPILER_MSVC && OGRE_COMP_VER < 1900
+                "%Iu"
+#else
+                "%zu"
+#endif
+                , &ret) == 1 ? ret : defaultValue;
     }
     //-----------------------------------------------------------------------
     bool StringConverter::parseBool(const String& val, bool defaultValue)
@@ -564,15 +460,13 @@ namespace Ogre {
     {
         return StringUtil::split(val);
     }
+
     //-----------------------------------------------------------------------
     bool StringConverter::isNumber(const String& val)
     {
-        StringStream str(val);
-        if (msUseLocale)
-            str.imbue(msLocale);
-        float tst;
-        str >> tst;
-        return !str.fail() && str.eof();
+        char* end;
+        strtod(val.c_str(), &end);
+        return end == (val.c_str() + val.size());
     }
 	//-----------------------------------------------------------------------
     String StringConverter::toString(ColourBufferType val)

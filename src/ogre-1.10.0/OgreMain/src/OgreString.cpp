@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include "OgreString.h"
 
 namespace Ogre {
+    const String& StringUtil::BLANK = BLANKSTRING;
 
     //-----------------------------------------------------------------------
     void StringUtil::trim(String& str, bool left, bool right)
@@ -226,40 +227,30 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     bool StringUtil::startsWith(const String& str, const String& pattern, bool lowerCase)
     {
-        size_t thisLen = str.length();
-        size_t patternLen = pattern.length();
-        if (thisLen < patternLen || patternLen == 0)
+        if (pattern.empty())
             return false;
 
-        String startOfThis = str.substr(0, patternLen);
         if (lowerCase)
         {
-            String lowerCasePattern = pattern;
-            StringUtil::toLowerCase(lowerCasePattern);
-            StringUtil::toLowerCase(startOfThis);
-            return (startOfThis == lowerCasePattern);
+            return strnicmp(str.c_str(), pattern.c_str(), pattern.size()) == 0;
         }
 
-        return (startOfThis == pattern);
+        return strncmp(str.c_str(), pattern.c_str(), pattern.size()) == 0;
     }
     //-----------------------------------------------------------------------
     bool StringUtil::endsWith(const String& str, const String& pattern, bool lowerCase)
     {
-        size_t thisLen = str.length();
-        size_t patternLen = pattern.length();
-        if (thisLen < patternLen || patternLen == 0)
+        if (pattern.empty())
             return false;
 
-        String endOfThis = str.substr(thisLen - patternLen, patternLen);
+        size_t offset = str.size() - pattern.size();
+
         if (lowerCase)
         {
-            String lowerCasePattern = pattern;
-            StringUtil::toLowerCase(lowerCasePattern);
-            StringUtil::toLowerCase(endOfThis);
-            return (endOfThis == lowerCasePattern);
+            return strnicmp(str.c_str() + offset, pattern.c_str(), pattern.size()) == 0;
         }
 
-        return (endOfThis == pattern);
+        return strncmp(str.c_str() + offset, pattern.c_str(), pattern.size()) == 0;
     }
     //-----------------------------------------------------------------------
     String StringUtil::standardisePath(const String& init)

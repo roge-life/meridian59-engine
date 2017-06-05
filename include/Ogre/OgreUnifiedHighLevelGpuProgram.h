@@ -31,6 +31,7 @@ THE SOFTWARE.
 #include "OgrePrerequisites.h"
 #include "OgreHighLevelGpuProgram.h"
 #include "OgreHighLevelGpuProgramManager.h"
+#include "OgreHeaderPrefix.h"
 
 namespace Ogre {
 
@@ -71,7 +72,13 @@ namespace Ogre {
             void doSet(void* target, const String& val);
         };
 
-        static void setPrioriry(String shaderLanguage,int priority);
+
+        /// @deprecated use UnifiedHighLevelGpuProgram::setPriority
+        OGRE_DEPRECATED static void setPrioriry(String shaderLanguage,int priority) {
+            setPriority(shaderLanguage,priority);
+        }
+
+        static void setPriority(String shaderLanguage,int priority);
         static int  getPriority(String shaderLanguage);
 
     protected:
@@ -164,7 +171,7 @@ namespace Ogre {
     };
 
     /** Factory class for Unified programs. */
-    class UnifiedHighLevelGpuProgramFactory : public HighLevelGpuProgramFactory
+    class _OgreExport UnifiedHighLevelGpuProgramFactory : public HighLevelGpuProgramFactory
     {
     public:
         UnifiedHighLevelGpuProgramFactory();
@@ -182,4 +189,7 @@ namespace Ogre {
     /** @} */
 
 }
+
+#include "OgreHeaderSuffix.h"
+
 #endif

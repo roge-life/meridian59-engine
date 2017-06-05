@@ -67,21 +67,21 @@ namespace Ogre
     BaseInstanceBatchVTF::~BaseInstanceBatchVTF()
     {
         //Remove cloned caster materials (if any)
-        Material::TechniqueIterator techItor = mMaterial->getTechniqueIterator();
-        while( techItor.hasMoreElements() )
+        Material::Techniques::const_iterator it;
+        for(it = mMaterial->getTechniques().begin(); it != mMaterial->getTechniques().end(); ++it)
         {
-            Technique *technique = techItor.getNext();
+            Technique *technique = *it;
 
-            if( !technique->getShadowCasterMaterial().isNull() )
-                MaterialManager::getSingleton().remove( technique->getShadowCasterMaterial()->getName() );
+            if (technique->getShadowCasterMaterial())
+                MaterialManager::getSingleton().remove( technique->getShadowCasterMaterial() );
         }
 
         //Remove cloned material
-        MaterialManager::getSingleton().remove( mMaterial->getName() );
+        MaterialManager::getSingleton().remove( mMaterial );
 
         //Remove the VTF texture
-        if( !mMatrixTexture.isNull() )
-            TextureManager::getSingleton().remove( mMatrixTexture->getName() );
+        if( mMatrixTexture )
+            TextureManager::getSingleton().remove( mMatrixTexture );
 
         OGRE_FREE(mTempTransformsArray3x4, MEMCATEGORY_GENERAL);
     }
@@ -115,12 +115,12 @@ namespace Ogre
         mMaterial = material->clone( mName + "/VTFMaterial" );
 
         //Now do the same with the techniques which have a material shadow caster
-        Material::TechniqueIterator techItor = material->getTechniqueIterator();
-        while( techItor.hasMoreElements() )
+        Material::Techniques::const_iterator it;
+        for(it = material->getTechniques().begin(); it != material->getTechniques().end(); ++it)
         {
-            Technique *technique = techItor.getNext();
+            Technique *technique = *it;
 
-            if( !technique->getShadowCasterMaterial().isNull() )
+            if( technique->getShadowCasterMaterial() )
             {
                 const MaterialPtr &casterMat    = technique->getShadowCasterMaterial();
                 const String &casterName        = casterMat->getName();
@@ -156,7 +156,7 @@ namespace Ogre
             float const *pWeights = reinterpret_cast<float const*>(baseBuffer + veWeights->getOffset());
 
             uint8 biggestWeightIdx = 0;
-            for( size_t j=1; j< mWeightCount; ++j )
+            for( uint8 j=1; j< uint8(mWeightCount); ++j )
             {
                 biggestWeightIdx = pWeights[biggestWeightIdx] < pWeights[j] ? j : biggestWeightIdx;
             }
@@ -205,24 +205,20 @@ namespace Ogre
     }
     
     //-----------------------------------------------------------------------
-    void BaseInstanceBatchVTF::setupMaterialToUseVTF( TextureType textureType, MaterialPtr &material )
+    void BaseInstanceBatchVTF::setupMaterialToUseVTF( TextureType textureType, MaterialPtr &material ) const
     {
-        Material::TechniqueIterator techItor = material->getTechniqueIterator();
-        while( techItor.hasMoreElements() )
+        Material::Techniques::const_iterator t;
+        for(t = material->getTechniques().begin(); t != material->getTechniques().end(); ++t)
         {
-            Technique *technique = techItor.getNext();
-            Technique::PassIterator passItor = technique->getPassIterator();
-
-            while( passItor.hasMoreElements() )
+            Technique *technique = *t;
+            Technique::Passes::const_iterator i;
+            for(i = technique->getPasses().begin(); i != technique->getPasses().end(); ++i)
             {
-                bool bTexUnitFound = false;
-
-                Pass *pass = passItor.getNext();
-                Pass::TextureUnitStateIterator texUnitItor = pass->getTextureUnitStateIterator();
-
-                while( texUnitItor.hasMoreElements() && !bTexUnitFound )
+                Pass *pass = *i;
+                Pass::TextureUnitStates::const_iterator it;
+                for(it = pass->getTextureUnitStates().begin(); it != pass->getTextureUnitStates().end(); ++it)
                 {
-                    TextureUnitState *texUnit = texUnitItor.getNext();
+                    TextureUnitState *texUnit = *it;
 
                     if( texUnit->getName() == "InstancingVTF" )
                     {
@@ -233,7 +229,7 @@ namespace Ogre
                 }
             }
 
-            if( !technique->getShadowCasterMaterial().isNull() )
+            if( technique->getShadowCasterMaterial() )
             {
                 MaterialPtr matCaster = technique->getShadowCasterMaterial();
                 setupMaterialToUseVTF( textureType, matCaster );
@@ -398,8 +394,8 @@ namespace Ogre
                 //In each entity update the "transform lookup number" so that:
                 // 1. All entities sharing the same transformation will share the same unique number
                 // 2. "transform lookup number" will be numbered from 0 up to getMaxLookupTableInstances
-                size_t lookupCounter = 0;
-                typedef map<Matrix4*,size_t>::type MapTransformId;
+                uint16 lookupCounter = 0;
+                typedef map<Matrix4*,uint16>::type MapTransformId;
                 MapTransformId transformToId;
                 InstancedEntityVec::const_iterator itEnt = mInstancedEntities.begin(),
                     itEntEnd = mInstancedEntities.end();
@@ -411,7 +407,7 @@ namespace Ogre
                         MapTransformId::iterator itLu = transformToId.find(transformUniqueId);
                         if (itLu == transformToId.end())
                         {
-                            itLu = transformToId.insert(MapTransformId::value_type(transformUniqueId,lookupCounter)).first;
+                            itLu = transformToId.insert(std::make_pair(transformUniqueId,lookupCounter)).first;
                             ++lookupCounter;
                         }
                         (*itEnt)->setTransformLookupNumber(itLu->second);
@@ -519,7 +515,7 @@ namespace Ogre
 
         hwBoneIdx.resize( baseVertexData->vertexCount * mWeightCount, 0 );
 
-        if( mMeshReference->hasSkeleton() && !mMeshReference->getSkeleton().isNull() )
+        if( mMeshReference->hasSkeleton() && mMeshReference->getSkeleton() )
         {
             if(mWeightCount > 1)
             {
@@ -611,7 +607,7 @@ namespace Ogre
                     originalVal = *initBuf32++;
 
                 if( indexType == HardwareIndexBuffer::IT_16BIT )
-                    *thisBuf16++ = static_cast<uint16>(originalVal) + vertexOffset;
+                    *thisBuf16++ = static_cast<uint16>(originalVal + vertexOffset);
                 else
                     *thisBuf32++ = static_cast<uint32>(originalVal + vertexOffset);
             }

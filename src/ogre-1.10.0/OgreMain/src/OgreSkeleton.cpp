@@ -76,7 +76,7 @@ namespace Ogre {
 
         DataStreamPtr stream = 
             ResourceGroupManager::getSingleton().openResource(
-                mName, mGroup, true, this);
+                mName, mGroup, this);
 
         serializer.importSkeleton(stream, this);
 
@@ -85,8 +85,8 @@ namespace Ogre {
         for (i = mLinkedSkeletonAnimSourceList.begin(); 
             i != mLinkedSkeletonAnimSourceList.end(); ++i)
         {
-            i->pSkeleton = SkeletonManager::getSingleton().load(
-                i->skeletonName, mGroup).staticCast<Skeleton>();
+            i->pSkeleton = static_pointer_cast<Skeleton>(
+                SkeletonManager::getSingleton().load(i->skeletonName, mGroup));
         }
 
 
@@ -189,18 +189,15 @@ namespace Ogre {
         return ret;
     }
 
-
-
-    //---------------------------------------------------------------------
-    Bone* Skeleton::getRootBone(void) const
-    {
+    const Skeleton::BoneList& Skeleton::getRootBones() const {
         if (mRootBones.empty())
         {
             deriveRootBone();
         }
 
-        return mRootBones[0];
+        return mRootBones;
     }
+
     //---------------------------------------------------------------------
     void Skeleton::setAnimationState(const AnimationStateSet& animSet)
     {
@@ -218,11 +215,10 @@ namespace Ogre {
         {
             // Derive total weights so we can rebalance if > 1.0f
             Real totalWeights = 0.0f;
-            ConstEnabledAnimationStateIterator stateIt = 
-                animSet.getEnabledAnimationStateIterator();
-            while (stateIt.hasMoreElements())
+            EnabledAnimationStateList::const_iterator animIt;
+            for(animIt = animSet.getEnabledAnimationStates().begin(); animIt != animSet.getEnabledAnimationStates().end(); ++animIt)
             {
-                const AnimationState* animState = stateIt.getNext();
+                const AnimationState* animState = *animIt;
                 // Make sure we have an anim to match implementation
                 const LinkedSkeletonAnimationSource* linked = 0;
                 if (_getAnimationImpl(animState->getAnimationName(), &linked))
@@ -239,11 +235,10 @@ namespace Ogre {
         }
 
         // Per enabled animation state
-        ConstEnabledAnimationStateIterator stateIt = 
-            animSet.getEnabledAnimationStateIterator();
-        while (stateIt.hasMoreElements())
+        EnabledAnimationStateList::const_iterator animIt;
+        for(animIt = animSet.getEnabledAnimationStates().begin(); animIt != animSet.getEnabledAnimationStates().end(); ++animIt)
         {
-            const AnimationState* animState = stateIt.getNext();
+            const AnimationState* animState = *animIt;
             const LinkedSkeletonAnimationSource* linked = 0;
             Animation* anim = _getAnimationImpl(animState->getAnimationName(), &linked);
             // tolerate state entries for animations we're not aware of
@@ -344,7 +339,7 @@ namespace Ogre {
             for (it = mLinkedSkeletonAnimSourceList.begin(); 
                 it != mLinkedSkeletonAnimSourceList.end() && !ret; ++it)
             {
-                if (!it->pSkeleton.isNull())
+                if (it->pSkeleton)
                 {
                     ret = it->pSkeleton->_getAnimationImpl(name);
                     if (ret && linker)
@@ -401,7 +396,7 @@ namespace Ogre {
         for (li = mLinkedSkeletonAnimSourceList.begin(); 
             li != mLinkedSkeletonAnimSourceList.end(); ++li)
         {
-            if (!li->pSkeleton.isNull())
+            if (li->pSkeleton)
             {
                 li->pSkeleton->_refreshAnimationState(animSet);
             }
@@ -435,7 +430,7 @@ namespace Ogre {
         for (li = mLinkedSkeletonAnimSourceList.begin(); 
             li != mLinkedSkeletonAnimSourceList.end(); ++li)
         {
-            if (!li->pSkeleton.isNull())
+            if (li->pSkeleton)
             {
                 li->pSkeleton->_refreshAnimationState(animSet);
             }
@@ -703,8 +698,8 @@ namespace Ogre {
         if (isLoaded())
         {
             // Load immediately
-            SkeletonPtr skelPtr = 
-                SkeletonManager::getSingleton().load(skelName, mGroup).staticCast<Skeleton>();
+            SkeletonPtr skelPtr = static_pointer_cast<Skeleton>(
+                SkeletonManager::getSingleton().load(skelName, mGroup));
             mLinkedSkeletonAnimSourceList.push_back(
                 LinkedSkeletonAnimationSource(skelName, scale, skelPtr));
 
@@ -1038,4 +1033,3 @@ namespace Ogre {
         return memSize;
     }
 }
-

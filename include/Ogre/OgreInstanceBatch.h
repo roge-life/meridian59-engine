@@ -127,6 +127,8 @@ namespace Ogre
         /// False if a technique doesn't support skeletal animation
         bool                mTechnSupportsSkeletal;
 
+        /// Last update camera distance frame number
+        mutable unsigned long mCameraDistLastUpdateFrameNumber;
         /// Cached distance to last camera for getSquaredViewDepth
         mutable Real mCachedCameraDist;
         /// The camera for which the cached distance is valid
@@ -329,25 +331,25 @@ namespace Ogre
         const Vector4& _getCustomParam( InstancedEntity *instancedEntity, unsigned char idx );
 
         //Renderable overloads
-        /** @copydoc Renderable::getMaterial. */
+        /** @copydoc Renderable::getMaterial */
         const MaterialPtr& getMaterial(void) const      { return mMaterial; }
-        /** @copydoc Renderable::getRenderOperation. */
+        /** @copydoc Renderable::getRenderOperation */
         void getRenderOperation( RenderOperation& op )  { op = mRenderOperation; }
 
-        /** @copydoc Renderable::getSquaredViewDepth. */
+        /** @copydoc Renderable::getSquaredViewDepth */
         Real getSquaredViewDepth( const Camera* cam ) const;
-        /** @copydoc Renderable::getLights. */
+        /** @copydoc Renderable::getLights */
         const LightList& getLights( void ) const;
-        /** @copydoc Renderable::getTechnique. */
+        /** @copydoc Renderable::getTechnique */
         Technique* getTechnique(void) const;
 
-        /** @copydoc MovableObject::getMovableType. */
+        /** @copydoc MovableObject::getMovableType */
         const String& getMovableType(void) const;
-        /** @copydoc MovableObject::_notifyCurrentCamera. */
+        /** @copydoc MovableObject::_notifyCurrentCamera */
         void _notifyCurrentCamera( Camera* cam );
-        /** @copydoc MovableObject::getBoundingBox. */
+        /** @copydoc MovableObject::getBoundingBox */
         const AxisAlignedBox& getBoundingBox(void) const;
-        /** @copydoc MovableObject::getBoundingRadius. */
+        /** @copydoc MovableObject::getBoundingRadius */
         Real getBoundingRadius(void) const;
 
         virtual void _updateRenderQueue(RenderQueue* queue);

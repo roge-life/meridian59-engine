@@ -45,10 +45,6 @@ namespace Ogre
     {
     }
 
-    InstanceBatchShader::~InstanceBatchShader()
-    {
-    }
-
     //-----------------------------------------------------------------------
     size_t InstanceBatchShader::calculateMaxNumInstances( const SubMesh *baseSubMesh, uint16 flags ) const
     {
@@ -126,7 +122,7 @@ namespace Ogre
     //-----------------------------------------------------------------------
     void InstanceBatchShader::buildFrom( const SubMesh *baseSubMesh, const RenderOperation &renderOperation )
     {
-        if( mMeshReference->hasSkeleton() && !mMeshReference->getSkeleton().isNull() )
+        if( mMeshReference->hasSkeleton() && mMeshReference->getSkeleton() )
             mNumWorldMatrices = mInstancesPerBatch * baseSubMesh->blendIndexToBoneIndexMap.size();
         InstanceBatch::buildFrom( baseSubMesh, renderOperation );
     }
@@ -145,7 +141,7 @@ namespace Ogre
         HardwareBufferManager::getSingleton().destroyVertexDeclaration( thisVertexData->vertexDeclaration );
         thisVertexData->vertexDeclaration = baseVertexData->vertexDeclaration->clone();
 
-        if( mMeshReference->hasSkeleton() && !mMeshReference->getSkeleton().isNull() )
+        if( mMeshReference->hasSkeleton() && mMeshReference->getSkeleton() )
         {
             //Building hw skinned batches follow a different path
             setupHardwareSkinned( baseSubMesh, thisVertexData, baseVertexData );
@@ -198,7 +194,7 @@ namespace Ogre
             thisVertexData->vertexBufferBinding->setBinding( lastSource, vertexBuffer );
 
             char* thisBuf = static_cast<char*>(vertexBuffer->lock(HardwareBuffer::HBL_DISCARD));
-            for( size_t j=0; j<mInstancesPerBatch; ++j )
+            for( uint8 j=0; j<uint8(mInstancesPerBatch); ++j )
             {
                 for( size_t k=0; k<baseVertexData->vertexCount; ++k )
                 {
@@ -254,7 +250,7 @@ namespace Ogre
                     originalVal = *initBuf32++;
 
                 if( indexType == HardwareIndexBuffer::IT_16BIT )
-                    *thisBuf16++ = static_cast<uint16>(originalVal) + vertexOffset;
+                    *thisBuf16++ = static_cast<uint16>(originalVal + vertexOffset);
                 else
                     *thisBuf32++ = static_cast<uint32>(originalVal + vertexOffset);
             }
@@ -267,7 +263,7 @@ namespace Ogre
     void InstanceBatchShader::setupHardwareSkinned( const SubMesh* baseSubMesh, VertexData *thisVertexData,
                                                     VertexData *baseVertexData )
     {
-        const size_t numBones = baseSubMesh->blendIndexToBoneIndexMap.size();
+        const uint8 numBones = uint8(baseSubMesh->blendIndexToBoneIndexMap.size());
         mNumWorldMatrices = mInstancesPerBatch * numBones;
 
         for( uint16 i=0; i<=thisVertexData->vertexDeclaration->getMaxSource(); ++i )
@@ -292,7 +288,7 @@ namespace Ogre
             char *startBuf = baseBuf;
 
             //Copy and repeat
-            for( size_t j=0; j<mInstancesPerBatch; ++j )
+            for( uint8 j=0; j<uint8(mInstancesPerBatch); ++j )
             {
                 //Repeat source
                 baseBuf = startBuf;
@@ -342,6 +338,6 @@ namespace Ogre
     //-----------------------------------------------------------------------
     unsigned short InstanceBatchShader::getNumWorldTransforms(void) const
     {
-        return mNumWorldMatrices;
+        return uint16(mNumWorldMatrices);
     }
 }

@@ -210,7 +210,7 @@ namespace Ogre {
         const String& outFileName, Codec::CodecDataPtr& pData) const
     {
         // Unwrap codecDataPtr - data is cleaned by calling function
-        ImageData* imgData = static_cast<ImageData* >(pData.getPointer());  
+        ImageData* imgData = static_cast<ImageData* >(pData.get());  
 
 
         // Check size for cube map faces
@@ -746,7 +746,7 @@ namespace Ogre {
         {
             if (Root::getSingleton().getRenderSystem() == NULL ||
                 !Root::getSingleton().getRenderSystem()->getCapabilities()->hasCapability(RSC_TEXTURE_COMPRESSION_DXT)
-                || (!Root::getSingleton().getRenderSystem()->getCapabilities()->hasCapability(RSC_AUTOMIPMAP)
+                || (!Root::getSingleton().getRenderSystem()->getCapabilities()->hasCapability(RSC_AUTOMIPMAP_COMPRESSED)
                 && !imgData->num_mipmaps))
             {
                 // We'll need to decompress
@@ -810,7 +810,7 @@ namespace Ogre {
             imgData->width, imgData->height, imgData->depth, imgData->format);
 
         // Bind output buffer
-        output.bind(OGRE_NEW MemoryDataStream(imgData->size));
+        output.reset(OGRE_NEW MemoryDataStream(imgData->size));
 
 
         // Now deal with the data
@@ -818,7 +818,7 @@ namespace Ogre {
 
         // all mips for a face, then each face
         for(size_t i = 0; i < numFaces; ++i)
-        {   
+        {
             uint32 width = imgData->width;
             uint32 height = imgData->height;
             uint32 depth = imgData->depth;
@@ -826,7 +826,7 @@ namespace Ogre {
             for(size_t mip = 0; mip <= imgData->num_mipmaps; ++mip)
             {
                 size_t dstPitch = width * PixelUtil::getNumElemBytes(imgData->format);
-
+                
                 if (PixelUtil::isCompressed(sourceFormat))
                 {
                     // Compressed data
@@ -838,17 +838,27 @@ namespace Ogre {
                         // 4x4 block of decompressed colour
                         ColourValue tempColours[16];
                         size_t destBpp = PixelUtil::getNumElemBytes(imgData->format);
-                        size_t sx = std::min((size_t)width, (size_t)4);
-                        size_t sy = std::min((size_t)height, (size_t)4);
-                        size_t destPitchMinus4 = dstPitch - destBpp * sx;
+
                         // slices are done individually
                         for(size_t z = 0; z < depth; ++z)
                         {
+                            size_t remainingHeight = height;
+
                             // 4x4 blocks in x/y
                             for (size_t y = 0; y < height; y += 4)
                             {
+                                size_t sy = std::min<size_t>( remainingHeight, 4u );
+                                remainingHeight -= sy;
+
+                                size_t remainingWidth = width;
+
                                 for (size_t x = 0; x < width; x += 4)
                                 {
+                                    size_t sx = std::min<size_t>( remainingWidth, 4u );
+                                    size_t destPitchMinus4 = dstPitch - destBpp * sx;
+
+                                    remainingWidth -= sx;
+
                                     if (sourceFormat == PF_DXT2 || 
                                         sourceFormat == PF_DXT3)
                                     {

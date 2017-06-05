@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -42,16 +42,16 @@ THE SOFTWARE.
 #include "OgreDistanceLodStrategy.h"
 #include "OgreHighLevelGpuProgram.h"
 
-namespace Ogre
+//-----------------------------------------------------------------------
+// Internal parser methods
+//-----------------------------------------------------------------------
+namespace 
 {
-
-    //-----------------------------------------------------------------------
-    // Internal parser methods
-    //-----------------------------------------------------------------------
+    using namespace Ogre;
     void logParseError(const String& error, const MaterialScriptContext& context)
     {
         // log material name only if filename not specified
-        if (context.filename.empty() && !context.material.isNull())
+        if (context.filename.empty() && context.material)
         {
             LogManager::getSingleton().logMessage(
                 "Error in material " + context.material->getName() +
@@ -59,7 +59,7 @@ namespace Ogre
         }
         else
         {
-            if (!context.material.isNull())
+            if (context.material)
             {
                 LogManager::getSingleton().logMessage(
                     "Error in material " + context.material->getName() +
@@ -2307,7 +2307,7 @@ namespace Ogre
     bool parseParamIndexed(String& params, MaterialScriptContext& context)
     {
         // NB skip this if the program is not supported or could not be found
-        if (context.program.isNull() || !context.program->isSupported())
+        if (!context.program || !context.program->isSupported())
         {
             return false;
         }
@@ -2332,7 +2332,7 @@ namespace Ogre
     bool parseParamIndexedAuto(String& params, MaterialScriptContext& context)
     {
         // NB skip this if the program is not supported or could not be found
-        if (context.program.isNull() || !context.program->isSupported())
+        if (!context.program || !context.program->isSupported())
         {
             return false;
         }
@@ -2357,7 +2357,7 @@ namespace Ogre
     bool parseParamNamed(String& params, MaterialScriptContext& context)
     {
         // NB skip this if the program is not supported or could not be found
-        if (context.program.isNull() || !context.program->isSupported())
+        if (!context.program || !context.program->isSupported())
         {
             return false;
         }
@@ -2389,7 +2389,7 @@ namespace Ogre
     bool parseParamNamedAuto(String& params, MaterialScriptContext& context)
     {
         // NB skip this if the program is not supported or could not be found
-        if (context.program.isNull() || !context.program->isSupported())
+        if (!context.program || !context.program->isSupported())
         {
             return false;
         }
@@ -2437,7 +2437,7 @@ namespace Ogre
             // make sure base material exists
             basematerial = MaterialManager::getSingleton().getByName(vecparams[1]);
             // if it doesn't exist then report error in log and just create a new material
-            if (basematerial.isNull())
+            if (!basematerial)
             {
                 logParseError("parent material: " + vecparams[1] + " not found for new material:"
                     + vecparams[0], context);
@@ -2450,7 +2450,7 @@ namespace Ogre
         context.material =
             MaterialManager::getSingleton().create(vecparams[0], context.groupName);
 
-        if (!basematerial.isNull())
+        if (basematerial)
         {
             // copy parent material details to new material
             basematerial->copyDetailsTo(context.material);
@@ -2484,12 +2484,11 @@ namespace Ogre
                 // figure out technique index by iterating through technique container
                 // would be nice if each technique remembered its index
                 int count = 0;
-                Material::TechniqueIterator i = context.material->getTechniqueIterator();
-                while(i.hasMoreElements())
+                Material::Techniques::const_iterator it;
+                for(it = context.material->getTechniques().begin(); it != context.material->getTechniques().end(); ++it)
                 {
-                    if (foundTechnique == i.peekNext())
+                    if (foundTechnique == *it)
                         break;
-                    i.moveNext();
                     ++count;
                 }
 
@@ -2644,10 +2643,11 @@ namespace Ogre
 
         // if context.program was not set then try to get the vertex program using the name
         // passed in params
-        if (context.program.isNull())
+        if (!context.program)
         {
-            context.program = GpuProgramManager::getSingleton().getByName(params);
-            if (context.program.isNull())
+            context.program = GpuProgramManager::getSingleton().getByName(
+                params, ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+            if (!context.program)
             {
                 // Unknown program
                 logParseError("Invalid vertex_program_ref entry - vertex program "
@@ -2694,10 +2694,11 @@ namespace Ogre
 
         // if context.program was not set then try to get the geometry program using the name
         // passed in params
-        if (context.program.isNull())
+        if (!context.program)
         {
-            context.program = GpuProgramManager::getSingleton().getByName(params);
-            if (context.program.isNull())
+            context.program = GpuProgramManager::getSingleton().getByName(
+                params, ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+            if (!context.program)
             {
                 // Unknown program
                 logParseError("Invalid geometry_program_ref entry - vertex program "
@@ -2731,8 +2732,9 @@ namespace Ogre
         // update section
         context.section = MSS_PROGRAM_REF;
 
-        context.program = GpuProgramManager::getSingleton().getByName(params);
-        if (context.program.isNull())
+        context.program = GpuProgramManager::getSingleton().getByName(
+            params, ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+        if (!context.program)
         {
             // Unknown program
             logParseError("Invalid shadow_caster_vertex_program_ref entry - vertex program "
@@ -2765,8 +2767,9 @@ namespace Ogre
         // update section
         context.section = MSS_PROGRAM_REF;
 
-        context.program = GpuProgramManager::getSingleton().getByName(params);
-        if (context.program.isNull())
+        context.program = GpuProgramManager::getSingleton().getByName(
+            params, ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+        if (!context.program)
         {
             // Unknown program
             logParseError("Invalid shadow_caster_fragment_program_ref entry - fragment program "
@@ -2799,8 +2802,9 @@ namespace Ogre
         // update section
         context.section = MSS_PROGRAM_REF;
 
-        context.program = GpuProgramManager::getSingleton().getByName(params);
-        if (context.program.isNull())
+        context.program = GpuProgramManager::getSingleton().getByName(
+            params, ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+        if (!context.program)
         {
             // Unknown program
             logParseError("Invalid shadow_receiver_vertex_program_ref entry - vertex program "
@@ -2834,8 +2838,9 @@ namespace Ogre
         // update section
         context.section = MSS_PROGRAM_REF;
 
-        context.program = GpuProgramManager::getSingleton().getByName(params);
-        if (context.program.isNull())
+        context.program = GpuProgramManager::getSingleton().getByName(
+            params, ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+        if (!context.program)
         {
             // Unknown program
             logParseError("Invalid shadow_receiver_fragment_program_ref entry - fragment program "
@@ -2882,10 +2887,11 @@ namespace Ogre
 
         // if context.program was not set then try to get the fragment program using the name
         // passed in params
-        if (context.program.isNull())
+        if (!context.program)
         {
-            context.program = GpuProgramManager::getSingleton().getByName(params);
-            if (context.program.isNull())
+            context.program = GpuProgramManager::getSingleton().getByName(
+                params, ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
+            if (!context.program)
             {
                 // Unknown program
                 logParseError("Invalid fragment_program_ref entry - fragment program "
@@ -3197,6 +3203,9 @@ namespace Ogre
 
         return false;
     }
+}
+namespace Ogre
+{
     //-----------------------------------------------------------------------
     //-----------------------------------------------------------------------
     MaterialSerializer::MaterialSerializer()
@@ -3320,11 +3329,11 @@ namespace Ogre
         mProgramDefaultParamAttribParsers.insert(AttribParserList::value_type("param_named_auto", (ATTRIBUTE_PARSER)parseParamNamedAuto));
 
         mScriptContext.section = MSS_NONE;
-        mScriptContext.material.setNull();
+        mScriptContext.material.reset();
         mScriptContext.technique = 0;
         mScriptContext.pass = 0;
         mScriptContext.textureUnit = 0;
-        mScriptContext.program.setNull();
+        mScriptContext.program.reset();
         mScriptContext.lineNo = 0;
         mScriptContext.filename.clear();
         mScriptContext.techLev = -1;
@@ -3342,11 +3351,11 @@ namespace Ogre
         bool nextIsOpenBrace = false;
 
         mScriptContext.section = MSS_NONE;
-        mScriptContext.material.setNull();
+        mScriptContext.material.reset();
         mScriptContext.technique = 0;
         mScriptContext.pass = 0;
         mScriptContext.textureUnit = 0;
-        mScriptContext.program.setNull();
+        mScriptContext.program.reset();
         mScriptContext.lineNo = 0;
         mScriptContext.techLev = -1;
         mScriptContext.passLev = -1;
@@ -3390,7 +3399,7 @@ namespace Ogre
         }
 
         // Make sure we invalidate our context shared pointer (don't want to hold on)
-        mScriptContext.material.setNull();
+        mScriptContext.material.reset();
 
     }
     //-----------------------------------------------------------------------
@@ -3424,7 +3433,7 @@ namespace Ogre
                 }
 
                 mScriptContext.section = MSS_NONE;
-                mScriptContext.material.setNull();
+                mScriptContext.material.reset();
                 //Reset all levels for next material
                 mScriptContext.passLev = -1;
                 mScriptContext.stateLev= -1;
@@ -3501,7 +3510,7 @@ namespace Ogre
             {
                 // End of program
                 mScriptContext.section = MSS_PASS;
-                mScriptContext.program.setNull();
+                mScriptContext.program.reset();
             }
             else
             {
@@ -3624,8 +3633,8 @@ namespace Ogre
             {
                 logParseError("Could not create GPU program '"
                     + def->name + "', error reported was: " + e.getDescription(), mScriptContext);
-                mScriptContext.program.setNull();
-                mScriptContext.programParams.setNull();
+                mScriptContext.program.reset();
+                mScriptContext.programParams.reset();
                 return;
             }
         }
@@ -3669,8 +3678,8 @@ namespace Ogre
 
             }
             // Reset
-            mScriptContext.program.setNull();
-            mScriptContext.programParams.setNull();
+            mScriptContext.program.reset();
+            mScriptContext.programParams.reset();
         }
 
     }
@@ -3803,15 +3812,15 @@ namespace Ogre
             fireMaterialEvent(MSE_WRITE_BEGIN, skipWriting, pMat.get());
 
             // Write LOD information
-            Material::LodValueIterator valueIt = pMat->getUserLodValueIterator();
+            Material::LodValueList::const_iterator valueIt = pMat->getUserLodValues().begin();
             // Skip zero value
-            if (valueIt.hasMoreElements())
-                valueIt.getNext();
+            if (!pMat->getUserLodValues().empty())
+                valueIt++;
             String attributeVal;
-            while (valueIt.hasMoreElements())
+            while (valueIt != pMat->getUserLodValues().end())
             {
-                attributeVal.append(StringConverter::toString(valueIt.getNext()));
-                if (valueIt.hasMoreElements())
+                attributeVal.append(StringConverter::toString(*valueIt++));
+                if (valueIt != pMat->getUserLodValues().end())
                     attributeVal.append(" ");
             }
             if (!attributeVal.empty())
@@ -3838,10 +3847,10 @@ namespace Ogre
             }
 
             // Iterate over techniques
-            Material::TechniqueIterator it = pMat->getTechniqueIterator();
-            while (it.hasMoreElements())
+            Material::Techniques::const_iterator it;
+            for(it = pMat->getTechniques().begin(); it != pMat->getTechniques().end(); ++it)
             {
-                writeTechnique(it.getNext());
+                writeTechnique(*it);
                 mBuffer += "\n";
             }
 
@@ -3892,22 +3901,22 @@ namespace Ogre
             }
 
             // ShadowCasterMaterial name
-            if (!pTech->getShadowCasterMaterial().isNull())
+            if (pTech->getShadowCasterMaterial())
             {
                 writeAttribute(2, "shadow_caster_material");
                 writeValue(quoteWord(pTech->getShadowCasterMaterial()->getName()));
             }
             // ShadowReceiverMaterial name
-            if (!pTech->getShadowReceiverMaterial().isNull())
+            if (pTech->getShadowReceiverMaterial())
             {
                 writeAttribute(2, "shadow_receiver_material");
                 writeValue(quoteWord(pTech->getShadowReceiverMaterial()->getName()));
             }
             // GPU vendor rules
-            Technique::GPUVendorRuleIterator vrit = pTech->getGPUVendorRuleIterator();
-            while (vrit.hasMoreElements())
+            Technique::GPUVendorRuleList::const_iterator vrit;
+            for (vrit = pTech->getGPUVendorRules().begin(); vrit != pTech->getGPUVendorRules().end(); ++vrit)
             {
-                const Technique::GPUVendorRule& rule = vrit.getNext();
+                const Technique::GPUVendorRule& rule = *vrit;
                 writeAttribute(2, "gpu_vendor_rule");
                 if (rule.includeOrExclude == Technique::INCLUDE)
                     writeValue("include");
@@ -3916,10 +3925,10 @@ namespace Ogre
                 writeValue(quoteWord(RenderSystemCapabilities::vendorToString(rule.vendor)));
             }
             // GPU device rules
-            Technique::GPUDeviceNameRuleIterator dnit = pTech->getGPUDeviceNameRuleIterator();
-            while (dnit.hasMoreElements())
+            Technique::GPUDeviceNameRuleList::const_iterator dnit;
+            for (dnit = pTech->getGPUDeviceNameRules().begin(); dnit != pTech->getGPUDeviceNameRules().end(); ++dnit)
             {
-                const Technique::GPUDeviceNameRule& rule = dnit.getNext();
+                const Technique::GPUDeviceNameRule& rule = *dnit;
                 writeAttribute(2, "gpu_device_rule");
                 if (rule.includeOrExclude == Technique::INCLUDE)
                     writeValue("include");
@@ -3929,10 +3938,10 @@ namespace Ogre
                 writeValue(StringConverter::toString(rule.caseSensitive));
             }
             // Iterate over passes
-            Technique::PassIterator it = const_cast<Technique*>(pTech)->getPassIterator();
-            while (it.hasMoreElements())
+            Technique::Passes::const_iterator i;
+            for(i = pTech->getPasses().begin(); i != pTech->getPasses().end(); ++i)
             {
-                writePass(it.getNext());
+                writePass(*i);
                 mBuffer += "\n";
             }
 
@@ -4455,10 +4464,10 @@ namespace Ogre
             }
 
             // Nested texture layers
-            Pass::TextureUnitStateIterator it = const_cast<Pass*>(pPass)->getTextureUnitStateIterator();
-            while(it.hasMoreElements())
+            Pass::TextureUnitStates::const_iterator it;
+            for(it = pPass->getTextureUnitStates().begin(); it != pPass->getTextureUnitStates().end(); ++it)
             {
-                writeTextureUnit(it.getNext());
+                writeTextureUnit(*it);
             }
 
             // Fire write end event.
@@ -5204,7 +5213,7 @@ namespace Ogre
             GpuProgramParameters* defaultParams = 0;
             // does the GPU program have default parameters?
             if (program->hasDefaultParameters())
-                defaultParams = program->getDefaultParameters().getPointer();
+                defaultParams = program->getDefaultParameters().get();
 
             // Fire write begin event.
             fireGpuProgramRefEvent(MSE_WRITE_BEGIN, skipWriting, attrib, program, params, defaultParams);
@@ -5281,7 +5290,7 @@ namespace Ogre
 
         // float params
         GpuLogicalBufferStructPtr floatLogical = params->getFloatLogicalBufferStruct();
-        if( !floatLogical.isNull() )
+        if( floatLogical )
         {
             OGRE_LOCK_MUTEX(floatLogical->mutex);
 
@@ -5309,7 +5318,7 @@ namespace Ogre
 
         // double params
         GpuLogicalBufferStructPtr doubleLogical = params->getDoubleLogicalBufferStruct();
-        if( !doubleLogical.isNull() )
+        if( doubleLogical )
         {
             OGRE_LOCK_MUTEX(doubleLogical->mutex);
 
@@ -5337,7 +5346,7 @@ namespace Ogre
 
         // int params
         GpuLogicalBufferStructPtr intLogical = params->getIntLogicalBufferStruct();
-        if( !intLogical.isNull() )
+        if( intLogical )
         {
             OGRE_LOCK_MUTEX(intLogical->mutex);
 
@@ -5366,7 +5375,7 @@ namespace Ogre
 
         // uint params
         GpuLogicalBufferStructPtr uintLogical = params->getUnsignedIntLogicalBufferStruct();
-        if( !uintLogical.isNull() )
+        if( uintLogical )
         {
             OGRE_LOCK_MUTEX(uintLogical->mutex);
 
@@ -5395,7 +5404,7 @@ namespace Ogre
 
         // // bool params
         // GpuLogicalBufferStructPtr boolLogical = params->getBoolLogicalBufferStruct();
-        // if( !boolLogical.isNull() )
+        // if( boolLogical )
         // {
         //     OGRE_LOCK_MUTEX(boolLogical->mutex);
 
@@ -5623,7 +5632,8 @@ namespace Ogre
         while (currentDef != endDef)
         {
             // get gpu program from gpu program manager
-            GpuProgramPtr program = GpuProgramManager::getSingleton().getByName((*currentDef));
+            GpuProgramPtr program = GpuProgramManager::getSingleton().getByName(
+                *currentDef, ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
             // write gpu program definition type to buffer
             // check program type for vertex program
             // write program type

@@ -249,9 +249,9 @@ namespace Ogre
          * names. This means that excluded types will always have empty names.
          * All values in the object header are stored as object values.
          */
-        void addNameExclusion(const String &type);
+        //void addNameExclusion(const String &type);
         /// Removes a name exclusion
-        void removeNameExclusion(const String &type);
+        //void removeNameExclusion(const String &type);
         /// Internal method for firing the handleEvent method
         bool _fireEvent(ScriptCompilerEvent *evt, void *retval);
 
@@ -458,37 +458,9 @@ namespace Ogre
         /// @copydoc ScriptLoader::getLoadingOrder
         Real getLoadingOrder(void) const;
 
-        /** Override standard Singleton retrieval.
-        @remarks
-        Why do we do this? Well, it's because the Singleton
-        implementation is in a .h file, which means it gets compiled
-        into anybody who includes it. This is needed for the
-        Singleton template to work, but we actually only want it
-        compiled into the implementation of the class based on the
-        Singleton, not all of them. If we don't change this, we get
-        link errors when trying to use the Singleton-based class from
-        an outside dll.
-        @par
-        This method just delegates to the template version anyway,
-        but the implementation stays in this single compilation unit,
-        preventing link errors.
-        */
+        /// @copydoc Singleton::getSingleton()
         static ScriptCompilerManager& getSingleton(void);
-        /** Override standard Singleton retrieval.
-        @remarks
-        Why do we do this? Well, it's because the Singleton
-        implementation is in a .h file, which means it gets compiled
-        into anybody who includes it. This is needed for the
-        Singleton template to work, but we actually only want it
-        compiled into the implementation of the class based on the
-        Singleton, not all of them. If we don't change this, we get
-        link errors when trying to use the Singleton-based class from
-        an outside dll.
-        @par
-        This method just delegates to the template version anyway,
-        but the implementation stays in this single compilation unit,
-        preventing link errors.
-        */
+        /// @copydoc Singleton::getSingleton()
         static ScriptCompilerManager* getSingletonPtr(void);
     };
 

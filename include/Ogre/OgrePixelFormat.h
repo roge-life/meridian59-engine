@@ -53,7 +53,7 @@ namespace Ogre {
         /// 8-bit pixel format, all bits alpha.
         PF_A8 = 3,
         PF_BYTE_A = PF_A8,
-        /// 8-bit pixel format, 4 bits alpha, 4 bits luminance.
+        /// 8-bit pixel format, 4 bits alpha, 4 bits luminance. @deprecated legacy format
         PF_A4L4 = 4,
         /// 2 byte pixel format, 1 byte luminance, 1 byte alpha
         PF_BYTE_LA = 5,
@@ -300,6 +300,8 @@ namespace Ogre {
         In case of a rectangle, depth must be 1. 
         Pixels are stored as a succession of "depth" slices, each containing "height" rows of 
         "width" pixels.
+
+        @copydetails Ogre::Box
     */
     class _OgreExport PixelBox: public Box, public ImageAlloc {
     public:
@@ -382,13 +384,16 @@ namespace Ogre {
         size_t getConsecutiveSize() const;
         /** Return a subvolume of this PixelBox.
             @param def  Defines the bounds of the subregion to return
+            @param resetOrigin Whether to reset left/top/front of returned PixelBox to zero 
+                together with adjusting data pointer to compensate this, or do nothing 
+                so that returned PixelBox will have left/top/front of requested Box
             @return A pixel box describing the region and the data in it
             @remarks    This function does not copy any data, it just returns
                 a PixelBox object with a data pointer pointing somewhere inside 
                 the data of object.
             @throws Exception(ERR_INVALIDPARAMS) if def is not fully contained
         */
-        PixelBox getSubVolume(const Box &def) const;
+        PixelBox getSubVolume(const Box &def, bool resetOrigin = true) const;
         
         /** Return a data pointer pointing to top left front pixel of the pixel box.
             @remarks Non consecutive pixel boxes are supported.
@@ -446,7 +451,7 @@ namespace Ogre {
                 The size in bytes
             @remarks
                 In case that the format is non-compressed, this simply returns
-                width*height*depth*PixelUtil::getNumElemBytes(format). In the compressed
+                width * height * depth * PixelUtil::getNumElemBytes(format). In the compressed
                 case, this does serious magic.
         */
         static size_t getMemorySize(uint32 width, uint32 height, uint32 depth, PixelFormat format);
@@ -506,7 +511,7 @@ namespace Ogre {
 
         /** Gets the name of an image format
         */
-        static String getFormatName(PixelFormat srcformat);
+        static const String& getFormatName(PixelFormat srcformat);
 
         /** Returns whether the format can be packed or unpacked with the packColour()
         and unpackColour() functions. This is generally not true for compressed and

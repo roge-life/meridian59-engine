@@ -117,7 +117,7 @@ class RSClearOperation: public CompositorInstance::RenderSystemOperation
 {
 public:
     RSClearOperation(uint32 inBuffers, ColourValue inColour, Real inDepth, unsigned short inStencil, bool inAutomaticColour):
-        buffers(inBuffers), colour(inColour), depth(inDepth), stencil(inStencil), automaticColour(inAutomaticColour)
+        buffers(inBuffers), colour(inColour), automaticColour(inAutomaticColour), depth(inDepth), stencil(inStencil)
     {}
     /// Which buffers to clear (FrameBufferType)
     uint32 buffers;
@@ -245,11 +245,11 @@ public:
         }
 
         // Queue passes from mat
-        Technique::PassIterator i = technique->getPassIterator();
-        while(i.hasMoreElements())
+        Technique::Passes::const_iterator i;
+        for(i = technique->getPasses().begin(); i != technique->getPasses().end(); ++i)
         {
             sm->_injectRenderWithPass(
-                i.getNext(), 
+                *i,
                 rect,
                 false // don't allow replacement of shadow passes
                 );
@@ -336,7 +336,7 @@ void CompositorInstance::collectPasses(TargetOperation &finalState, CompositionT
                 /// XXX We could support repeating the last queue, with some effort
                 LogManager::getSingleton().logMessage("Warning in compilation of Compositor "
                     +mCompositor->getName()+": Attempt to render queue "+
-                    StringConverter::toString(pass->getFirstRenderQueue())+" before "+
+                    StringConverter::toString(pass->getFirstRenderQueue())+" after "+
                     StringConverter::toString(finalState.currentQueueGroupID), LML_CRITICAL);
             }
 
@@ -370,7 +370,7 @@ void CompositorInstance::collectPasses(TargetOperation &finalState, CompositionT
         }
         case CompositionPass::PT_RENDERQUAD: {
             srcmat = pass->getMaterial();
-            if(srcmat.isNull())
+            if(!srcmat)
             {
                 /// No material -- warn user
                 LogManager::getSingleton().logMessage("Warning in compilation of Compositor "
@@ -378,7 +378,7 @@ void CompositorInstance::collectPasses(TargetOperation &finalState, CompositionT
                 break;
             }
             srcmat->load();
-            if(srcmat->getNumSupportedTechniques()==0)  
+            if(srcmat->getSupportedTechniques().empty())
             {
                 /// No supported techniques -- warn user
                 LogManager::getSingleton().logMessage("Warning in compilation of Compositor "
@@ -389,10 +389,10 @@ void CompositorInstance::collectPasses(TargetOperation &finalState, CompositionT
             /// Create local material
             MaterialPtr localMat = createLocalMaterial(srcmat->getName());
             /// Copy and adapt passes from source material
-            Technique::PassIterator i = srctech->getPassIterator();
-            while(i.hasMoreElements())
+            Technique::Passes::const_iterator i;
+            for(i = srctech->getPasses().begin(); i != srctech->getPasses().end(); ++i)
             {
-                Pass *srcpass = i.getNext();
+                Pass *srcpass = *i;
                 /// Create new target pass
                 targetpass = localMat->getTechnique(0)->createPass();
                 (*targetpass) = (*srcpass);
@@ -595,7 +595,7 @@ static size_t dummyCounter = 0;
     /// This is safe, as we hold a private reference
     /// XXX does not compile due to ResourcePtr conversion :
     ///     MaterialManager::getSingleton().remove(mat);
-    MaterialManager::getSingleton().remove(mat->getName());
+    MaterialManager::getSingleton().remove(mat);
     /// Remove all passes from first technique
     mat->getTechnique(0)->removeAllPasses();
     return mat;
@@ -605,6 +605,8 @@ void CompositorInstance::notifyResized()
 {
     freeResources(true, true);
     createResources(true);
+    /// Notify chain state needs recompile.
+    mChain->_markDirty();
 }
 //-----------------------------------------------------------------------
 void CompositorInstance::createResources(bool forResizeOnly)
@@ -914,7 +916,7 @@ void CompositorInstance::freeResources(bool forResizeOnly, bool clearReserveText
                     if (!def->pooled && def->scope != CompositionTechnique::TS_GLOBAL)
                     {
                         // remove myself from central only if not pooled and not global
-                        TextureManager::getSingleton().remove(i->second->getName());
+                        TextureManager::getSingleton().remove(i->second);
                     }
 
                     // remove from local
@@ -1025,7 +1027,7 @@ RenderTarget *CompositorInstance::getTargetForTex(const String &name)
         {
             //Still NULL. Try global search.
             const CompositorPtr &refComp = CompositorManager::getSingleton().getByName(texDef->refCompName);
-            if(!refComp.isNull())
+            if(refComp)
             {
                 refTexDef = refComp->getSupportedTechnique()->getTextureDefinition(name);
             }
@@ -1079,7 +1081,7 @@ RenderTarget *CompositorInstance::getTargetForTex(const String &name)
             {
                 //Chain and global case - the referenced compositor will know how to handle
                 const CompositorPtr& refComp = CompositorManager::getSingleton().getByName(texDef->refCompName);
-                if(refComp.isNull())
+                if(!refComp)
                 {
                     OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND, "Referencing non-existent compositor",
                         "CompositorInstance::getTargetForTex");
@@ -1135,7 +1137,7 @@ const String &CompositorInstance::getSourceForTex(const String &name, size_t mrt
         {
             //Still NULL. Try global search.
             const CompositorPtr &refComp = CompositorManager::getSingleton().getByName(texDef->refCompName);
-            if(!refComp.isNull())
+            if(refComp)
             {
                 refTexDef = refComp->getSupportedTechnique()->getTextureDefinition(texDef->refTexName);
             }
@@ -1189,7 +1191,7 @@ const String &CompositorInstance::getSourceForTex(const String &name, size_t mrt
             {
                 //Chain and global case - the referenced compositor will know how to handle
                 const CompositorPtr& refComp = CompositorManager::getSingleton().getByName(texDef->refCompName);
-                if(refComp.isNull())
+                if(!refComp)
                 {
                     OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND, "Referencing non-existent compositor",
                         "CompositorInstance::getSourceForTex");
@@ -1298,7 +1300,8 @@ void CompositorInstance::notifyCameraChanged(Camera* camera)
     while (localMRTIter != localMRTIterEnd)
     {
         MultiRenderTarget* target = localMRTIter->second;
-        target->getViewport(0)->setCamera(camera);
+        if(target->getNumViewports())
+            target->getViewport(0)->setCamera(camera);
         ++localMRTIter;
     }
 }

@@ -41,24 +41,33 @@ THE SOFTWARE.
 #   if OGRE_DEBUG_MODE
 #       define OgreAssert( a, b ) assert( (a) && (b) )
 #   else
-#       if OGRE_COMP != OGRE_COMPILER_BORL
-#           define OgreAssert( a, b ) if( !(a) ) OGRE_EXCEPT( Ogre::Exception::ERR_RT_ASSERTION_FAILED, (b), "no function info")
-#       else
-#           define OgreAssert( a, b ) if( !(a) ) OGRE_EXCEPT( Ogre::Exception::ERR_RT_ASSERTION_FAILED, (b), __FUNC__ )
-#       endif
+#       define OgreAssert( a, b ) if( !(a) ) OGRE_EXCEPT( Ogre::Exception::ERR_RT_ASSERTION_FAILED, (b), __FUNCTION__ )
 #   endif
 
 // EXCEPTIONS mode
 #elif OGRE_ASSERT_MODE == 2
-#   if OGRE_COMP != OGRE_COMPILER_BORL
-#       define OgreAssert( a, b ) if( !(a) ) OGRE_EXCEPT( Ogre::Exception::ERR_RT_ASSERTION_FAILED, (b), "no function info")
-#   else
-#       define OgreAssert( a, b ) if( !(a) ) OGRE_EXCEPT( Ogre::Exception::ERR_RT_ASSERTION_FAILED, (b), __FUNC__ )
-#   endif
-
+#   define OgreAssert( a, b ) if( !(a) ) OGRE_EXCEPT( Ogre::Exception::ERR_RT_ASSERTION_FAILED, (b), __FUNCTION__ )
 // STANDARD mode
 #else
-#   define OgreAssert( a, b ) assert( (a) && (b) )
+/** Checks a condition at runtime and throws exception/ aborts if it fails.
+ *
+ * The macros OgreAssert (and OgreAssertDbg) evaluate the specified expression.
+ * If it is 0, OgreAssert raises an error (see Ogre::RuntimeAssertionException) in Release configuration
+ * and aborts in Debug configuration.
+ * The macro OgreAssert checks the condition in both Debug and Release configurations
+ * while OgreAssertDbg is only retained in the Debug configuration.
+ *
+ * To always abort instead of throwing an exception or disabling OgreAssert in Release configuration altogether,
+ * set OGRE_ASSERT_MODE in CMake accordingly.
+ */
+#   define OgreAssert( expr, mesg ) assert( (expr) && (mesg) )
+#endif
+
+#if OGRE_DEBUG_MODE
+#   define OgreAssertDbg( a, b ) OgreAssert( a, b )
+#else
+/// replaced with OgreAssert(expr, mesg) in Debug configuration
+#   define OgreAssertDbg( expr, mesg )
 #endif
 
 namespace Ogre {
@@ -144,8 +153,9 @@ namespace Ogre {
         virtual const String& getFullDescription(void) const;
 
         /** Gets the error code.
+        @deprecated catch by exception type instead
         */
-        virtual int getNumber(void) const throw();
+        OGRE_DEPRECATED virtual int getNumber(void) const throw();
 
         /** Gets the source function.
         */
@@ -256,8 +266,7 @@ namespace Ogre {
     private:
         /// Private constructor, no construction
         ExceptionFactory() {}
-    public:
-        static OGRE_NORETURN void throwException(
+        static OGRE_NORETURN void _throwException(
             Exception::ExceptionCodes code, int number,
             const String& desc, 
             const String& src, const char* file, long line)
@@ -278,14 +287,30 @@ namespace Ogre {
             default:                                    throw Exception(number, desc, src, "Exception", file, line);
             }
         }
+    public:
+        static OGRE_NORETURN void throwException(
+            Exception::ExceptionCodes code,
+            const String& desc,
+            const String& src, const char* file, long line)
+        {
+            _throwException(code, code, desc, src, file, line);
+        }
 
+        OGRE_DEPRECATED static OGRE_NORETURN void throwExceptionEx(
+            Exception::ExceptionCodes code, int number,
+            const String& desc,
+            const String& src, const char* file, long line)
+        {
+            _throwException(code, number, desc, src, file, line);
+        }
     };
     
 
     
 #ifndef OGRE_EXCEPT
-#define OGRE_EXCEPT(code, desc, src)         Ogre::ExceptionFactory::throwException(code, code, desc, src, __FILE__, __LINE__)
-#define OGRE_EXCEPT_EX(code, num, desc, src) Ogre::ExceptionFactory::throwException(code, num, desc, src, __FILE__, __LINE__)
+#define OGRE_EXCEPT(code, desc, src)         Ogre::ExceptionFactory::throwException(code, desc, src, __FILE__, __LINE__)
+/// @deprecated do not use
+#define OGRE_EXCEPT_EX(code, num, desc, src) Ogre::ExceptionFactory::throwExceptionEx(code, num, desc, src, __FILE__, __LINE__)
 #else
 #define OGRE_EXCEPT_EX(code, num, desc, src) OGRE_EXCEPT(code, desc, src)
 #endif

@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -94,67 +94,47 @@ namespace Ogre {
     {
         // Calculate byte size
         // Use decl if we know it by now, otherwise default size to pos/norm/texcoord*2
-        size_t newSize;
-        if (!mFirstVertex)
-        {
-            newSize = mDeclSize * numVerts;
+        size_t newSize = (mFirstVertex ? TEMP_VERTEXSIZE_GUESS : mDeclSize) * numVerts;
+
+        if(newSize <= mTempVertexSize && mTempVertexBuffer) {
+            return;
         }
-        else
+
+        // init or increase to at least double current
+        newSize = std::max(newSize, mTempVertexBuffer ? mTempVertexSize*2 : mTempVertexSize);
+
+        // copy old data
+        char* tmp = mTempVertexBuffer;
+        mTempVertexBuffer = OGRE_ALLOC_T(char, newSize, MEMCATEGORY_GEOMETRY);
+        if (tmp)
         {
-            // estimate - size checks will deal for subsequent verts
-            newSize = TEMP_VERTEXSIZE_GUESS * numVerts;
+            memcpy(mTempVertexBuffer, tmp, mTempVertexSize);
+            // delete old buffer
+            OGRE_FREE(tmp, MEMCATEGORY_GEOMETRY);
         }
-        if (newSize > mTempVertexSize || !mTempVertexBuffer)
-        {
-            if (!mTempVertexBuffer)
-            {
-                // init
-                //newSize = mTempVertexSize;
-            }
-            else
-            {
-                // increase to at least double current
-                newSize = std::max(newSize, mTempVertexSize*2);
-            }
-            // copy old data
-            char* tmp = mTempVertexBuffer;
-            mTempVertexBuffer = OGRE_ALLOC_T(char, newSize, MEMCATEGORY_GEOMETRY);
-            if (tmp)
-            {
-                memcpy(mTempVertexBuffer, tmp, mTempVertexSize);
-                // delete old buffer
-                OGRE_FREE(tmp, MEMCATEGORY_GEOMETRY);
-            }
-            mTempVertexSize = newSize;
-        }
+        mTempVertexSize = newSize;
     }
     //-----------------------------------------------------------------------------
     void ManualObject::resizeTempIndexBufferIfNeeded(size_t numInds)
     {
         size_t newSize = numInds * sizeof(uint32);
-        if (newSize > mTempIndexSize || !mTempIndexBuffer)
-        {
-            if (!mTempIndexBuffer)
-            {
-                // init
-                //newSize = mTempIndexSize;
-            }
-            else
-            {
-                // increase to at least double current
-                newSize = std::max(newSize, mTempIndexSize*2);
-            }
-            numInds = newSize / sizeof(uint32);
-            uint32* tmp = mTempIndexBuffer;
-            mTempIndexBuffer = OGRE_ALLOC_T(uint32, numInds, MEMCATEGORY_GEOMETRY);
-            if (tmp)
-            {
-                memcpy(mTempIndexBuffer, tmp, mTempIndexSize);
-                OGRE_FREE(tmp, MEMCATEGORY_GEOMETRY);
-            }
-            mTempIndexSize = newSize;
+
+        if(newSize <= mTempIndexSize && mTempIndexBuffer) {
+            return;
         }
 
+        // init or increase to at least double current
+        newSize = std::max(newSize, mTempIndexBuffer ? mTempIndexSize*2 : mTempIndexSize);
+
+        numInds = newSize / sizeof(uint32);
+        uint32* tmp = mTempIndexBuffer;
+        mTempIndexBuffer = OGRE_ALLOC_T(uint32, numInds, MEMCATEGORY_GEOMETRY);
+        if (tmp)
+        {
+            memcpy(mTempIndexBuffer, tmp, mTempIndexSize);
+            OGRE_FREE(tmp, MEMCATEGORY_GEOMETRY);
+        }
+        mTempIndexSize = newSize;
     }
     //-----------------------------------------------------------------------------
     void ManualObject::estimateVertexCount(size_t vcount)
@@ -182,22 +162,14 @@ namespace Ogre {
         // Check that a valid material was provided
         MaterialPtr material = MaterialManager::getSingleton().getByName(materialName, groupName);
 
-        if( material.isNull() )
+        if( !material )
         {
             LogManager::getSingleton().logMessage("Can't assign material " + materialName +
                                                   " to the ManualObject " + mName + " because this "
-                                                  "Material does not exist. Have you forgotten to define it in a "
+                                                  "Material does not exist in group "+groupName+". Have you forgotten to define it in a "
                                                   ".material script?", LML_CRITICAL);
 
-            material = MaterialManager::getSingleton().getByName("BaseWhite");
-
-            if (material.isNull())
-            {
-                OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR, "Can't assign default material "
-                            "to the ManualObject " + mName + ". Did "
-                            "you forget to call MaterialManager::initialise()?",
-                            "ManualObject::begin");
-            }
+            material = MaterialManager::getSingleton().getDefaultMaterial();
         }
 
         mCurrentSection = OGRE_NEW ManualObjectSection(this, materialName, opType, groupName);
@@ -1091,11 +1063,11 @@ namespace Ogre {
     //-----------------------------------------------------------------------------
     const MaterialPtr& ManualObject::ManualObjectSection::getMaterial(void) const
     {
-        if (mMaterial.isNull())
+        if (!mMaterial)
         {
             // Load from default group. If user wants to use alternate groups,
             // they can define it and preload
-            mMaterial = MaterialManager::getSingleton().load(mMaterialName, mGroupName).staticCast<Material>();
+            mMaterial = static_pointer_cast<Material>(MaterialManager::getSingleton().load(mMaterialName, mGroupName));
         }
         return mMaterial;
     }
@@ -1106,7 +1078,7 @@ namespace Ogre {
         {
             mMaterialName = name;
             mGroupName = groupName;
-            mMaterial.setNull();
+            mMaterial.reset();
         }
     }
     //-----------------------------------------------------------------------------
@@ -1155,7 +1127,7 @@ namespace Ogre {
         mPositionBuffer = vertexData->vertexBufferBinding->getBuffer(origPosBind);
         mRenderOp.vertexData->vertexBufferBinding->setBinding(0, mPositionBuffer);
         // Map in w-coord buffer (if present)
-        if(!vertexData->hardwareShadowVolWBuffer.isNull())
+        if(vertexData->hardwareShadowVolWBuffer)
         {
             mRenderOp.vertexData->vertexDeclaration->addElement(1,0,VET_FLOAT1, VES_TEXTURE_COORDINATES, 0);
             mWBuffer = vertexData->hardwareShadowVolWBuffer;

@@ -128,7 +128,7 @@ namespace Ogre {
         // Also add to name index
         std::pair<ObjectMap::iterator, bool> insresult = 
             mObjectsByName.insert(ObjectMap::value_type(obj->getName(), obj));
-        assert(insresult.second && "Object was not attached because an object of the "
+        OgreAssert(insresult.second, "Object was not attached because an object of the "
             "same name was already attached to this node.");
         (void)insresult;
         
@@ -336,18 +336,6 @@ namespace Ogre {
         queue->addRenderable(mWireBoundingBox);
     }
 
-    void SceneNode::showBoundingBox(bool bShow) {
-        mShowBoundingBox = bShow;
-    }
-
-    bool SceneNode::getShowBoundingBox() const {
-        return mShowBoundingBox;
-    }
-
-    void SceneNode::hideBoundingBox(bool bHide) {
-        mHideBoundingBox = bHide;
-    }
-
     //-----------------------------------------------------------------------
     void SceneNode::updateFromParentImpl(void) const
     {
@@ -372,21 +360,6 @@ namespace Ogre {
     {
         assert(mCreator);
         return mCreator->createSceneNode(name);
-    }
-    //-----------------------------------------------------------------------
-    const AxisAlignedBox& SceneNode::_getWorldAABB(void) const
-    {
-        return mWorldAABB;
-    }
-    //-----------------------------------------------------------------------
-    SceneNode::ObjectIterator SceneNode::getAttachedObjectIterator(void)
-    {
-        return ObjectIterator(mObjectsByName.begin(), mObjectsByName.end());
-    }
-    //-----------------------------------------------------------------------
-    SceneNode::ConstObjectIterator SceneNode::getAttachedObjectIterator(void) const
-    {
-        return ConstObjectIterator(mObjectsByName.begin(), mObjectsByName.end());
     }
     //-----------------------------------------------------------------------
     void SceneNode::removeAndDestroyChild(const String& name)
