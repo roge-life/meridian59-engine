@@ -21,11 +21,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibPNG", "LibPNG-1.6.22\Lib
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FreeImage", "freeimage-3.17.0\FreeImage.2012.vcxproj", "{B39ED2B3-D53A-4077-B957-930979A3577D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OgreMain", "ogre-1.10.0\OgreMain\OgreMain.vcxproj", "{25347CBB-C21C-4F72-A582-3BB44F654D25}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OgreMain", "ogre-1.10.5\OgreMain\OgreMain.vcxproj", "{25347CBB-C21C-4F72-A582-3BB44F654D25}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OgreD3D9", "ogre-1.10.0\RenderSystems\Direct3D9\RenderSystem_Direct3D9.vcxproj", "{0C84D990-915C-4FB7-B180-A2ED77B819F2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OgreD3D9", "ogre-1.10.5\RenderSystems\Direct3D9\RenderSystem_Direct3D9.vcxproj", "{0C84D990-915C-4FB7-B180-A2ED77B819F2}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OgreOctree", "ogre-1.10.0\PlugIns\OctreeSceneManager\Plugin_OctreeSceneManager.vcxproj", "{59D9ED67-A692-4BBC-8A11-1BCCAC149D16}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OgreOctree", "ogre-1.10.5\PlugIns\OctreeSceneManager\Plugin_OctreeSceneManager.vcxproj", "{59D9ED67-A692-4BBC-8A11-1BCCAC149D16}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CEGUIBase", "cegui-0.8.5\CEGUIBase.vcxproj", "{DABE5779-876D-4CF2-B2A6-2D985994D59F}"
 EndProject
