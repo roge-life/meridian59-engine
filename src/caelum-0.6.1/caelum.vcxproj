@@ -100,7 +100,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PreprocessorDefinitions>BOOST_ALL_NO_LIB;BOOST_THREAD_BUILD_LIB;BOOST_THREAD_VERSION=4;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <DisableSpecificWarnings>4996;4305;4244;4838;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4311;4996;4305;4244;4838;</DisableSpecificWarnings>
       <AdditionalOptions>-Zm214</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
@@ -126,7 +126,7 @@
       <AdditionalIncludeDirectories>..\..\include;..\..\include\caelum;..\..\include\ogre;</AdditionalIncludeDirectories>
       <MinimalRebuild>false</MinimalRebuild>
       <PreprocessorDefinitions>BOOST_ALL_NO_LIB;BOOST_THREAD_BUILD_LIB;BOOST_THREAD_VERSION=4;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <DisableSpecificWarnings>4996;4305;4244;4838;4302</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4311;4996;4305;4244;4838;4302</DisableSpecificWarnings>
       <CompileAs>CompileAsCpp</CompileAs>
       <AdditionalOptions>-Zm214</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -163,7 +163,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <DebugInformationFormat>None</DebugInformationFormat>
-      <DisableSpecificWarnings>4996;4305;4244;4838;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4311;4996;4305;4244;4838;</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -197,7 +197,7 @@
       <PrecompiledHeaderFile>CaelumPrecompiled.h</PrecompiledHeaderFile>
       <DebugInformationFormat>None</DebugInformationFormat>
       <PreprocessorDefinitions>BOOST_ALL_NO_LIB;BOOST_THREAD_BUILD_LIB;BOOST_THREAD_VERSION=4;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <DisableSpecificWarnings>4996;4305;4244;4838;4302</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4311;4996;4305;4244;4838;4302</DisableSpecificWarnings>
       <AdditionalOptions>-Zm214</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
