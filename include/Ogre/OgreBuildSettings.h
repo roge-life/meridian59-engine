@@ -60,7 +60,7 @@
 
 #define OGRE_NO_DDS_CODEC 0
 
-#define OGRE_NO_PVRTC_CODEC 0
+#define OGRE_NO_PVRTC_CODEC 1
 
 #define OGRE_NO_STBI_CODEC 1
 
