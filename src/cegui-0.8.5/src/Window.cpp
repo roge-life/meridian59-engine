@@ -78,6 +78,7 @@ const String Window::IDPropertyName("ID");
 const String Window::InheritsAlphaPropertyName("InheritsAlpha");
 const String Window::MouseCursorImagePropertyName("MouseCursorImage");
 const String Window::VisiblePropertyName("Visible");
+const String Window::ActivePropertyName("Active");
 const String Window::RestoreOldCapturePropertyName("RestoreOldCapture");
 const String Window::TextPropertyName("Text");
 const String Window::ZOrderingEnabledPropertyName("ZOrderingEnabled");
@@ -743,6 +744,18 @@ void Window::setVisible(bool setting)
 }
 
 //----------------------------------------------------------------------------//
+void Window::setActive(bool setting)
+{
+  if (isActive() == setting)
+    return;
+
+  if (setting)
+    activate();
+  else
+    deactivate();
+}
+
+//----------------------------------------------------------------------------//
 void Window::activate(void)
 {
     // exit if the window is not visible, since a hidden window may not be the
@@ -1257,8 +1270,12 @@ void Window::removeChild_impl(Element* element)
     
     wnd->onZChange_impl();
 
-    // Removed windows should not be active anymore
-    //wnd->deactivate();
+    // Removed windows should not be active anymore (they are not attached
+    // to anything so this would not make sense)
+    if(wnd->isActive())
+    {
+        wnd->deactivate();
+    }
 }
 
 //----------------------------------------------------------------------------//
@@ -1399,6 +1416,11 @@ void Window::addWindowProperties(void)
     CEGUI_DEFINE_PROPERTY(Window, bool,
         VisiblePropertyName, "Property to get/set the 'visible state' setting for the Window. Value is either \"true\" or \"false\".",
         &Window::setVisible, &Window::isVisible, true
+    );
+
+    CEGUI_DEFINE_PROPERTY(Window, bool,
+        ActivePropertyName, "Property to get/set the 'active' setting for the Window. Value is either \"true\" or \"false\".",
+        &Window::setActive, &Window::isActive, false 
     );
 
     CEGUI_DEFINE_PROPERTY(Window, bool,
@@ -1734,13 +1756,13 @@ void Window::destroy(void)
         return;
     }
 
-	// double check we are detached from parent
-	if (d_parent)
-		d_parent->removeChild(this);
-
     // signal our imminent destruction
     WindowEventArgs args(this);
     onDestructionStarted(args);
+
+    // Check we are detached from parent
+    if (d_parent)
+        d_parent->removeChild(this);
 
     releaseInput();
 
@@ -1751,6 +1773,8 @@ void Window::destroy(void)
 
     // ensure custom tooltip is cleaned up
     setTooltip(static_cast<Tooltip*>(0));
+    
+
 
     // clean up looknfeel related things
     if (!d_lookName.empty())
@@ -2244,7 +2268,7 @@ void Window::onSized(ElementEventArgs& e)
     // screen area changes when we're resized.
     // NB: Called non-recursive since the performChildWindowLayout call should
     // have dealt more selectively with child Window cases.
-    notifyScreenAreaChanged(false);
+    notifyScreenAreaChanged(true);
     performChildWindowLayout(true, true);
 
     invalidate();
