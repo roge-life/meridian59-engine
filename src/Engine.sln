@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "zlib-1.2.8\zlib.2012.vcxproj", "{E2C146F9-F840-4C21-9CA9-E1DD9649AB7A}"
 EndProject
@@ -40,8 +40,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CEGUISTBImageCodec", "cegui-0.8.5\CEGUISTBImageCodec.vcxproj", "{7419F1DA-FE40-4168-9AF9-417F34C608D4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "caelum", "caelum-0.6.1\caelum.vcxproj", "{DBA2AEFB-1BE9-47A4-A592-1EE6F382CADC}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "boost", "boost-1.61.0\boost.vcxproj", "{E09FC166-2921-4D6D-9E14-E6F89B46FD53}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParticleUniverse", "ParticleUniverse-1.6+\ParticleUniverse.vcxproj", "{837046F4-06E7-4DD3-BDF4-5522427D5FD5}"
 EndProject
@@ -205,14 +203,6 @@ Global
 		{DBA2AEFB-1BE9-47A4-A592-1EE6F382CADC}.Release|Win32.Build.0 = Release|Win32
 		{DBA2AEFB-1BE9-47A4-A592-1EE6F382CADC}.Release|x64.ActiveCfg = Release|x64
 		{DBA2AEFB-1BE9-47A4-A592-1EE6F382CADC}.Release|x64.Build.0 = Release|x64
-		{E09FC166-2921-4D6D-9E14-E6F89B46FD53}.Debug|Win32.ActiveCfg = Debug|Win32
-		{E09FC166-2921-4D6D-9E14-E6F89B46FD53}.Debug|Win32.Build.0 = Debug|Win32
-		{E09FC166-2921-4D6D-9E14-E6F89B46FD53}.Debug|x64.ActiveCfg = Debug|x64
-		{E09FC166-2921-4D6D-9E14-E6F89B46FD53}.Debug|x64.Build.0 = Debug|x64
-		{E09FC166-2921-4D6D-9E14-E6F89B46FD53}.Release|Win32.ActiveCfg = Release|Win32
-		{E09FC166-2921-4D6D-9E14-E6F89B46FD53}.Release|Win32.Build.0 = Release|Win32
-		{E09FC166-2921-4D6D-9E14-E6F89B46FD53}.Release|x64.ActiveCfg = Release|x64
-		{E09FC166-2921-4D6D-9E14-E6F89B46FD53}.Release|x64.Build.0 = Release|x64
 		{837046F4-06E7-4DD3-BDF4-5522427D5FD5}.Debug|Win32.ActiveCfg = Debug|Win32
 		{837046F4-06E7-4DD3-BDF4-5522427D5FD5}.Debug|Win32.Build.0 = Debug|Win32
 		{837046F4-06E7-4DD3-BDF4-5522427D5FD5}.Debug|x64.ActiveCfg = Debug|x64
