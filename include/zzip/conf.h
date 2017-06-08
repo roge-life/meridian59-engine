@@ -207,7 +207,6 @@
 #  endif
 #     endif
 
-#define ZZIPLIB_EXPORTS
 #if defined ZZIP_EXPORTS || defined ZZIPLIB_EXPORTS
 # undef ZZIP_DLL
 #define ZZIP_DLL 1
