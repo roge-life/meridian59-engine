@@ -24,6 +24,8 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  *   OTHER DEALINGS IN THE SOFTWARE.
  ***************************************************************************/
+#include "CEGUI/WindowRendererSets/Core/Precompiled.h"
+
 #include "CEGUI/WindowRendererSets/Core/Listbox.h"
 #include "CEGUI/widgets/Scrollbar.h"
 #include "CEGUI/widgets/ListboxItem.h"

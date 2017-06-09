@@ -24,6 +24,8 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  *   OTHER DEALINGS IN THE SOFTWARE.
  ***************************************************************************/
+#include "CEGUI/WindowRendererSets/Core/Precompiled.h"
+
 #include "CEGUI/WindowRendererSets/Core/ToggleButton.h"
 #include "CEGUI/PropertyHelper.h"
 #include "CEGUI/falagard/WidgetLookManager.h"

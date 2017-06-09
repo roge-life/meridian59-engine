@@ -24,6 +24,8 @@ author:		Jonathan Welch (Based on Code by David Durant)
 *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 *   OTHER DEALINGS IN THE SOFTWARE.
 ***************************************************************************/
+#include "CEGUI/WindowRendererSets/Core/Precompiled.h"
+
 #include "CEGUI/WindowRendererSets/Core/Tree.h"
 #include "CEGUI/falagard/WidgetLookManager.h"
 #include "CEGUI/falagard/WidgetLookFeel.h"
