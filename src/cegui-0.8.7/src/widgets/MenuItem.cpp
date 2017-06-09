@@ -26,6 +26,8 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  *   OTHER DEALINGS IN THE SOFTWARE.
  ***************************************************************************/
+#include "CEGUI/Precompiled.h"
+
 #include "CEGUI/widgets/MenuItem.h"
 #include "CEGUI/widgets/Menubar.h"
 #include "CEGUI/widgets/PopupMenu.h"

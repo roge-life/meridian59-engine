@@ -24,6 +24,8 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  *   OTHER DEALINGS IN THE SOFTWARE.
  ***************************************************************************/
+#include "CEGUI/Precompiled.h"
+
 #include "CEGUI/LeftAlignedRenderedString.h"
 #include "CEGUI/RenderedString.h"
 #include "CEGUI/Vector.h"

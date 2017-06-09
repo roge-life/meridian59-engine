@@ -24,6 +24,8 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  *   OTHER DEALINGS IN THE SOFTWARE.
  ***************************************************************************/
+#include "CEGUI/Precompiled.h"
+
 #include "CEGUI/XMLHandler.h"
 #include "CEGUI/System.h"
 #include "CEGUI/XMLParser.h"

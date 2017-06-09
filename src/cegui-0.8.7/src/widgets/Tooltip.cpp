@@ -24,6 +24,8 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  *   OTHER DEALINGS IN THE SOFTWARE.
  ***************************************************************************/
+#include "CEGUI/Precompiled.h"
+
 #include "CEGUI/widgets/Tooltip.h"
 #include "CEGUI/Logger.h"
 #include "CEGUI/Font.h"

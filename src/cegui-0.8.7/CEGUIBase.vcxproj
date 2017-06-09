@@ -90,7 +90,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <Optimization>Disabled</Optimization>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <WarningLevel>Level3</WarningLevel>
@@ -100,6 +100,7 @@
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4101;4091</DisableSpecificWarnings>
+      <PrecompiledHeaderFile>CEGUI\Precompiled.h</PrecompiledHeaderFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;CEGUI_STATIC;_CRT_SECURE_NO_WARNINGS;NOMINMAX;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -127,7 +128,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <Optimization>Disabled</Optimization>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <WarningLevel>Level3</WarningLevel>
@@ -137,6 +138,7 @@
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4244;4267;4101;4091;4477</DisableSpecificWarnings>
+      <PrecompiledHeaderFile>CEGUI\Precompiled.h</PrecompiledHeaderFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;CEGUI_STATIC;_CRT_SECURE_NO_WARNINGS;NOMINMAX;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -162,7 +164,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <Optimization>MaxSpeed</Optimization>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <WarningLevel>Level3</WarningLevel>
@@ -182,6 +184,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <DisableSpecificWarnings>4101;4091</DisableSpecificWarnings>
+      <PrecompiledHeaderFile>CEGUI\Precompiled.h</PrecompiledHeaderFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CEGUI_STATIC;_CRT_SECURE_NO_WARNINGS;NOMINMAX;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -208,7 +211,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <Optimization>MaxSpeed</Optimization>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <WarningLevel>Level3</WarningLevel>
@@ -228,6 +231,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <DisableSpecificWarnings>4244;4267;4101;4091;4477</DisableSpecificWarnings>
+      <PrecompiledHeaderFile>CEGUI\Precompiled.h</PrecompiledHeaderFile>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CEGUI_STATIC;_CRT_SECURE_NO_WARNINGS;NOMINMAX;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -296,7 +300,6 @@
     <ClInclude Include="..\..\include\cegui\CEGUI\GlobalEventSet.h" />
     <ClInclude Include="..\..\include\cegui\CEGUI\GUIContext.h" />
     <ClInclude Include="..\..\include\cegui\CEGUI\GUILayout_xmlHandler.h" />
-    <ClInclude Include="..\..\include\cegui\CEGUI\IconvStringTranscoder.h" />
     <ClInclude Include="..\..\include\cegui\CEGUI\Image.h" />
     <ClInclude Include="..\..\include\cegui\CEGUI\ImageCodec.h" />
     <ClInclude Include="..\..\include\cegui\CEGUI\ImageFactory.h" />
@@ -316,13 +319,12 @@
     <ClInclude Include="..\..\include\cegui\CEGUI\MemoryOgreAllocator.h" />
     <ClInclude Include="..\..\include\cegui\CEGUI\MemoryStdAllocator.h" />
     <ClInclude Include="..\..\include\cegui\CEGUI\MemorySTLWrapper.h" />
-    <ClInclude Include="..\..\include\cegui\CEGUI\MinibidiVisualMapping.h" />
-    <ClInclude Include="..\..\include\cegui\CEGUI\MinizipResourceProvider.h" />
     <ClInclude Include="..\..\include\cegui\CEGUI\MouseCursor.h" />
     <ClInclude Include="..\..\include\cegui\CEGUI\NamedElement.h" />
     <ClInclude Include="..\..\include\cegui\CEGUI\NamedXMLResourceManager.h" />
     <ClInclude Include="..\..\include\cegui\CEGUI\PCRERegexMatcher.h" />
     <ClInclude Include="..\..\include\cegui\CEGUI\PixmapFont.h" />
+    <ClInclude Include="..\..\include\cegui\CEGUI\Precompiled.h" />
     <ClInclude Include="..\..\include\cegui\CEGUI\Property.h" />
     <ClInclude Include="..\..\include\cegui\CEGUI\PropertyHelper.h" />
     <ClInclude Include="..\..\include\cegui\CEGUI\PropertySet.h" />
@@ -514,6 +516,12 @@
     <ClCompile Include="src\NamedXMLResourceManager.cpp" />
     <ClCompile Include="src\PCRERegexMatcher.cpp" />
     <ClCompile Include="src\PixmapFont.cpp" />
+    <ClCompile Include="src\Precompiled.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\Property.cpp" />
     <ClCompile Include="src\PropertyHelper.cpp" />
     <ClCompile Include="src\PropertySet.cpp" />

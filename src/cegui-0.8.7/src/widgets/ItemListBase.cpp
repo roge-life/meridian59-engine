@@ -26,6 +26,8 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  *   OTHER DEALINGS IN THE SOFTWARE.
  ***************************************************************************/
+#include "CEGUI/Precompiled.h"
+
 #include "CEGUI/Exceptions.h"
 #include "CEGUI/WindowManager.h"
 #include "CEGUI/CoordConverter.h"
