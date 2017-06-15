@@ -1062,7 +1062,6 @@ namespace Ogre
                 if (mMipmapsHardwareGenerated)
                 {
                     usage |= D3DUSAGE_AUTOGENMIPMAP;
-                    numMips = 0;
                 }
             }
         }
