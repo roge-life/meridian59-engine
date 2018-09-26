@@ -35,6 +35,12 @@ email                : janders@users.sf.net
 ***************************************************************************/
 #include "OgreOctreePrecompiled.h"
 
+#if OGRE_NODE_STORAGE_LEGACY
+#define ITER_VAL(it) it->second
+#else
+#define ITER_VAL(it) (*it)
+#endif
+
 namespace Ogre
 {
 unsigned long green = 0xFFFFFFFF;
@@ -64,7 +70,7 @@ void OctreeNode::_removeNodeAndChildren( )
     ChildNodeMap::iterator it = mChildren.begin();
     while( it != mChildren.end() )
     {
-        static_cast<OctreeNode *>( it->second ) -> _removeNodeAndChildren();
+        static_cast<OctreeNode *>( ITER_VAL(it) ) -> _removeNodeAndChildren();
         ++it;
     }
 }
@@ -86,7 +92,7 @@ void OctreeNode::removeAllChildren()
     iend = mChildren.end();
     for (i = mChildren.begin(); i != iend; ++i)
     {
-        OctreeNode* on = static_cast<OctreeNode*>(i->second);
+        OctreeNode* on = static_cast<OctreeNode*>(ITER_VAL(i));
         on->setParent(0);
         on->_removeNodeAndChildren();
     }
@@ -116,11 +122,11 @@ void OctreeNode::_updateBounds( void )
     {
 
         // Get local bounds of object
-        bx = i->second ->getBoundingBox();
+        bx = ITER_VAL(i)->getBoundingBox();
 
         mLocalAABB.merge( bx );
 
-        mWorldAABB.merge( i->second ->getWorldBoundingBox(true) );
+        mWorldAABB.merge( ITER_VAL(i)->getWorldBoundingBox(true) );
         ++i;
     }
 
@@ -173,7 +179,7 @@ void OctreeNode::_addToRenderQueue( Camera* cam, RenderQueue *queue,
 
     while ( mit != mObjectsByName.end() )
     {
-        MovableObject * mo = mit->second;
+        MovableObject * mo = ITER_VAL(mit);
         
         queue->processVisibleObject(mo, cam, onlyShadowCasters, visibleBounds);
 

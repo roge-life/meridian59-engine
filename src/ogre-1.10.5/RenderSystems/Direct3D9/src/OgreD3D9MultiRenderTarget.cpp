@@ -27,7 +27,6 @@ THE SOFTWARE.
 */
 #include "OgreD3D9Precompiled.h"
 
-
 namespace Ogre 
 {
     D3D9MultiRenderTarget::D3D9MultiRenderTarget(const String &name):

@@ -31,6 +31,10 @@ THE SOFTWARE
 
 #include <string>
 
+#if OGRE_USE_STD11
+#include <memory>
+#endif
+
 // configure memory tracking
 #if OGRE_DEBUG_MODE 
 #   if OGRE_MEMORY_TRACKER_DEBUG_MODE
@@ -50,7 +54,7 @@ namespace Ogre {
     // Define ogre version
     #define OGRE_VERSION_MAJOR 1
     #define OGRE_VERSION_MINOR 10
-    #define OGRE_VERSION_PATCH 7
+    #define OGRE_VERSION_PATCH 8
     #define OGRE_VERSION_SUFFIX ""
     #define OGRE_VERSION_NAME "Xalafu"
 
@@ -331,7 +335,11 @@ namespace Ogre {
     class CompositionTargetPass;
     class CustomCompositionPass;
 
+#if OGRE_USE_STD11
+    template<typename T> using SharedPtr = std::shared_ptr<T>;
+#else
     template<typename T> class SharedPtr;
+#endif
     typedef SharedPtr<AnimableValue> AnimableValuePtr;
     typedef SharedPtr<Compositor> CompositorPtr;
     typedef SharedPtr<DataStream> DataStreamPtr;

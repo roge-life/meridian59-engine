@@ -169,18 +169,13 @@ namespace Ogre {
         // never process responses in main thread for longer than 10ms by default
         defaultQ->setResponseProcessingTimeLimit(10);
         // match threads to hardware
-#if OGRE_THREAD_SUPPORT
         unsigned threadCount = OGRE_THREAD_HARDWARE_CONCURRENCY;
         if (!threadCount)
             threadCount = 1;
         defaultQ->setWorkerThreadCount(threadCount);
-#endif
+
         // only allow workers to access rendersystem if threadsupport is 1
-#if OGRE_THREAD_SUPPORT == 1
-        defaultQ->setWorkersCanAccessRenderSystem(true);
-#else
-        defaultQ->setWorkersCanAccessRenderSystem(false);
-#endif
+        defaultQ->setWorkersCanAccessRenderSystem(OGRE_THREAD_SUPPORT == 1);
         mWorkQueue = defaultQ;
 
         // ResourceBackgroundQueue
@@ -1025,11 +1020,16 @@ namespace Ogre {
         mResourceBackgroundQueue->shutdown();
         mWorkQueue->shutdown();
 
-        SceneManagerEnumerator::getSingleton().shutdownAll();
-        shutdownPlugins();
+        if(mSceneManagerEnum)
+            mSceneManagerEnum->shutdownAll();
+        if(mFirstTimePostWindowInit)
+            shutdownPlugins();
         OGRE_DELETE mSceneManagerEnum;
+        mSceneManagerEnum = NULL;
 
         OGRE_DELETE mShadowTextureManager;
+        mShadowTextureManager = NULL;
+
         ShadowVolumeExtrudeProgram::shutdown();
         ResourceGroupManager::getSingleton().shutdownAll();
 

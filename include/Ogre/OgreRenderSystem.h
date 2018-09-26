@@ -323,6 +323,7 @@ namespace Ogre
         | useNVPerfHUD | true, false | false | Enable the use of nVidia NVPerfHUD | DirectX Specific |
         | depthBuffer | true, false | true | Use depth buffer | DirectX9 Specific |
         | macAPI | String: "cocoa" or "carbon" | "carbon" | Specifies the type of rendering window on the Mac Platform. | Mac OS X Specific |
+        | NSOpenGLCPSurfaceOrder | -1 or 1 | 1 | [NSOpenGLCPSurfaceOrder](https://developer.apple.com/documentation/appkit/nsopenglcpsurfaceorder) | Mac OS X Specific |
         | contentScalingFactor | Positive Float greater than 1.0 | The default content scaling factor of the screen | Specifies the CAEAGLLayer content scaling factor. Only supported on iOS 4 or greater. This can be useful to limit the resolution of the OpenGL ES backing store. For example, the iPhone 4's native resolution is 960 x 640\. Windows are always 320 x 480, if you would like to limit the display to 720 x 480, specify 1.5 as the scaling factor. | iOS Specific |
         | externalViewHandle | UIView pointer as an integer | 0 | External view handle, for rendering OGRE render in an existing view | iOS Specific |
         | externalViewControllerHandle | UIViewController pointer as an integer | 0 | External view controller handle, for embedding OGRE in an existing view controller | iOS Specific |
@@ -452,7 +453,8 @@ namespace Ogre
         /** Sets the world transform matrix.
          * @deprecated only needed for fixed function APIs */
         virtual void _setWorldMatrix(const Matrix4 &m) {}
-        /** Sets multiple world matrices (vertex blending). */
+        /** Sets multiple world matrices (vertex blending).
+         * @deprecated unused. for FFP vertex blending, which never existed. */
         virtual void _setWorldMatrices(const Matrix4* m, unsigned short count);
         /** Sets the view transform matrix
          * @deprecated only needed for fixed function APIs */
@@ -1010,10 +1012,12 @@ namespace Ogre
 
 
 
-        /** Sets the current vertex declaration, ie the source of vertex data. */
-        virtual void setVertexDeclaration(VertexDeclaration* decl) = 0;
-        /** Sets the current vertex buffer binding state. */
-        virtual void setVertexBufferBinding(VertexBufferBinding* binding) = 0;
+        /** Sets the current vertex declaration, ie the source of vertex data.
+         @deprecated use RenderOperation */
+        OGRE_DEPRECATED virtual void setVertexDeclaration(VertexDeclaration* decl) {}
+        /** Sets the current vertex buffer binding state.
+         @deprecated use RenderOperation */
+        virtual void setVertexBufferBinding(VertexBufferBinding* binding) {}
 
         /** Sets whether or not normals are to be automatically normalised.
         @remarks

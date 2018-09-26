@@ -39,7 +39,11 @@ namespace Ogre
     {
     public:
         DefaultWorkQueue(const String& name = BLANKSTRING);
-        virtual ~DefaultWorkQueue();
+#ifdef __cplusplus >= 201103L
+        virtual ~DefaultWorkQueue(void) noexcept(true);
+#else
+        virtual ~DefaultWorkQueue(void);
+#endif
         /** Process the next request on the queue. 
         @remarks
             This method is public, but only intended for advanced users to call. 
@@ -69,7 +73,7 @@ namespace Ogre
 #endif
         tbb::task_group mTaskGroup;
         /// Synchronise registering threads with the RenderSystem
-        OGRE_MUTEX(mRegisterRSMutex);
+        OGRE_WQ_MUTEX(mRegisterRSMutex);
         std::set<tbb::tbb_thread::id> mRegisteredThreads;
     };
 

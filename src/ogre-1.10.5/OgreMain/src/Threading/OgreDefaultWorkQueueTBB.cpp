@@ -96,7 +96,7 @@ namespace Ogre
     void DefaultWorkQueue::_registerThreadWithRenderSystem()
     {
         {
-                    OGRE_LOCK_MUTEX(mRegisterRSMutex);
+                    OGRE_WQ_LOCK_MUTEX(mRegisterRSMutex);
             tbb::tbb_thread::id cur = tbb::this_tbb_thread::get_id();
             if (mRegisteredThreads.find(cur) == mRegisteredThreads.end())
             {
@@ -108,7 +108,11 @@ namespace Ogre
         tbb::this_tbb_thread::yield();
     }
     //---------------------------------------------------------------------
+#ifdef __cplusplus >= 201103L
+    DefaultWorkQueue::~DefaultWorkQueue() noexcept(true)
+#else
     DefaultWorkQueue::~DefaultWorkQueue()
+#endif // __cplusplus
     {
         shutdown();
     }
