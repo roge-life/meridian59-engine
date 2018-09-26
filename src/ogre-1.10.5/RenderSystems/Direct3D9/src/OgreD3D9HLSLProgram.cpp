@@ -27,7 +27,6 @@ THE SOFTWARE.
 */
 #include "OgreD3D9Precompiled.h"
 
-
 namespace Ogre {
     //-----------------------------------------------------------------------
     D3D9HLSLProgram::CmdEntryPoint D3D9HLSLProgram::msCmdEntryPoint;
@@ -641,9 +640,6 @@ namespace Ogre {
         ResourceHandle handle, const String& group, bool isManual, 
         ManualResourceLoader* loader)
         : HighLevelGpuProgram(creator, name, handle, group, isManual, loader)
-        , mTarget()
-        , mEntryPoint()
-        , mPreprocessorDefines()
         , mColumnMajorMatrices(true)
         , mBackwardsCompatibility(false)
         , mMicroCode(NULL)
