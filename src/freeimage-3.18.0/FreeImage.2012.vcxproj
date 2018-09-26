@@ -414,8 +414,6 @@
     <ClCompile Include="ToneMapping.cpp" />
     <ClCompile Include="NNQuantizer.cpp" />
     <ClCompile Include="WuQuantizer.cpp" />
-    <ClCompile Include="Deprecated.cpp" />
-    <ClCompile Include="DeprecationMgr.cpp" />
     <ClCompile Include="CacheFile.cpp" />
     <ClCompile Include="MultiPage.cpp" />
     <ClCompile Include="ZLibInterface.cpp" />
