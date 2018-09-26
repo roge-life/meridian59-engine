@@ -352,7 +352,7 @@ namespace Caelum
     }
 
     CaelumSystemScriptTranslator::CaelumSystemScriptTranslator ():
-            mResourceManager(false),
+            mResourceManager(),
             mTranslationTarget(0),
             mTranslationTargetFound(false),
             mTypeDescriptor(0)
@@ -406,7 +406,11 @@ namespace Caelum
             //LogManager::getSingleton ().logMessage (
             //        "Caelum: Saved " + objNode->cls + " name " + objNode->name + " as a resource");
             PropScriptResourceManager* mgr = this->getResourceManager ();
+#if OGRE_VERSION >= 0x00010900
+            ResourcePtr resource = mgr->createResource (objNode->name, compiler->getResourceGroup());
+#else
             ResourcePtr resource = mgr->create (objNode->name, compiler->getResourceGroup());
+#endif
             resource->_notifyOrigin (objNode->file);
             return;
         }
@@ -589,6 +593,11 @@ namespace Caelum
         mTranslatorMap.insert (std::make_pair ("depth_composer", &mDepthComposerTranslator));
         mTranslatorMap.insert (std::make_pair ("precipitation", &mPrecipitationTranslator));
         mTranslatorMap.insert (std::make_pair ("sky_dome", &mSkyDomeTranslator));
+
+        ScriptCompilerManager* mgr = ScriptCompilerManager::getSingletonPtr();
+        ScriptTranslatorMap::iterator it;
+        for(it = mTranslatorMap.begin(); it !=  mTranslatorMap.end(); ++it)
+            mgr->registerCustomWordId(it->first);
     }
 
     size_t CaelumScriptTranslatorManager::getNumTranslators () const {

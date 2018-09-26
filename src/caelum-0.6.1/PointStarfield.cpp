@@ -157,7 +157,7 @@ namespace Caelum
 
         mManualObj->clear();
         mManualObj->estimateVertexCount(6 * starCount);
-        mManualObj->begin(mMaterial->getName (), Ogre::RenderOperation::OT_TRIANGLE_LIST);
+        mManualObj->begin(mMaterial->getName (), Ogre::RenderOperation::OT_TRIANGLE_LIST, mMaterial->getGroup());
         for (uint i = 0; i < starCount; ++i)
         {
             const Star& star = mStars[i];
@@ -193,9 +193,8 @@ namespace Caelum
         }
         mManualObj->end();
 
-        // Set infinite bounds on the starfield.
-        AxisAlignedBox box;
-        box.setInfinite ();
+        // Set finite bounds on the starfield to avoid parent AABB infection
+        AxisAlignedBox box(Ogre::AxisAlignedBox::EXTENT_FINITE);
         mManualObj->setBoundingBox (box);
 
 		mValidGeometry = true;

@@ -1,11 +1,28 @@
-// This file is part of the Caelum project.
-// It is subject to the license terms in the LICENSE file found in the top-level directory
-// of this distribution.
+/*
+This file is part of Caelum.
+See http://www.ogre3d.org/wiki/index.php/Caelum 
+
+Copyright (c) 2006-2007 Caelum team. See Contributors.txt for details.
+
+Caelum is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Caelum is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with Caelum. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #include "CaelumPrecompiled.h"
 #include "CaelumExceptions.h"
 #include "InternalUtilities.h"
 #include "PrivatePtr.h"
+#include <cstddef>
 
 namespace Caelum
 {
@@ -67,13 +84,7 @@ namespace Caelum
             const Ogre::String& originalName,
             const Ogre::String& cloneName)
     {
-
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
-		Ogre::MaterialPtr scriptMaterial = Ogre::MaterialManager::getSingletonPtr()->getByName(originalName);
-#else
-        Ogre::MaterialPtr scriptMaterial = Ogre::MaterialManager::getSingletonPtr()->getByName(originalName).staticCast<Ogre::Material>();
-#endif
-
+        Ogre::MaterialPtr scriptMaterial = Ogre::MaterialManager::getSingletonPtr()->getByName(originalName);
         if (scriptMaterial.isNull()) {
             CAELUM_THROW_UNSUPPORTED_EXCEPTION (
                     "Can't find material \"" + originalName + "\"",
@@ -96,13 +107,7 @@ namespace Caelum
 
     Ogre::CompositorPtr InternalUtilities::checkCompositorSupported (const Ogre::String& name)
     {
-
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
         Ogre::CompositorPtr comp = Ogre::CompositorManager::getSingletonPtr()->getByName(name);
-#else
-        Ogre::CompositorPtr comp = Ogre::CompositorManager::getSingletonPtr()->getByName(name).staticCast<Ogre::Compositor>();
-#endif
-
         if (comp.isNull()) {
             CAELUM_THROW_UNSUPPORTED_EXCEPTION (
                     "Can't find compositor \"" + name + "\"",

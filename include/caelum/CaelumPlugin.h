@@ -19,7 +19,7 @@ namespace Caelum
      *  library normally and call install functions manually.
      */
     class CaelumPlugin: public Ogre::Singleton<CaelumPlugin>, public Ogre::Plugin
-	{
+    {
     public:
         /// Get reference to singleton instance; or crash if N/A.
         static CaelumPlugin& getSingleton(void);
