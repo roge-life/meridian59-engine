@@ -123,6 +123,7 @@ namespace Ogre {
         }
         SubMeshList::iterator i = mSubMeshList.begin();
         std::advance(i, index);
+        OGRE_DELETE *i;
         mSubMeshList.erase(i);
         
         // Fix up any name/index entries
@@ -313,7 +314,7 @@ namespace Ogre {
 
         // New Mesh is assumed to be manually defined rather than loaded since you're cloning it for a reason
         String theGroup;
-        if (newGroup == BLANKSTRING)
+        if (newGroup.empty())
         {
             theGroup = this->getGroup();
         }
@@ -1489,7 +1490,7 @@ namespace Ogre {
                     tangentsCalc.build(targetSemantic, sourceTexCoordSet, index);
 
                 // If any vertex splitting happened, we have to give them bone assignments
-                if (getSkeletonName() != BLANKSTRING)
+                if (!getSkeletonName().empty())
                 {
                     for (TangentSpaceCalc::IndexRemapList::iterator r = res.indexesRemapped.begin(); 
                         r != res.indexesRemapped.end(); ++r)
@@ -1548,7 +1549,7 @@ namespace Ogre {
                     tangentsCalc.build(targetSemantic, sourceTexCoordSet, index);
 
                 // If any vertex splitting happened, we have to give them bone assignments
-                if (getSkeletonName() != BLANKSTRING)
+                if (!getSkeletonName().empty())
                 {
                     for (TangentSpaceCalc::IndexRemapList::iterator r = res.indexesRemapped.begin(); 
                         r != res.indexesRemapped.end(); ++r)
