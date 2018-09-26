@@ -12,134 +12,135 @@ using namespace Ogre;
 
 namespace Caelum
 {
-	const Ogre::String PointStarfield::STARFIELD_MATERIAL_NAME = "Caelum/StarPoint";
-    const Ogre::Degree PointStarfield::DEFAULT_OBSERVER_POSITION_REBUILD_DELTA = Ogre::Degree(0.1);
+   const Ogre::String PointStarfield::STARFIELD_MATERIAL_NAME = "Caelum/StarPoint";
+   const Ogre::Degree PointStarfield::DEFAULT_OBSERVER_POSITION_REBUILD_DELTA = Ogre::Degree(0.1);
 
-	PointStarfield::PointStarfield (
-			Ogre::SceneManager *sceneMgr,
-			Ogre::SceneNode *caelumRootNode,
-			bool initWithCatalogue)
-	{
-		mMag0PixelSize = 16;
-		mMinPixelSize = 4;
-		mMaxPixelSize = 6;
-		mMagnitudeScale = Math::Pow(100, 0.2);
-		mObserverLatitude = 45;
-		mObserverLongitude = 0;
-        mObserverPositionRebuildDelta = DEFAULT_OBSERVER_POSITION_REBUILD_DELTA;
+   PointStarfield::PointStarfield (
+      Ogre::SceneManager *sceneMgr,
+      Ogre::SceneNode *caelumRootNode,
+      bool initWithCatalogue)
+   {
+      mMag0PixelSize = 16;
+      mMinPixelSize = 4;
+      mMaxPixelSize = 6;
+      mMagnitudeScale = Math::Pow(100, 0.2);
+      mObserverLatitude = 45;
+      mObserverLongitude = 0;
+      mObserverPositionRebuildDelta = DEFAULT_OBSERVER_POSITION_REBUILD_DELTA;
 
-        String uniqueSuffix = "/" + InternalUtilities::pointerToString(this);
+      const String uniqueSuffix = "/" + InternalUtilities::pointerToString(this);
 
-        // Load material.
-        mMaterial.reset(InternalUtilities::checkLoadMaterialClone(
-                    STARFIELD_MATERIAL_NAME,
-                    STARFIELD_MATERIAL_NAME + uniqueSuffix));
+      // Load material.
+      mMaterial.reset(InternalUtilities::checkLoadMaterialClone(
+         STARFIELD_MATERIAL_NAME,
+         STARFIELD_MATERIAL_NAME + uniqueSuffix));
 
-        mParams.setup(mMaterial->getTechnique(0)->getPass(0)->getVertexProgramParameters());
+      mParams.setup(mMaterial->getTechnique(0)->getPass(0)->getVertexProgramParameters());
 
-		// We use a separate data source.
-		Ogre::String objName = "Caelum/PointStarfield" + uniqueSuffix;
-        mManualObj.reset (sceneMgr->createManualObject (objName));
-        mManualObj->setDynamic(false);
-		mManualObj->setRenderQueueGroup (CAELUM_RENDER_QUEUE_STARFIELD);
-		sceneMgr->getRenderQueue()->getQueueGroup(CAELUM_RENDER_QUEUE_STARFIELD)->setShadowsEnabled (false);
-        mManualObj->setCastShadows(false);
+      // We use a separate data source.
+      const Ogre::String objName = "Caelum/PointStarfield" + uniqueSuffix;
 
-		mNode.reset (caelumRootNode->createChildSceneNode ());
-		mNode->attachObject (mManualObj.getPointer ());
+      mManualObj.reset(sceneMgr->createManualObject(objName));
+      mManualObj->setDynamic(false);
+      mManualObj->setRenderQueueGroup(CAELUM_RENDER_QUEUE_STARFIELD);
+      sceneMgr->getRenderQueue()->getQueueGroup(CAELUM_RENDER_QUEUE_STARFIELD)->setShadowsEnabled (false);
+      mManualObj->setCastShadows(false);
 
-		if (initWithCatalogue) {
-			addBrightStarCatalogue ();
-		}
-	}
+      mNode.reset (caelumRootNode->createChildSceneNode(objName));
+      mNode->attachObject (mManualObj.getPointer ());
 
-	PointStarfield::~PointStarfield ()
-    {
-	}
+      if (initWithCatalogue) {
+         addBrightStarCatalogue ();
+      }
+   }
 
-    void PointStarfield::notifyStarVectorChanged () {
-        invalidateGeometry ();
-    }
+   PointStarfield::~PointStarfield ()
+   {
+   }
 
-    void PointStarfield::clearAllStars () {
-        mStars.clear();
-        notifyStarVectorChanged ();
-    }
+   void PointStarfield::notifyStarVectorChanged () {
+      invalidateGeometry ();
+   }
 
-	Real randReal () {
-		return rand() / static_cast<float>(RAND_MAX);
-	}
+   void PointStarfield::clearAllStars () {
+      mStars.clear();
+      notifyStarVectorChanged ();
+   }
 
-	Real randReal (Real min, Real max) {
-		Real f = randReal ();
-		return min * (1 - f) + max * f;
-	}
+   Real randReal () {
+      return rand() / static_cast<float>(RAND_MAX);
+   }
 
-	void PointStarfield::addRandomStars (int count)
-	{
-		for (int i = 0; i < count; ++i) {
-			// Generate a vector inside a sphere
-			Ogre::Vector3 pos;
-			do {
-				pos.x = randReal(-1, 1);
-				pos.y = randReal(-1, 1);
-				pos.z = randReal(-1, 1);
-			} while (pos.squaredLength () >= 1);
+   Real randReal (Real min, Real max) {
+      Real f = randReal ();
+      return min * (1 - f) + max * f;
+   }
 
-			// Convert to rasc/decl angles.
-			LongReal rasc, decl, dist;
-			Astronomy::convertRectangularToSpherical(
-					pos.x, pos.y, pos.z,
-					rasc, decl, dist);
+   void PointStarfield::addRandomStars (int count)
+   {
+      for (int i = 0; i < count; ++i) {
+         // Generate a vector inside a sphere
+         Ogre::Vector3 pos;
+         do {
+            pos.x = randReal(-1, 1);
+            pos.y = randReal(-1, 1);
+            pos.z = randReal(-1, 1);
+         } while (pos.squaredLength () >= 1);
 
-			Star s;
-			s.RightAscension = Ogre::Degree (rasc);
-			s.Declination = Ogre::Degree (decl);
-			// This distribution is wrong.
-			s.Magnitude = 6 * pos.squaredLength () + 1.5;
-			mStars.push_back(s);
-		}
-		notifyStarVectorChanged ();
-	}
+         // Convert to rasc/decl angles.
+         LongReal rasc, decl, dist;
+         Astronomy::convertRectangularToSpherical(
+            pos.x, pos.y, pos.z,
+            rasc, decl, dist);
 
-	void PointStarfield::addStar (const BrightStarCatalogueEntry &entry) {
-		Star s;
-		s.RightAscension = Ogre::Degree(360 / 24.0f * (
-				Math::Abs(entry.rasc_hour) +
-				entry.rasc_min / 60.0f +
-				entry.rasc_sec / 3600.0f));
-		s.Declination = Ogre::Degree(Math::Sign(entry.decl_deg) * (
-				Math::Abs(entry.decl_deg) +
-				entry.decl_min / 60.0f +
-				entry.decl_sec / 3600.0f));
-		s.Magnitude = entry.magn;
-		mStars.push_back(s);
+         Star s;
+         s.RightAscension = Ogre::Degree (rasc);
+         s.Declination = Ogre::Degree (decl);
+         // This distribution is wrong.
+         s.Magnitude = 6 * pos.squaredLength () + 1.5;
+         mStars.push_back(s);
+      }
+      notifyStarVectorChanged ();
+   }
 
-        notifyStarVectorChanged ();
-	}
+   void PointStarfield::addStar (const BrightStarCatalogueEntry &entry) {
+      Star s;
+      s.RightAscension = Ogre::Degree(360 / 24.0f * (
+         Math::Abs(entry.rasc_hour) +
+         entry.rasc_min / 60.0f +
+         entry.rasc_sec / 3600.0f));
+      s.Declination = Ogre::Degree(Math::Sign(entry.decl_deg) * (
+         Math::Abs(entry.decl_deg) +
+         entry.decl_min / 60.0f +
+         entry.decl_sec / 3600.0f));
+      s.Magnitude = entry.magn;
+      mStars.push_back(s);
 
-	void PointStarfield::addBrightStarCatalogue (int count) {
-		assert(count >= 0);
-		if (count < BrightStarCatalogueSize) {
-			// Only sort if we don't add everything.
-			// It would be lovely if the catalogue was already sorted.
-			std::vector<std::pair<Real, int> > vec;
-			vec.reserve(BrightStarCatalogueSize);
-			for (int i = 0; i < BrightStarCatalogueSize; ++i) {
-				vec.push_back(std::make_pair(BrightStarCatalogue[i].magn, i));
-			}
-			sort(vec.begin(), vec.end());
-			for (int i = 0; i < count; ++i) {
-				addStar(BrightStarCatalogue[vec[i].second]);
-			}
-		} else {
-			assert(count == BrightStarCatalogueSize);
-			for (int i = 0; i < BrightStarCatalogueSize; ++i) {
-				addStar(BrightStarCatalogue[i]);
-			}
-		}
-        notifyStarVectorChanged ();
-	}
+      notifyStarVectorChanged ();
+   }
+
+   void PointStarfield::addBrightStarCatalogue (int count) {
+      assert(count >= 0);
+      if (count < BrightStarCatalogueSize) {
+	      // Only sort if we don't add everything.
+	      // It would be lovely if the catalogue was already sorted.
+	      std::vector<std::pair<Real, int> > vec;
+	      vec.reserve(BrightStarCatalogueSize);
+	      for (int i = 0; i < BrightStarCatalogueSize; ++i) {
+		      vec.push_back(std::make_pair(BrightStarCatalogue[i].magn, i));
+	      }
+	      sort(vec.begin(), vec.end());
+	      for (int i = 0; i < count; ++i) {
+		      addStar(BrightStarCatalogue[vec[i].second]);
+	      }
+      } else {
+	      assert(count == BrightStarCatalogueSize);
+	      for (int i = 0; i < BrightStarCatalogueSize; ++i) {
+		      addStar(BrightStarCatalogue[i]);
+	      }
+      }
+      notifyStarVectorChanged ();
+   }
 
 	void PointStarfield::invalidateGeometry () {
 		mValidGeometry = false;
