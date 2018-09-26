@@ -36,24 +36,6 @@ email                : janders@users.sf.net
 
 #include "OgreOctreePrecompiled.h"
 
-extern "C"
-{
-    void findNodesInBox( Ogre::SceneManager *sm,
-                         const Ogre::AxisAlignedBox &box,
-                         Ogre::list< Ogre::SceneNode * >::type &list,
-                         Ogre::SceneNode *exclude )
-    {
-        static_cast<Ogre::OctreeSceneManager*>( sm ) -> findNodesIn( box, list, exclude );
-    }
-    void findNodesInSphere( Ogre::SceneManager *sm,
-                            const Ogre::Sphere &sphere,
-                            Ogre::list< Ogre::SceneNode * >::type &list,
-                            Ogre::SceneNode *exclude )
-    {
-        static_cast<Ogre::OctreeSceneManager*>( sm ) -> findNodesIn( sphere, list, exclude );
-    }
-}
-
 namespace Ogre
 {
 enum Intersection
@@ -64,7 +46,7 @@ enum Intersection
 };
 int OctreeSceneManager::intersect_call = 0;
 
-Intersection intersect( const Ray &one, const AxisAlignedBox &two )
+static Intersection intersect( const Ray &one, const AxisAlignedBox &two )
 {
     OctreeSceneManager::intersect_call++;
     // Null box?
@@ -135,7 +117,7 @@ Intersection intersect( const Ray &one, const AxisAlignedBox &two )
 
 /** Checks how the second box intersects with the first.
 */
-Intersection intersect( const PlaneBoundedVolume &one, const AxisAlignedBox &two )
+static Intersection intersect( const PlaneBoundedVolume &one, const AxisAlignedBox &two )
 {
     OctreeSceneManager::intersect_call++;
     // Null box?
@@ -176,7 +158,7 @@ Intersection intersect( const PlaneBoundedVolume &one, const AxisAlignedBox &two
 
 /** Checks how the second box intersects with the first.
 */
-Intersection intersect( const AxisAlignedBox &one, const AxisAlignedBox &two )
+static Intersection intersect( const AxisAlignedBox &one, const AxisAlignedBox &two )
 {
     OctreeSceneManager::intersect_call++;
     // Null box?
@@ -217,7 +199,7 @@ Intersection intersect( const AxisAlignedBox &one, const AxisAlignedBox &two )
 
 /** Checks how the box intersects with the sphere.
 */
-Intersection intersect( const Sphere &one, const AxisAlignedBox &two )
+static Intersection intersect( const Sphere &one, const AxisAlignedBox &two )
 {
     OctreeSceneManager::intersect_call++;
     // Null box?
@@ -685,7 +667,7 @@ void OctreeSceneManager::walkOctree( OctreeCamera *camera, RenderQueue *queue,
 }
 
 // --- non template versions
-void _findNodes( const AxisAlignedBox &t, list< SceneNode * >::type &list, SceneNode *exclude, bool full, Octree *octant )
+static void _findNodes( const AxisAlignedBox &t, list< SceneNode * >::type &list, SceneNode *exclude, bool full, Octree *octant )
 {
 
     if ( !full )
@@ -758,7 +740,7 @@ void _findNodes( const AxisAlignedBox &t, list< SceneNode * >::type &list, Scene
 
 }
 
-void _findNodes( const Sphere &t, list< SceneNode * >::type &list, SceneNode *exclude, bool full, Octree *octant )
+static void _findNodes( const Sphere &t, list< SceneNode * >::type &list, SceneNode *exclude, bool full, Octree *octant )
 {
 
     if ( !full )
@@ -832,7 +814,7 @@ void _findNodes( const Sphere &t, list< SceneNode * >::type &list, SceneNode *ex
 }
 
 
-void _findNodes( const PlaneBoundedVolume &t, list< SceneNode * >::type &list, SceneNode *exclude, bool full, Octree *octant )
+static void _findNodes( const PlaneBoundedVolume &t, list< SceneNode * >::type &list, SceneNode *exclude, bool full, Octree *octant )
 {
 
     if ( !full )
@@ -905,7 +887,7 @@ void _findNodes( const PlaneBoundedVolume &t, list< SceneNode * >::type &list, S
 
 }
 
-void _findNodes( const Ray &t, list< SceneNode * >::type &list, SceneNode *exclude, bool full, Octree *octant )
+static void _findNodes( const Ray &t, list< SceneNode * >::type &list, SceneNode *exclude, bool full, Octree *octant )
 {
 
     if ( !full )

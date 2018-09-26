@@ -93,7 +93,7 @@ namespace Ogre
         if( sceneNode )
         {
             sceneNode->detachAllObjects();
-            sceneNode->getParentSceneNode()->removeAndDestroyChild( sceneNode->getName() );
+            sceneNode->getParentSceneNode()->removeAndDestroyChild( sceneNode );
         }
 
         if( mRemoveOwnVertexData )
@@ -162,6 +162,9 @@ namespace Ogre
 
 
         mBoundingRadius = Math::boundingRadiusFromAABBCentered( mFullBoundingBox );
+        if (mParentNode) {
+            mParentNode->needUpdate();
+        }
         mBoundsDirty    = false;
     }
 
