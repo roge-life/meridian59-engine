@@ -575,8 +575,8 @@ namespace Ogre {
         }
         if (delim.size() > 1)
         {
-            LogManager::getSingleton().logMessage(
-                "WARNING: FileStreamDataStream::readLine - using only first delimeter");
+            LogManager::getSingleton().logWarning(
+                "FileStreamDataStream::readLine - using only first delimeter");
         }
         // Deal with both Unix & Windows LFs
         bool trimCR = false;
@@ -624,7 +624,7 @@ namespace Ogre {
         }
 
         // trim off CR if we found CR/LF
-        if (trimCR && buf[ret-1] == '\r')
+        if (trimCR && ret && buf[ret-1] == '\r')
         {
             --ret;
             buf[ret] = '\0';

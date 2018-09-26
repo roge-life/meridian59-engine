@@ -853,6 +853,9 @@ namespace Ogre {
         // Tell all listeners
         for (set<FrameListener*>::type::iterator i = mFrameListeners.begin(); i != mFrameListeners.end(); ++i)
         {
+            if(mRemovedFrameListeners.find(*i) != mRemovedFrameListeners.end())
+                continue;
+
             if (!(*i)->frameStarted(evt))
                 return false;
         }
@@ -869,6 +872,9 @@ namespace Ogre {
         // Tell all listeners
         for (set<FrameListener*>::type::iterator i = mFrameListeners.begin(); i != mFrameListeners.end(); ++i)
         {
+            if(mRemovedFrameListeners.find(*i) != mRemovedFrameListeners.end())
+                continue;
+
             if (!(*i)->frameRenderingQueued(evt))
                 return false;
         }
@@ -884,6 +890,9 @@ namespace Ogre {
         bool ret = true;
         for (set<FrameListener*>::type::iterator i = mFrameListeners.begin(); i != mFrameListeners.end(); ++i)
         {
+            if(mRemovedFrameListeners.find(*i) != mRemovedFrameListeners.end())
+                continue;
+
             if (!(*i)->frameEnded(evt))
             {
                 ret = false;
@@ -1070,9 +1079,9 @@ namespace Ogre {
         try {
             cfg.load( pluginsfile );
         }
-        catch (Exception)
+        catch (Exception& e)
         {
-            LogManager::getSingleton().logMessage(pluginsfile + " not found, automatic plugin loading disabled.");
+            LogManager::getSingleton().logMessage("automatic plugin loading disabled: "+e.getDescription());
             return;
         }
 

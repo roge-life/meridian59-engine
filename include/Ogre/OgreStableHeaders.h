@@ -78,42 +78,6 @@ THE SOFTWARE.
 #   include "OgreZip.h"
 #endif
 
-// MANUALLY ADDED
-#include "Ogre.h"
-#include "OgreRoot.h"
-#include "OgreRenderSystem.h"
-#include "OgreRenderWindow.h"
-#include "OgreRenderQueue.h"
-#include "OgreViewport.h"
-#include "OgreResourceManager.h"
-#include "OgreTextureManager.h"
-#include "OgreMaterialManager.h"
-#include "OgreHardwareBufferManager.h"
-#include "OgreControllerManager.h"
-#include "OgreCompositorManager.h"
-#include "OgreParticleSystemManager.h"
-#include "OgreLogManager.h"
-#include "OgreHardwareBuffer.h"
-#include "OgreHardwareIndexBuffer.h"
-#include "OgreHardwarePixelBuffer.h"
-#include "OgreHardwareVertexBuffer.h"
-#include "OgreCompositor.h"
-#include "OgreSceneManager.h"
-#include "OgreLight.h"
-#include "OgreBillboardSet.h"
-#include "OgreManualObject.h"
-#include "OgreMesh.h"
-#include "OgreMaterial.h"
-#include "OgreImage.h"
-#include "OgreWorkQueue.h"
-#include "OgreAlignedAllocator.h"
-#include "OgreMemoryAllocatedObject.h"
-#include "OgreAnimation.h"
-#include "OgreCodec.h"
-#include "OgreEntity.h"
-#include "OgreFileSystem.h"
-#include "OgreRay.h"
-
 #endif
 
 #endif 

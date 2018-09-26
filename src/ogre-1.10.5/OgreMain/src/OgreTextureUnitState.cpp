@@ -478,7 +478,7 @@ namespace Ogre {
         String ext;
         String baseName;
 
-        size_t pos = name.find_last_of(".");
+        size_t pos = name.find_last_of('.');
         baseName = name.substr(0, pos);
         ext = name.substr(pos);
 
@@ -1155,11 +1155,9 @@ namespace Ogre {
                             mTextureSrcMipmaps, mGamma, mIsAlpha, mDesiredFormat, mHwGamma);
                 }
                 catch (Exception &e) {
-                    String msg;
-                    msg = msg + "Error preparing texture " + mFrames[frame]  +
-                        ". Texture layer will be blank: "
-                        + e.getFullDescription();
-                    LogManager::getSingleton().logMessage(msg, LML_CRITICAL);
+                    String msg = "preparing texture " + mFrames[frame] +
+                                 ". Texture layer will be blank: " + e.getFullDescription();
+                    LogManager::getSingleton().logError(msg);
                     mTextureLoadFailed = true;
                 }   
             }
@@ -1186,11 +1184,9 @@ namespace Ogre {
                             mTextureSrcMipmaps, mGamma, mIsAlpha, mDesiredFormat, mHwGamma);
                 }
                 catch (Exception &e) {
-                    String msg;
-                    msg = msg + "Error loading texture " + mFrames[frame]  + 
-                        ". Texture layer will be blank: "
-                        + e.getFullDescription();
-                    LogManager::getSingleton().logMessage(msg, LML_CRITICAL);
+                    String msg = "loading texture " + mFrames[frame] +
+                                 ". Texture layer will be blank: " + e.getFullDescription();
+                    LogManager::getSingleton().logError(msg);
                     mTextureLoadFailed = true;
                 }
             }

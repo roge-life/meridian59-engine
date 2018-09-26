@@ -33,12 +33,21 @@ THE SOFTWARE.
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_WINRT
 #   include <windows.h>
+#   if _WIN32_WINNT >= _WIN32_WINNT_VISTA
+#       include <werapi.h>
+#   endif
 #endif
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_NACL
 #   include "ppapi/cpp/var.h"
 #   include "ppapi/cpp/instance.h"
 #endif
+
+namespace {
+    const char* RED = "\x1b[31;1m";
+    const char* YELLOW = "\x1b[33;1m";
+    const char* RESET = "\x1b[0m";
+}
 
 namespace Ogre
 {
@@ -47,14 +56,34 @@ namespace Ogre
 #endif
     
     //-----------------------------------------------------------------------
-    Log::Log( const String& name, bool debuggerOuput, bool suppressFile ) : 
-        mLogLevel(LL_NORMAL), mDebugOut(debuggerOuput),
-        mSuppressFile(suppressFile), mTimeStamp(true), mLogName(name)
+    Log::Log( const String& name, bool debuggerOutput, bool suppressFile ) : 
+        mLogLevel(LL_NORMAL), mDebugOut(debuggerOutput),
+        mSuppressFile(suppressFile), mTimeStamp(true), mLogName(name), mTermHasColours(false)
     {
         if (!mSuppressFile)
         {
             mLog.open(name.c_str());
+
+#if (OGRE_PLATFORM == OGRE_PLATFORM_WIN32 || OGRE_PLATFORM == OGRE_PLATFORM_WINRT) && _WIN32_WINNT >= _WIN32_WINNT_VISTA
+            // Register log file to be collected by Windows Error Reporting
+            const int utf16Length = ::MultiByteToWideChar(CP_ACP, 0, name.c_str(), (int)name.size(), NULL, 0);
+            if(utf16Length > 0)
+            {
+                std::wstring wname;
+                wname.resize(utf16Length);
+                if (0 != ::MultiByteToWideChar(CP_ACP, 0, name.c_str(), (int)name.size(), &wname[0], (int)wname.size()))
+                    WerRegisterFile(wname.c_str(), WerRegFileTypeOther, WER_FILE_ANONYMOUS_DATA);
+            }
+#endif
         }
+
+#if OGRE_PLATFORM != OGRE_PLATFORM_WINRT
+        if(mDebugOut)
+        {
+            char* val = getenv("TERM");
+            mTermHasColours = val && String(val).find("xterm") != String::npos;
+        }
+#endif
     }
     //-----------------------------------------------------------------------
     Log::~Log()
@@ -65,6 +94,7 @@ namespace Ogre
             mLog.close();
         }
     }
+
     //-----------------------------------------------------------------------
     void Log::logMessage( const String& message, LogMessageLevel lml, bool maskDebug )
     {
@@ -90,10 +120,23 @@ namespace Ogre
                     OutputDebugStringA(message.c_str());
                     OutputDebugStringA("\n");
 #    endif
-                    if (lml == LML_CRITICAL)
-                        std::cerr << message << std::endl;
-                    else
-                        std::cout << message << std::endl;
+
+                    std::ostream& os = int(lml) >= int(LML_WARNING) ? std::cerr : std::cout;
+
+                    if(mTermHasColours) {
+                        if(lml == LML_WARNING)
+                            os << YELLOW;
+                        if(lml == LML_CRITICAL)
+                            os << RED;
+                    }
+
+                    os << message;
+
+                    if(mTermHasColours) {
+                        os << RESET;
+                    }
+
+                    os << std::endl;
                 }
 #endif
 

@@ -950,7 +950,8 @@ namespace Ogre
             
                 
         // Init caps to maximum.        
-        rsc->setNumTextureUnits(1024);
+        rsc->setNumTextureUnits(OGRE_MAX_TEXTURE_LAYERS);
+        rsc->setNumVertexAttributes(14); // see D3DDECLUSAGE
         rsc->setCapability(RSC_ANISOTROPY);
         rsc->setCapability(RSC_AUTOMIPMAP);
         rsc->setCapability(RSC_AUTOMIPMAP_COMPRESSED);
@@ -2948,7 +2949,7 @@ namespace Ogre
         DWORD oldVal;
 
         // can only set fixed-function texture stage state
-        if (stage < 8)
+        if (mEnableFixedPipeline && stage < 8)
         {
             if ( FAILED( hr = getActiveD3D9Device()->GetTextureStageState(stage, type, &oldVal) ) )
                 return hr;

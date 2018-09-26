@@ -673,8 +673,8 @@ namespace Ogre {
                                      " it says it's incompatible with that RT" );
             }
             else
-                LogManager::getSingleton().logMessage( "WARNING: Couldn't create a suited DepthBuffer"
-                                                       "for RT: " + renderTarget->getName() , LML_CRITICAL);
+                LogManager::getSingleton().logWarning( "Couldn't create a suited DepthBuffer"
+                                                       "for RT: " + renderTarget->getName());
         }
     }
     bool RenderSystem::getWBufferEnabled(void) const
@@ -699,15 +699,23 @@ namespace Ogre {
 
         _cleanupDepthBuffers();
 
-        // Remove all the render targets.
-        // (destroy primary target last since others may depend on it)
+        // Remove all the render targets. Destroy primary target last since others may depend on it.
+        // Keep mRenderTargets valid all the time, so that render targets could receive
+        // appropriate notifications, for example FBO based about GL context destruction.
         RenderTarget* primary = 0;
-        for (RenderTargetMap::iterator it = mRenderTargets.begin(); it != mRenderTargets.end(); ++it)
+        for (RenderTargetMap::iterator it = mRenderTargets.begin(); it != mRenderTargets.end(); /* note - no increment */)
         {
-            if (!primary && it->second->isPrimary())
-                primary = it->second;
+            RenderTarget* current = it->second;
+            if (!primary && current->isPrimary())
+            {
+                ++it;
+                primary = current;
+            }
             else
-                OGRE_DELETE it->second;
+            {
+                it = mRenderTargets.erase(it);
+                OGRE_DELETE current;
+            }
         }
         OGRE_DELETE primary;
         mRenderTargets.clear();
