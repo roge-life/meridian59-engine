@@ -374,11 +374,9 @@
     <ClCompile Include="MNGHelper.cpp" />
     <ClCompile Include="Plugin.cpp" />
     <ClCompile Include="PluginBMP.cpp" />
-    <ClCompile Include="PluginCUT.cpp" />
     <ClCompile Include="PluginDDS.cpp" />
     <ClCompile Include="PluginGIF.cpp" />
     <ClCompile Include="PluginHDR.cpp" />
-    <ClCompile Include="PluginICO.cpp" />
     <ClCompile Include="PluginJNG.cpp" />
     <ClCompile Include="PluginJPEG.cpp" />
     <ClCompile Include="PluginMNG.cpp" />
