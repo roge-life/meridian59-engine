@@ -943,7 +943,7 @@ namespace ParticleUniverse
 	//-----------------------------------------------------------------------
 	void ParticleSystemManager::destroyParticleSystem(const String& particleSystemName, Ogre::SceneManager* sceneManager)
 	{
-		// Remove it from the map although it doesn´t exist anymore
+		// Remove it from the map although it doesnï¿½t exist anymore
 		ParticleSystemMap::iterator i = mParticleSystems.find(particleSystemName);
 		if (i != mParticleSystems.end())
 		{
@@ -960,7 +960,7 @@ namespace ParticleUniverse
 	void ParticleSystemManager::destroyAllParticleSystems(Ogre::SceneManager* sceneManager)
 	{
 		// Changed function in V1.3.1
-		// Delete all Particle Systems in the specified sceneManager. This doesn´t include the templates
+		// Delete all Particle Systems in the specified sceneManager. This doesnï¿½t include the templates
 		// changed this function.
 		ParticleSystemMap::iterator t = mParticleSystems.begin();
 		while ( t != mParticleSystems.end() )
@@ -1141,7 +1141,7 @@ namespace ParticleUniverse
 	//-----------------------------------------------------------------------
 	void ParticleSystemManager::createDepthMap (Camera* camera, Ogre::SceneManager* sceneManager)
 	{
-		// Don´t recreate the depth map
+		// Donï¿½t recreate the depth map
 		if (mDepthMap || mDepthMapExtern)
 		{
 			return;
@@ -1212,8 +1212,9 @@ namespace ParticleUniverse
 		}
 
 		// Set depth map
-		Ogre::TexturePtr depthTexturePtr = Ogre::TextureManager::getSingleton().getByName(mDepthTextureName);
-		if (!depthTexturePtr.isNull())
+		Ogre::TexturePtr depthTexturePtr = Ogre::TextureManager::getSingleton().getByName(mDepthTextureName,
+		        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+		if (depthTexturePtr)
 		{
 			mDepthMap = depthTexturePtr->getBuffer()->getRenderTarget();
 			Ogre::Viewport* viewport = mDepthMap->addViewport(camera);
@@ -1291,7 +1292,7 @@ namespace ParticleUniverse
 	{
 		if (!mDepthMapExtern)
 		{
-			// Unregister the renderers and destroy the depthmap, because apparently it isn´t used anymore
+			// Unregister the renderers and destroy the depthmap, because apparently it isnï¿½t used anymore
 			mDepthMapTargetListener.unregisterRenderer(renderer);
 			if (mDepthMapTargetListener.registeredRenderersEmpty())
 			{

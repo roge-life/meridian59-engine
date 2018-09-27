@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -102,12 +102,7 @@ namespace Ogre {
 
         /// Get a resource by name
         /// @see ResourceManager::getResourceByName
-        HighLevelGpuProgramPtr
-#if OGRE_RESOURCEMANAGER_STRICT
-        getByName(const String& name, const String& groupName);
-#else
-        getByName(const String& name, const String& groupName = ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
-#endif
+        HighLevelGpuProgramPtr getByName(const String& name, const String& groupName OGRE_RESOURCE_GROUP_INIT);
 
         /** Create a new, unloaded HighLevelGpuProgram. 
         @par

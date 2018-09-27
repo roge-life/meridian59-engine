@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -74,7 +74,7 @@ namespace Ogre
         typedef map<String, uint16>::type ChannelMap;
         ChannelMap mChannelMap;
         uint16 mNextChannel;
-        OGRE_MUTEX(mChannelMapMutex);
+        OGRE_WQ_MUTEX(mChannelMapMutex);
     public:
         /// Numeric identifier for a request
         typedef unsigned long long int RequestID;
@@ -143,7 +143,7 @@ namespace Ogre
             /// Return the response data (user defined, only valid on success)
             const Any& getData() const { return mData; }
             /// Abort the request
-            void abortRequest() { mRequest->abortRequest(); mData.destroy(); }
+            void abortRequest() { mRequest->abortRequest(); mData.reset(); }
         };
 
         /** Interface definition for a handler of requests. 
@@ -279,6 +279,15 @@ namespace Ogre
         @param id The ID of the previously issued request.
         */
         virtual void abortRequest(RequestID id) = 0;
+
+        /** Abort request if it is not being processed currently.
+         *
+         * @param id The ID of the previously issued request.
+         *
+         * @retval true If request was aborted successfully.
+         * @retval false If request is already being processed so it can not be aborted.
+         */
+        virtual bool abortPendingRequest(RequestID id) = 0;
 
         /** Abort all previously issued requests in a given channel.
         Any requests still waiting to be processed of the given channel, will be 
@@ -436,6 +445,8 @@ namespace Ogre
             bool forceSynchronous = false, bool idleThread = false);
         /// @copydoc WorkQueue::abortRequest
         virtual void abortRequest(RequestID id);
+        /// @copydoc WorkQueue::abortPendingRequest
+        virtual bool abortPendingRequest(RequestID id);
         /// @copydoc WorkQueue::abortRequestsByChannel
         virtual void abortRequestsByChannel(uint16 channel);
         /// @copydoc WorkQueue::abortPendingRequestsByChannel
@@ -492,7 +503,7 @@ namespace Ogre
         class _OgreExport RequestHandlerHolder : public UtilityAlloc
         {
         protected:
-            OGRE_RW_MUTEX(mRWMutex);
+            OGRE_WQ_RW_MUTEX(mRWMutex);
             RequestHandler* mHandler;
         public:
             RequestHandlerHolder(RequestHandler* handler)
@@ -502,7 +513,7 @@ namespace Ogre
             void disconnectHandler()
             {
                 // write lock - must wait for all requests to finish
-                OGRE_LOCK_RW_MUTEX_WRITE(mRWMutex);
+                OGRE_WQ_LOCK_RW_MUTEX_WRITE(mRWMutex);
                 mHandler = 0;
             }
 
@@ -518,7 +529,7 @@ namespace Ogre
             {
                 // Read mutex so that multiple requests can be processed by the
                 // same handler in parallel if required
-                OGRE_LOCK_RW_MUTEX_READ(mRWMutex);
+                OGRE_WQ_LOCK_RW_MUTEX_READ(mRWMutex);
                 Response* response = 0;
                 if (mHandler)
                 {
@@ -550,11 +561,11 @@ namespace Ogre
         // For example if threadA locks mIdleMutex first then tries to lock mProcessMutex,
         // and threadB locks mProcessMutex first, then mIdleMutex. In this case you can get livelock and the system is dead!
         //RULE: Lock mProcessMutex before other mutex, to prevent livelocks
-        OGRE_MUTEX(mIdleMutex);
-        OGRE_MUTEX(mRequestMutex);
-        OGRE_MUTEX(mProcessMutex);
-        OGRE_MUTEX(mResponseMutex);
-        OGRE_RW_MUTEX(mRequestHandlerMutex);
+        OGRE_WQ_MUTEX(mIdleMutex);
+        OGRE_WQ_MUTEX(mRequestMutex);
+        OGRE_WQ_MUTEX(mProcessMutex);
+        OGRE_WQ_MUTEX(mResponseMutex);
+        OGRE_WQ_RW_MUTEX(mRequestHandlerMutex);
 
 
         void processRequestResponse(Request* r, bool synchronous);

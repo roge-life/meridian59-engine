@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -72,12 +72,7 @@ namespace Ogre {
                             const NameValuePairList* createParams = 0);
         /// Get a resource by name
         /// @see ResourceManager::getResourceByName
-        TexturePtr
-#if OGRE_RESOURCEMANAGER_STRICT
-        getByName(const String& name, const String& groupName);
-#else
-        getByName(const String& name, const String& groupName = ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
-#endif
+        TexturePtr getByName(const String& name, const String& groupName OGRE_RESOURCE_GROUP_INIT);
 
         using ResourceManager::createOrRetrieve;
 
@@ -435,14 +430,17 @@ namespace Ogre {
             @note
                 The default value is 0.
         */
-        virtual void setDefaultNumMipmaps(size_t num);
+        virtual void setDefaultNumMipmaps(uint32 num);
 
         /** Gets the default number of mipmaps to be used for loaded textures.
         */
-        virtual size_t getDefaultNumMipmaps()
+        virtual uint32 getDefaultNumMipmaps()
         {
             return mDefaultNumMipmaps;
         }
+
+        /// Internal method to create a warning texture (bound when a texture unit is blank)
+        const TexturePtr& _getWarningTexture();
 
         /// @copydoc Singleton::getSingleton()
         static TextureManager& getSingleton(void);
@@ -453,7 +451,15 @@ namespace Ogre {
 
         ushort mPreferredIntegerBitDepth;
         ushort mPreferredFloatBitDepth;
-        size_t mDefaultNumMipmaps;
+        uint32 mDefaultNumMipmaps;
+#if !OGRE_USE_STD11 && OGRE_COMPILER == OGRE_COMPILER_MSVC
+#pragma warning ( push )
+#pragma warning ( disable: 4251 )
+#endif
+        TexturePtr mWarningTexture;
+#if !OGRE_USE_STD11 && OGRE_COMPILER == OGRE_COMPILER_MSVC
+#pragma warning ( pop )
+#endif
     };
     /** @} */
     /** @} */

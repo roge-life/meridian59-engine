@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -57,9 +57,15 @@ namespace Ogre {
     class _OgreExport SceneNode : public Node
     {
     public:
+#if OGRE_NODE_STORAGE_LEGACY
         typedef OGRE_HashMap<String, MovableObject*> ObjectMap;
         typedef MapIterator<ObjectMap> ObjectIterator;
         typedef ConstMapIterator<ObjectMap> ConstObjectIterator;
+#else
+        typedef vector<MovableObject*>::type ObjectMap;
+        typedef VectorIterator<ObjectMap> ObjectIterator;
+        typedef ConstVectorIterator<ObjectMap> ConstObjectIterator;
+#endif
 
     protected:
         ObjectMap mObjectsByName;
@@ -126,12 +132,14 @@ namespace Ogre {
         virtual void attachObject(MovableObject* obj);
 
         /** Reports the number of objects attached to this node.
+        @deprecated use getAttachedObjects()
         */
         unsigned short numAttachedObjects(void) const;
 
         /** Retrieves a pointer to an attached object.
         @remarks Retrieves by index, see alternate version to retrieve by name. The index
         of an object may change as other objects are added / removed.
+        @deprecated use getAttachedObjects()
         */
         MovableObject* getAttachedObject(unsigned short index);
 
@@ -224,6 +232,7 @@ namespace Ogre {
             as transient, and don't add / remove items as you go through the iterator, save changes
             until the end, or retrieve a new iterator after making the change. Making changes to
             the object returned through the iterator is OK though.
+        @deprecated use getAttachedObjects()
         */
         ObjectIterator getAttachedObjectIterator(void) {
             return ObjectIterator(mObjectsByName.begin(), mObjectsByName.end());
@@ -237,10 +246,18 @@ namespace Ogre {
             as transient, and don't add / remove items as you go through the iterator, save changes
             until the end, or retrieve a new iterator after making the change. Making changes to
             the object returned through the iterator is OK though.
+        @deprecated use getAttachedObjects()
         */
         ConstObjectIterator getAttachedObjectIterator(void) const {
             return ConstObjectIterator(mObjectsByName.begin(), mObjectsByName.end());
         }
+
+#if !OGRE_NODE_STORAGE_LEGACY
+        /// The MovableObjects associated with this node
+        const ObjectMap& getAttachedObjects() const {
+            return mObjectsByName;
+        }
+#endif
 
         /** Gets the creator of this scene node. 
         @remarks
@@ -261,17 +278,12 @@ namespace Ogre {
         */
         void removeAndDestroyChild(const String& name);
 
-        /** This method removes and destroys the child and all of its children.
-        @remarks
-            Unlike removeChild, which removes a single named child from this
-            node but does not destroy it, this method destroys the child
-            and all of it's children. 
-        @par
-            Use this if you wish to recursively destroy a node as well as 
-            detaching it from it's parent. Note that any objects attached to
-            the nodes will be detached but will not themselves be destroyed.
-        */
+        /// @overload
         void removeAndDestroyChild(unsigned short index);
+
+        /// @overload
+        void removeAndDestroyChild(SceneNode* child);
+
 
         /** Removes and destroys all children of this node.
         @remarks

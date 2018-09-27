@@ -4,7 +4,7 @@ This source file is a part of OGRE
 
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -31,6 +31,10 @@ THE SOFTWARE
 
 #include <string>
 
+#if OGRE_USE_STD11
+#include <memory>
+#endif
+
 // configure memory tracking
 #if OGRE_DEBUG_MODE 
 #   if OGRE_MEMORY_TRACKER_DEBUG_MODE
@@ -50,7 +54,7 @@ namespace Ogre {
     // Define ogre version
     #define OGRE_VERSION_MAJOR 1
     #define OGRE_VERSION_MINOR 10
-    #define OGRE_VERSION_PATCH 5
+    #define OGRE_VERSION_PATCH 12
     #define OGRE_VERSION_SUFFIX ""
     #define OGRE_VERSION_NAME "Xalafu"
 
@@ -70,7 +74,12 @@ namespace Ogre {
         typedef float Real;
     #endif
 
-    #if OGRE_COMPILER == OGRE_COMPILER_GNUC && OGRE_COMP_VER >= 310 && !defined(STLPORT)
+    #if OGRE_USE_STD11
+    #       define OGRE_HashMap ::std::unordered_map
+    #       define OGRE_HashMultiMap ::std::unordered_multimap
+    #       define OGRE_HashSet ::std::unordered_set
+    #       define OGRE_HashMultiSet ::std::unordered_multiset
+    #elif OGRE_COMPILER == OGRE_COMPILER_GNUC && OGRE_COMP_VER >= 310 && !defined(STLPORT)
     #   if OGRE_COMP_VER >= 430
     #       define OGRE_HashMap ::std::tr1::unordered_map
     #       define OGRE_HashMultiMap ::std::tr1::unordered_multimap
@@ -95,7 +104,7 @@ namespace Ogre {
     #       define OGRE_HashMultiSet ::std::tr1::unordered_multiset
     #    endif
     #else
-    #   if OGRE_COMPILER == OGRE_COMPILER_MSVC && !defined(_STLP_MSVC)
+    #   if OGRE_COMPILER == OGRE_COMPILER_MSVC && _MSC_VER < 1700 && !defined(_STLP_MSVC) // before VC++ 11.0 (2012)
     #       if _MSC_FULL_VER >= 150030729 // VC++ 9.0 SP1+
     #           define OGRE_HashMap ::std::tr1::unordered_map
     #           define OGRE_HashMultiMap ::std::tr1::unordered_multimap
@@ -179,11 +188,12 @@ namespace Ogre {
     class GpuProgram;
     class GpuProgramManager;
     class GpuProgramUsage;
+    class HardwareCounterBuffer;
     class HardwareIndexBuffer;
     class HardwareOcclusionQuery;
+    class HardwareUniformBuffer;
     class HardwareVertexBuffer;
     class HardwarePixelBuffer;
-    class HardwarePixelBufferSharedPtr;
     class HighLevelGpuProgram;
     class HighLevelGpuProgramManager;
     class HighLevelGpuProgramFactory;
@@ -330,7 +340,11 @@ namespace Ogre {
     class CompositionTargetPass;
     class CustomCompositionPass;
 
+#if OGRE_USE_STD11
+    template<typename T> using SharedPtr = std::shared_ptr<T>;
+#else
     template<typename T> class SharedPtr;
+#endif
     typedef SharedPtr<AnimableValue> AnimableValuePtr;
     typedef SharedPtr<Compositor> CompositorPtr;
     typedef SharedPtr<DataStream> DataStreamPtr;
@@ -339,6 +353,11 @@ namespace Ogre {
     typedef SharedPtr<GpuLogicalBufferStruct> GpuLogicalBufferStructPtr;
     typedef SharedPtr<GpuSharedParameters> GpuSharedParametersPtr;
     typedef SharedPtr<GpuProgramParameters> GpuProgramParametersSharedPtr;
+    typedef SharedPtr<HardwareCounterBuffer> HardwareCounterBufferSharedPtr;
+    typedef SharedPtr<HardwareIndexBuffer> HardwareIndexBufferSharedPtr;
+    typedef SharedPtr<HardwarePixelBuffer> HardwarePixelBufferSharedPtr;
+    typedef SharedPtr<HardwareUniformBuffer> HardwareUniformBufferSharedPtr;
+    typedef SharedPtr<HardwareVertexBuffer> HardwareVertexBufferSharedPtr;
     typedef SharedPtr<HighLevelGpuProgram> HighLevelGpuProgramPtr;
     typedef SharedPtr<Material> MaterialPtr;
     typedef SharedPtr<MemoryDataStream> MemoryDataStreamPtr;
@@ -361,17 +380,8 @@ settings have been made.
 namespace Ogre
 {
 #if OGRE_STRING_USE_CUSTOM_MEMORY_ALLOCATOR
-    #if OGRE_WCHAR_T_STRINGS
-        typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, STLAllocator<wchar_t,GeneralAllocPolicy > >   _StringBase;
-    #else
-        typedef std::basic_string<char, std::char_traits<char>, STLAllocator<char,GeneralAllocPolicy > >    _StringBase;
-    #endif
-
-    #if OGRE_WCHAR_T_STRINGS
-        typedef std::basic_stringstream<wchar_t,std::char_traits<wchar_t>,STLAllocator<wchar_t,GeneralAllocPolicy >> _StringStreamBase;
-    #else
-        typedef std::basic_stringstream<char,std::char_traits<char>,STLAllocator<char,GeneralAllocPolicy > > _StringStreamBase;
-    #endif
+    typedef std::basic_string<char, std::char_traits<char>, STLAllocator<char,GeneralAllocPolicy > >    _StringBase;
+    typedef std::basic_stringstream<char,std::char_traits<char>,STLAllocator<char,GeneralAllocPolicy > > _StringStreamBase;
 
     #define StdStringT(T) std::basic_string<T, std::char_traits<T>, std::allocator<T> > 
     #define CustomMemoryStringT(T) std::basic_string<T, std::char_traits<T>, STLAllocator<T,GeneralAllocPolicy> >   
@@ -472,18 +482,8 @@ namespace Ogre
     #undef CustomMemoryStringT
 
 #else
-    #if OGRE_WCHAR_T_STRINGS
-        typedef std::wstring _StringBase;
-    #else
-        typedef std::string _StringBase;
-    #endif
-
-    #if OGRE_WCHAR_T_STRINGS
-        typedef std::basic_stringstream<wchar_t,std::char_traits<wchar_t>,std::allocator<wchar_t> > _StringStreamBase;
-    #else
-        typedef std::basic_stringstream<char,std::char_traits<char>,std::allocator<char> > _StringStreamBase;
-    #endif
-
+    typedef std::string _StringBase;
+    typedef std::basic_stringstream<char,std::char_traits<char>,std::allocator<char> > _StringStreamBase;
 #endif
 
     typedef _StringBase String;

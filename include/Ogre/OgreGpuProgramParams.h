@@ -4,7 +4,7 @@
   (Object-oriented Graphics Rendering Engine)
   For the latest info, see http://www.ogre3d.org
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -884,6 +884,9 @@ namespace Ogre {
     public:
         /** Defines the types of automatically updated values that may be bound to GpuProgram
             parameters, or used to modify parameters on a per-object basis.
+
+            For use in @ref Program-Parameter-Specification, drop the `ACT_` prefix. 
+            E.g. `ACT_WORLD_MATRIX` becomes `world_matrix`.
         */
         enum AutoConstantType
         {
@@ -1409,6 +1412,8 @@ namespace Ogre {
             ACT_LOD_CAMERA_POSITION_OBJECT_SPACE,
             /** Binds custom per-light constants to the shaders. */
             ACT_LIGHT_CUSTOM,
+            /// Point params: size; constant, linear, quadratic attenuation
+            ACT_POINT_PARAMS,
 
             ACT_UNKNOWN = 999
         };
@@ -1499,8 +1504,8 @@ namespace Ogre {
         typedef vector<GpuSharedParametersUsage>::type GpuSharedParamUsageList;
 
         // Map that store subroutines associated with slots
-        typedef OGRE_HashMap<unsigned int, String> SubroutineMap;
-        typedef OGRE_HashMap<unsigned int, String>::const_iterator SubroutineIterator;
+        typedef OGRE_HashMap<size_t, String> SubroutineMap;
+        typedef OGRE_HashMap<size_t, String>::const_iterator SubroutineIterator;
 
     protected:
         SubroutineMap mSubroutineMap;
@@ -1591,13 +1596,13 @@ namespace Ogre {
 
 
         /// Does this parameter set include named parameters?
-        bool hasNamedParameters() const { return (bool)mNamedConstants; }
+        bool hasNamedParameters() const { return mNamedConstants.get() != 0; }
         /** Does this parameter set include logically indexed parameters?
             @note Not mutually exclusive with hasNamedParameters since some high-level
             programs still use logical indexes to set the parameters on the
             rendersystem.
         */
-        bool hasLogicalIndexedParameters() const { return (bool)mFloatLogicalToPhysical; }
+        bool hasLogicalIndexedParameters() const { return mFloatLogicalToPhysical.get() != 0; }
 
         /** Sets a 4-element floating-point parameter to the program.
             @param index The logical constant index at which to place the parameter

@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -112,8 +112,6 @@ namespace Ogre {
     */
     class _OgreExport HardwareBufferManagerBase : public BufferAlloc
     {
-        friend class HardwareVertexBufferSharedPtr;
-        friend class HardwareIndexBufferSharedPtr;
     protected:
         /** WARNING: The following two members should place before all other members.
             Members destruct order is very important here, because destructing other
@@ -428,8 +426,6 @@ namespace Ogre {
     /** Singleton wrapper for hardware buffer manager. */
     class _OgreExport HardwareBufferManager : public HardwareBufferManagerBase, public Singleton<HardwareBufferManager>
     {
-        friend class HardwareVertexBufferSharedPtr;
-        friend class HardwareIndexBufferSharedPtr;
     protected:
         HardwareBufferManagerBase* mImpl;
     public:

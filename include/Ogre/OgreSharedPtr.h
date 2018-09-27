@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,23 @@ namespace Ogre {
     /** \addtogroup General
     *  @{
     */
+#if OGRE_USE_STD11
+    struct SPFMDeleteT {
+        template<class T>
+        void operator()(T* p) {
+            OGRE_DELETE_T(p, T, MEMCATEGORY_GENERAL);
+        }
+    };
+    const SPFMDeleteT SPFM_DELETE_T;
 
+    struct SPFMNone {
+        void operator()(void*) {}
+    };
+    const SPFMNone SPFM_NONE;
+
+    using std::static_pointer_cast;
+    using std::dynamic_pointer_cast;
+#else
     /// The method to use to free memory on destruction
     enum SharedPtrFreeMethod
     {
@@ -295,12 +311,12 @@ namespace Ogre {
             pRep = rep;
         }
 
-        inline bool unique() const { assert(pInfo && pInfo->useCount.get()); return pInfo->useCount.get() == 1; }
+        inline bool unique() const { assert(pInfo && pInfo->useCount.load()); return pInfo->useCount.load() == 1; }
 
         /// @deprecated use use_count() instead
         OGRE_DEPRECATED unsigned int useCount() const { return use_count(); }
 
-        long use_count() const { assert(pInfo && pInfo->useCount.get()); return pInfo->useCount.get(); }
+        long use_count() const { assert(pInfo && pInfo->useCount.load()); return pInfo->useCount.load(); }
 
         /// @deprecated this API will be dropped
         OGRE_DEPRECATED void setUseCount(unsigned value) { assert(pInfo); pInfo->useCount = value; }
@@ -388,6 +404,7 @@ namespace Ogre {
     }
     /** @} */
     /** @} */
+#endif
 }
 
 

@@ -1,22 +1,6 @@
-/*
-This file is part of Caelum.
-See http://www.ogre3d.org/wiki/index.php/Caelum 
-
-Copyright (c) 2008 Caelum team. See Contributors.txt for details.
-
-Caelum is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published
-by the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Caelum is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with Caelum. If not, see <http://www.gnu.org/licenses/>.
-*/
+// This file is part of the Caelum project.
+// It is subject to the license terms in the LICENSE file found in the top-level directory
+// of this distribution.
 
 #include "CaelumPrecompiled.h"
 #include "CaelumPlugin.h"
@@ -28,7 +12,14 @@ along with Caelum. If not, see <http://www.gnu.org/licenses/>.
 	#define SINGLETON_MEMBER msSingleton
 #endif
 
-template<> Caelum::CaelumPlugin* Ogre::Singleton<Caelum::CaelumPlugin>::SINGLETON_MEMBER = 0;
+#if OGRE_VERSION_MINOR >= 9
+    namespace Ogre
+    {
+        template<> Caelum::CaelumPlugin* Ogre::Singleton<Caelum::CaelumPlugin>::SINGLETON_MEMBER = 0;
+    }
+#else
+    template<> Caelum::CaelumPlugin* Ogre::Singleton<Caelum::CaelumPlugin>::SINGLETON_MEMBER = 0;
+#endif
 
 namespace Caelum
 {
@@ -117,8 +108,6 @@ namespace Caelum
 #endif // CAELUM_SCRIPT_SUPPORT
 
         Ogre::LogManager::getSingleton ().logMessage("Caelum plugin uninstalled");
-		
-		delete CaelumPlugin::getSingletonPtr ();
 
         mIsInstalled = false;
     }
@@ -133,7 +122,9 @@ namespace Caelum
         assert (this->isInstalled () && "Must install CaelumPlugin before loading scripts");
 
         // Fetch raw resource ptr. Attempt to support explicit resource groups currently in Ogre trunk.
-#if OGRE_VERSION >= 0x00010700
+#if OGRE_VERSION >= 0x00010900
+	Ogre::ResourcePtr res = getPropScriptResourceManager ()->createOrRetrieve (objectName, groupName).first;
+#elif OGRE_VERSION >= 0x00010700
         Ogre::ResourcePtr res = getPropScriptResourceManager ()->getByName (objectName, groupName);
 #else
         Ogre::ResourcePtr res = getPropScriptResourceManager ()->getByName (objectName);

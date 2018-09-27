@@ -27,39 +27,39 @@ namespace Caelum
 {
 	const Ogre::String GroundFog::DEFAULT_PASS_NAME = "CaelumGroundFog";
 
-	GroundFog::GroundFog(
-			Ogre::SceneManager *sceneMgr,
-			Ogre::SceneNode *caelumRootNode,
-			const Ogre::String &domeMaterialName,
-			const Ogre::String &domeEntityName):
-			mScene(sceneMgr)
-	{
-        Ogre::String uniqueSuffix = InternalUtilities::pointerToString (this);
+   GroundFog::GroundFog(
+      Ogre::SceneManager *sceneMgr,
+      Ogre::SceneNode *caelumRootNode,
+      const Ogre::String &domeMaterialName,
+      const Ogre::String &domeEntityName):
+      mScene(sceneMgr)
+   {
+      Ogre::String uniqueSuffix = InternalUtilities::pointerToString (this);
 
-		mDomeMaterial.reset(InternalUtilities::checkLoadMaterialClone (domeMaterialName, domeMaterialName + uniqueSuffix));
-        mDomeParams.setup(mDomeMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters());
+      mDomeMaterial.reset(InternalUtilities::checkLoadMaterialClone (domeMaterialName, domeMaterialName + uniqueSuffix));
+      mDomeParams.setup(mDomeMaterial->getTechnique(0)->getPass(0)->getFragmentProgramParameters());
 
-		// Create dome entity, using a prefab sphere.
-        // The prefab sphere has a radius of 50 units.
-        // If this changes in future version of ogre this might break.
-        mDomeEntity.reset (mScene->createEntity (domeEntityName, Ogre::SceneManager::PT_SPHERE));
-        mDomeEntity->setMaterialName (mDomeMaterial->getName ());
-        mDomeEntity->setCastShadows (false);
-        mDomeEntity->setRenderQueueGroup (CAELUM_RENDER_QUEUE_GROUND_FOG);
-		sceneMgr->getRenderQueue()->getQueueGroup(CAELUM_RENDER_QUEUE_GROUND_FOG)->setShadowsEnabled(false);
-		
-        // Create dome node
-		mDomeNode.reset (caelumRootNode->createChildSceneNode ());
-		mDomeNode->attachObject (mDomeEntity.get());
-		
-		// Initialize default fog parameters
-		mDensity = 0.1;
-		mVerticalDecay = 0.2;
-		mGroundLevel = 5;
-		mFogColour = Ogre::ColourValue::Black;
+      // Create dome entity, using a prefab sphere.
+      // The prefab sphere has a radius of 50 units.
+      // If this changes in future version of ogre this might break.
+      mDomeEntity.reset (mScene->createEntity (domeEntityName, Ogre::SceneManager::PT_SPHERE));
+      mDomeEntity->setMaterialName (mDomeMaterial->getName ());
+      mDomeEntity->setCastShadows (false);
+      mDomeEntity->setRenderQueueGroup (CAELUM_RENDER_QUEUE_GROUND_FOG);
+      sceneMgr->getRenderQueue()->getQueueGroup(CAELUM_RENDER_QUEUE_GROUND_FOG)->setShadowsEnabled(false);
 
-        forceUpdate();
-	}
+      // Create dome node
+      mDomeNode.reset (caelumRootNode->createChildSceneNode (domeEntityName + uniqueSuffix));
+      mDomeNode->attachObject (mDomeEntity.get());
+
+      // Initialize default fog parameters
+      mDensity = 0.1;
+      mVerticalDecay = 0.2;
+      mGroundLevel = 5;
+      mFogColour = Ogre::ColourValue::Black;
+
+      forceUpdate();
+   }
 
 	GroundFog::~GroundFog() {
         // Disable passes.
@@ -78,11 +78,13 @@ namespace Caelum
 		Ogre::MaterialManager *matManager = Ogre::MaterialManager::getSingletonPtr();
 		Ogre::MaterialManager::ResourceMapIterator matIt = matManager->getResourceIterator();
 		while (matIt.hasMoreElements()) {
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
- 			Ogre::MaterialPtr mat = matIt.getNext();
-#else
+
+#if OGRE_VERSION >= 0x00010900
 			Ogre::MaterialPtr mat = matIt.getNext().staticCast<Ogre::Material>();
+#else
+        		Ogre::MaterialPtr mat = matIt.getNext();
 #endif
+			
 			Ogre::Material::TechniqueIterator techIt = mat->getTechniqueIterator();
 			while (techIt.hasMoreElements()) {
 				Ogre::Technique *tech = techIt.getNext();

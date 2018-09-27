@@ -25,35 +25,35 @@ along with Caelum. If not, see <http://www.gnu.org/licenses/>.
 
 namespace Caelum
 {
-    const Ogre::String SkyDome::SPHERIC_DOME_NAME = "CaelumSphericDome";
-    const Ogre::String SkyDome::SKY_DOME_MATERIAL_NAME = "CaelumSkyDomeMaterial";
+   const Ogre::String SkyDome::SPHERIC_DOME_NAME = "CaelumSphericDome";
+   const Ogre::String SkyDome::SKY_DOME_MATERIAL_NAME = "CaelumSkyDomeMaterial";
 
-    SkyDome::SkyDome (Ogre::SceneManager *sceneMgr, Ogre::SceneNode *caelumRootNode)
-    {
-        String uniqueSuffix = "/" + InternalUtilities::pointerToString(this);
+   SkyDome::SkyDome (Ogre::SceneManager *sceneMgr, Ogre::SceneNode *caelumRootNode)
+   {
+      String uniqueSuffix = "/" + InternalUtilities::pointerToString(this);
 
-        // First clone material
-        mMaterial.reset(InternalUtilities::checkLoadMaterialClone(SKY_DOME_MATERIAL_NAME, SKY_DOME_MATERIAL_NAME + uniqueSuffix));
+      // First clone material
+      mMaterial.reset(InternalUtilities::checkLoadMaterialClone(SKY_DOME_MATERIAL_NAME, SKY_DOME_MATERIAL_NAME + uniqueSuffix));
 
-        // Determine if the shader technique works.
-        mShadersEnabled = mMaterial->getBestTechnique()->getPass(0)->isProgrammable();
+      // Determine if the shader technique works.
+      mShadersEnabled = mMaterial->getBestTechnique()->getPass(0)->isProgrammable();
 
-        // Force setting haze, ensure mHazeEnabled != value.
-        mHazeEnabled = true;
-        setHazeEnabled(false);
+      // Force setting haze, ensure mHazeEnabled != value.
+      mHazeEnabled = true;
+      setHazeEnabled(false);
 
-        sceneMgr->getRenderQueue()->getQueueGroup(CAELUM_RENDER_QUEUE_SKYDOME)->setShadowsEnabled(false);
+      sceneMgr->getRenderQueue()->getQueueGroup(CAELUM_RENDER_QUEUE_SKYDOME)->setShadowsEnabled(false);
 
-        // Generate dome entity.
-        InternalUtilities::generateSphericDome (SPHERIC_DOME_NAME, 32, InternalUtilities::DT_SKY_DOME);
-        mEntity.reset(sceneMgr->createEntity ("Caelum/SkyDome/Entity" + uniqueSuffix, SPHERIC_DOME_NAME));
-        mEntity->setMaterialName (mMaterial->getName());
-        mEntity->setRenderQueueGroup (CAELUM_RENDER_QUEUE_SKYDOME);
-        mEntity->setCastShadows (false);
+      // Generate dome entity.
+      InternalUtilities::generateSphericDome (SPHERIC_DOME_NAME, 32, InternalUtilities::DT_SKY_DOME);
+      mEntity.reset(sceneMgr->createEntity ("Caelum/SkyDome/Entity" + uniqueSuffix, SPHERIC_DOME_NAME));
+      mEntity->setMaterialName (mMaterial->getName());
+      mEntity->setRenderQueueGroup (CAELUM_RENDER_QUEUE_SKYDOME);
+      mEntity->setCastShadows (false);
 
-        mNode.reset(caelumRootNode->createChildSceneNode ("Caelum/SkyDome/Node" + uniqueSuffix));
-        mNode->attachObject (mEntity.get());
-    }
+      mNode.reset(caelumRootNode->createChildSceneNode ("Caelum/SkyDome/Node" + uniqueSuffix));
+      mNode->attachObject (mEntity.get());
+   }
 
     SkyDome::~SkyDome () {
     }

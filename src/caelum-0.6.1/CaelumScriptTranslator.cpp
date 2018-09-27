@@ -1,22 +1,6 @@
-/*
-This file is part of Caelum.
-See http://www.ogre3d.org/wiki/index.php/Caelum 
-
-Copyright (c) 2006-2008 Caelum team. See Contributors.txt for details.
-
-Caelum is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published
-by the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Caelum is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with Caelum. If not, see <http://www.gnu.org/licenses/>.
-*/
+// This file is part of the Caelum project.
+// It is subject to the license terms in the LICENSE file found in the top-level directory
+// of this distribution.
 
 #include "CaelumPrecompiled.h"
 #include "CaelumPrerequisites.h"
@@ -368,7 +352,7 @@ namespace Caelum
     }
 
     CaelumSystemScriptTranslator::CaelumSystemScriptTranslator ():
-            mResourceManager(false),
+            mResourceManager(),
             mTranslationTarget(0),
             mTranslationTargetFound(false),
             mTypeDescriptor(0)
@@ -422,7 +406,11 @@ namespace Caelum
             //LogManager::getSingleton ().logMessage (
             //        "Caelum: Saved " + objNode->cls + " name " + objNode->name + " as a resource");
             PropScriptResourceManager* mgr = this->getResourceManager ();
+#if OGRE_VERSION >= 0x00010900
+            ResourcePtr resource = mgr->createResource (objNode->name, compiler->getResourceGroup());
+#else
             ResourcePtr resource = mgr->create (objNode->name, compiler->getResourceGroup());
+#endif
             resource->_notifyOrigin (objNode->file);
             return;
         }
@@ -605,6 +593,11 @@ namespace Caelum
         mTranslatorMap.insert (std::make_pair ("depth_composer", &mDepthComposerTranslator));
         mTranslatorMap.insert (std::make_pair ("precipitation", &mPrecipitationTranslator));
         mTranslatorMap.insert (std::make_pair ("sky_dome", &mSkyDomeTranslator));
+
+        ScriptCompilerManager* mgr = ScriptCompilerManager::getSingletonPtr();
+        ScriptTranslatorMap::iterator it;
+        for(it = mTranslatorMap.begin(); it !=  mTranslatorMap.end(); ++it)
+            mgr->registerCustomWordId(it->first);
     }
 
     size_t CaelumScriptTranslatorManager::getNumTranslators () const {

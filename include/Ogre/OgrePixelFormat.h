@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,13 @@ namespace Ogre {
     /** \addtogroup Image
     *  @{
     */
-    /** The pixel format used for images, textures, and render surfaces */
+    /** The pixel format used for images, textures, and render surfaces
+     *
+     * @note the components are specified in "packed" native byte order.
+     * For PF_BYTE_* formats this means that platform endianess changes the order:
+     * e.g. Ogre::PF_BYTE_RGBA on little endian (x86) forms an integer as Ogre::PF_A8B8G8R8,
+     * while on big endian it "packs" as Ogre::PF_R8G8B8A8
+     */
     enum PixelFormat
     {
         /// Unknown pixel format.
@@ -80,10 +86,10 @@ namespace Ogre {
         /// 32-bit pixel format, 8 bits for red, green, blue and alpha.
         PF_R8G8B8A8 = 28,
         /// 32-bit pixel format, 8 bits for red, 8 bits for green, 8 bits for blue
-        /// like PF_A8R8G8B8, but alpha will get discarded
+        /// like Ogre::PF_A8R8G8B8, but alpha will get discarded
         PF_X8R8G8B8 = 26,
         /// 32-bit pixel format, 8 bits for blue, 8 bits for green, 8 bits for red
-        /// like PF_A8B8G8R8, but alpha will get discarded
+        /// like Ogre::PF_A8B8G8R8, but alpha will get discarded
         PF_X8B8G8R8 = 27,
 #if OGRE_ENDIAN == OGRE_ENDIAN_BIG
         /// 3 byte pixel format, 1 byte for red, 1 byte for green, 1 byte for blue
@@ -124,7 +130,7 @@ namespace Ogre {
         PF_FLOAT16_RGB = 22,
         /// 64-bit pixel format, 16 bits (float) for red, 16 bits (float) for green, 16 bits (float) for blue, 16 bits (float) for alpha
         PF_FLOAT16_RGBA = 23,
-        // 32-bit pixel format, 32 bits (float) for red
+        /// 32-bit pixel format, 32 bits (float) for red
         PF_FLOAT32_R = 33,
         /// 96-bit pixel format, 32 bits (float) for red, 32 bits (float) for green, 32 bits (float) for blue
         PF_FLOAT32_RGB = 24,
@@ -220,7 +226,7 @@ namespace Ogre {
         PF_BC6H_SF16 = 75,
         /// DDS (DirectDraw Surface) BC7 format (unsigned normalised)
         PF_BC7_UNORM = 76,
-        /// DDS (DirectDraw Surface) BC7 format (unsigned normalised sRGB)
+        /// DDS (DirectDraw Surface) BC7 format (unsigned normalised sRGB). @deprecated for sRGB use Ogre::Texture::setHardwareGammaEnabled
         PF_BC7_UNORM_SRGB = 77,
         /// 8-bit pixel format, all bits red.
         PF_R8 = 78,
@@ -256,8 +262,36 @@ namespace Ogre {
         PF_ATC_RGBA_EXPLICIT_ALPHA = 93,
         /// ATC (AMD_compressed_ATC_texture)
         PF_ATC_RGBA_INTERPOLATED_ALPHA = 94,
-        // Number of pixel formats currently defined
-        PF_COUNT = 95
+        /// ASTC (ARM Adaptive Scalable Texture Compression RGBA, block size 4x4)
+        PF_ASTC_RGBA_4X4_LDR = 95,
+        /// ASTC (ARM Adaptive Scalable Texture Compression RGBA, block size 5x4)
+        PF_ASTC_RGBA_5X4_LDR = 96,
+        /// ASTC (ARM Adaptive Scalable Texture Compression RGBA, block size 5x5)
+        PF_ASTC_RGBA_5X5_LDR = 97,
+        /// ASTC (ARM Adaptive Scalable Texture Compression RGBA, block size 6x5)
+        PF_ASTC_RGBA_6X5_LDR = 98,
+        /// ASTC (ARM Adaptive Scalable Texture Compression RGBA, block size 6x6)
+        PF_ASTC_RGBA_6X6_LDR = 99,
+        /// ASTC (ARM Adaptive Scalable Texture Compression RGBA, block size 8x5)
+        PF_ASTC_RGBA_8X5_LDR = 100,
+        /// ASTC (ARM Adaptive Scalable Texture Compression RGBA, block size 8x6)
+        PF_ASTC_RGBA_8X6_LDR = 101,
+        /// ASTC (ARM Adaptive Scalable Texture Compression RGBA, block size 8x8)
+        PF_ASTC_RGBA_8X8_LDR = 102,
+        /// ASTC (ARM Adaptive Scalable Texture Compression RGBA, block size 10x5)
+        PF_ASTC_RGBA_10X5_LDR = 103,
+        /// ASTC (ARM Adaptive Scalable Texture Compression RGBA, block size 10x6)
+        PF_ASTC_RGBA_10X6_LDR = 104,
+        /// ASTC (ARM Adaptive Scalable Texture Compression RGBA, block size 10x8)
+        PF_ASTC_RGBA_10X8_LDR = 105,
+        /// ASTC (ARM Adaptive Scalable Texture Compression RGBA, block size 10x10)
+        PF_ASTC_RGBA_10X10_LDR = 106,
+        /// ASTC (ARM Adaptive Scalable Texture Compression RGBA, block size 12x10)
+        PF_ASTC_RGBA_12X10_LDR = 107,
+        /// ASTC (ARM Adaptive Scalable Texture Compression RGBA, block size 12x12)
+        PF_ASTC_RGBA_12X12_LDR = 108,
+        /// Number of pixel formats currently defined
+        PF_COUNT = 109
     };
     typedef vector<PixelFormat>::type PixelFormatList;
 
@@ -405,7 +439,7 @@ namespace Ogre {
          * is only valid for cubemaps and volume textures. This uses the first (largest)
          * mipmap.
          */
-        ColourValue getColourAt(size_t x, size_t y, size_t z);
+        ColourValue getColourAt(size_t x, size_t y, size_t z) const;
 
         /**
          * Set colour value at a certain location in the PixelBox. The z coordinate
@@ -491,8 +525,9 @@ namespace Ogre {
                 The format of the area
             @remarks For non-compressed formats, this is always true. For DXT formats,
             only sizes with a width and height multiple of 4 and depth 1 are allowed.
+            @deprecated do not use
         */
-        static bool isValidExtent(size_t width, size_t height, size_t depth, PixelFormat format);
+        OGRE_DEPRECATED static bool isValidExtent(size_t width, size_t height, size_t depth, PixelFormat format);
 
         /** Gives the number of bits (RGBA) for a format. See remarks.          
           @remarks      For non-colour formats (dxt, depth) this returns [0,0,0,0].

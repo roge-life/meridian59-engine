@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -184,32 +184,38 @@ namespace Ogre {
             Applicable to point lights and spotlights only.
         @note
             This will be overridden if the light is attached to a SceneNode.
+        @deprecated attach to SceneNode and use SceneNode::setPosition
         */
-        void setPosition(Real x, Real y, Real z);
+        OGRE_DEPRECATED void setPosition(Real x, Real y, Real z);
 
         /// @overload
+        /// @deprecated attach to SceneNode and use SceneNode::setPosition
         void setPosition(const Vector3& vec);
 
         /** Returns the position of the light.
         @note
             Applicable to point lights and spotlights only.
+        @deprecated attach to SceneNode and use SceneNode::getPosition
         */
-        const Vector3& getPosition(void) const;
+        OGRE_DEPRECATED const Vector3& getPosition(void) const;
 
         /** Sets the direction in which a light points.
         @remarks
             Applicable only to the spotlight and directional light types.
         @note
             This will be overridden if the light is attached to a SceneNode.
+        @deprecated only call with (0, 0, -1), then attach to SceneNode and use SceneNode::setDirection
         */
         void setDirection(Real x, Real y, Real z);
 
-        //// @overload
+        /// @overload
+        /// @deprecated only call with Vector3::NEGATIVE_UNIT_Z, then attach to SceneNode and use SceneNode::setDirection
         void setDirection(const Vector3& vec);
 
         /** Returns the light's direction.
         @remarks
             Applicable only to the spotlight and directional light types.
+        @deprecated attach to SceneNode and use SceneNode::getLocalAxes
         */
         const Vector3& getDirection(void) const;
 

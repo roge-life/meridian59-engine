@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -170,7 +170,7 @@ namespace Ogre {
         virtual void readAnimation(DataStreamPtr& stream, Mesh* pMesh);
         virtual void readAnimationTrack(DataStreamPtr& stream, Animation* anim, 
             Mesh* pMesh);
-        virtual void readMorphKeyFrame(DataStreamPtr& stream, VertexAnimationTrack* track);
+        virtual void readMorphKeyFrame(DataStreamPtr& stream, Mesh* pMesh, VertexAnimationTrack* track);
         virtual void readPoseKeyFrame(DataStreamPtr& stream, VertexAnimationTrack* track);
         virtual void readExtremes(DataStreamPtr& stream, Mesh *pMesh);
 
@@ -231,7 +231,7 @@ namespace Ogre {
         ~MeshSerializerImpl_v1_41();
     protected:
         void writeMorphKeyframe(const VertexMorphKeyFrame* kf, size_t vertexCount);
-        void readMorphKeyFrame(DataStreamPtr& stream, VertexAnimationTrack* track);
+        void readMorphKeyFrame(DataStreamPtr& stream, Mesh* pMesh, VertexAnimationTrack* track);
         void writePose(const Pose* pose);
         void readPose(DataStreamPtr& stream, Mesh* pMesh);
         size_t calcMorphKeyframeSize(const VertexMorphKeyFrame* kf, size_t vertexCount);

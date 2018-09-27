@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -314,6 +314,7 @@ namespace Ogre
         | externalWindowHandle | <ul><li>Win32: HWND as integer<li>GLX: poslong:posint:poslong (display*:screen:windowHandle) or poslong:posint:poslong:poslong (display*:screen:windowHandle:XVisualInfo*)<li>OS X Cocoa: OgreGLView address as an integer. You can pass NSView or NSWindow too, but should perform OgreGLView callbacks into the Ogre manually.<li>OS X Carbon: WindowRef as an integer<li>iOS: UIWindow address as an integer</ul> | 0 (none) | External window handle, for embedding the OGRE render in an existing window |  |
         | externalGLControl | true, false | false | Let the external window control OpenGL i.e. don't select a pixel format for the window, do not change v-sync and do not swap buffer. When set to true, the calling application is responsible of OpenGL initialization and buffer swapping. It should also create an OpenGL context for its own rendering, Ogre will create one for its use. Then the calling application must also enable Ogre OpenGL context before calling any Ogre function and restore its OpenGL context after these calls. | OpenGL Specific |
         | currentGLContext | true, false | false | Use an externally created GL context. (Must be current) | OpenGL Specific |
+        | minColourBufferSize | Positive integer (usually 16, 32) | 16 | Min total colour buffer size. See EGL_BUFFER_SIZE | OpenGL Specific |
         | colourDepth | 16, 32 | Desktop depth | Colour depth of the resulting rendering window; only applies if fullScreen | Win32 Specific |
         | FSAAHint | Depends on RenderSystem and hardware. Currently supports:"Quality": on systems that have an option to prefer higher AA quality over speed, use it | Blank | Full screen antialiasing hint | Win32 Specific |
         | outerDimensions | true, false | false | Whether the width/height is expressed as the size of the outer window, rather than the content area | Win32 Specific  |
@@ -323,6 +324,7 @@ namespace Ogre
         | useNVPerfHUD | true, false | false | Enable the use of nVidia NVPerfHUD | DirectX Specific |
         | depthBuffer | true, false | true | Use depth buffer | DirectX9 Specific |
         | macAPI | String: "cocoa" or "carbon" | "carbon" | Specifies the type of rendering window on the Mac Platform. | Mac OS X Specific |
+        | NSOpenGLCPSurfaceOrder | -1 or 1 | 1 | [NSOpenGLCPSurfaceOrder](https://developer.apple.com/documentation/appkit/nsopenglcpsurfaceorder) | Mac OS X Specific |
         | contentScalingFactor | Positive Float greater than 1.0 | The default content scaling factor of the screen | Specifies the CAEAGLLayer content scaling factor. Only supported on iOS 4 or greater. This can be useful to limit the resolution of the OpenGL ES backing store. For example, the iPhone 4's native resolution is 960 x 640\. Windows are always 320 x 480, if you would like to limit the display to 720 x 480, specify 1.5 as the scaling factor. | iOS Specific |
         | externalViewHandle | UIView pointer as an integer | 0 | External view handle, for rendering OGRE render in an existing view | iOS Specific |
         | externalViewControllerHandle | UIViewController pointer as an integer | 0 | External view controller handle, for embedding OGRE in an existing view controller | iOS Specific |
@@ -330,7 +332,6 @@ namespace Ogre
         | MSAA | Positive integer (usually 0, 2, 4, 8, 16) | 0 | Full screen antialiasing factor | Android Specific |
         | CSAA | Positive integer (usually 0, 2, 4, 8, 16) | 0 | [Coverage sampling factor](https://www.khronos.org/registry/egl/extensions/NV/EGL_NV_coverage_sample.txt) | Android Specific |
         | maxColourBufferSize | Positive integer (usually 16, 32) | 32 | Max EGL_BUFFER_SIZE | Android Specific |
-        | minColourBufferSize | Positive integer (usually 16, 32) | 16 | Min EGL_BUFFER_SIZE | Android Specific |
         | maxStencilBufferSize | Positive integer (usually 0, 8) | 0 | EGL_STENCIL_SIZE | Android Specific |
         | maxDepthBufferSize | Positive integer (usually 0, 16, 24) | 16 | EGL_DEPTH_SIZE | Android Specific |
         */
@@ -452,7 +453,8 @@ namespace Ogre
         /** Sets the world transform matrix.
          * @deprecated only needed for fixed function APIs */
         virtual void _setWorldMatrix(const Matrix4 &m) {}
-        /** Sets multiple world matrices (vertex blending). */
+        /** Sets multiple world matrices (vertex blending).
+         * @deprecated unused. for FFP vertex blending, which never existed. */
         virtual void _setWorldMatrices(const Matrix4* m, unsigned short count);
         /** Sets the view transform matrix
          * @deprecated only needed for fixed function APIs */
@@ -515,8 +517,9 @@ namespace Ogre
         render point sprites (textured quads) or plain points.
         @param enabled True enables point sprites, false returns to normal
         point rendering.
+        @deprecated only needed for fixed function APIs
         */  
-        virtual void _setPointSpritesEnabled(bool enabled) = 0;
+        virtual void _setPointSpritesEnabled(bool enabled) {};
 
         /** Sets the size of points and how they are attenuated with distance.
         @remarks
@@ -527,9 +530,10 @@ namespace Ogre
         For example, to disable distance attenuation (constant screensize) 
         you would set constant to 1, and linear and quadratic to 0. A
         standard perspective attenuation would be 0, 1, 0 respectively.
+        @deprecated only needed for fixed function APIs
         */
         virtual void _setPointParameters(Real size, bool attenuationEnabled, 
-            Real constant, Real linear, Real quadratic, Real minSize, Real maxSize) = 0;
+            Real constant, Real linear, Real quadratic, Real minSize, Real maxSize) {};
 
 
         /**
@@ -1010,10 +1014,12 @@ namespace Ogre
 
 
 
-        /** Sets the current vertex declaration, ie the source of vertex data. */
-        virtual void setVertexDeclaration(VertexDeclaration* decl) = 0;
-        /** Sets the current vertex buffer binding state. */
-        virtual void setVertexBufferBinding(VertexBufferBinding* binding) = 0;
+        /** Sets the current vertex declaration, ie the source of vertex data.
+         @deprecated use RenderOperation */
+        OGRE_DEPRECATED virtual void setVertexDeclaration(VertexDeclaration* decl) {}
+        /** Sets the current vertex buffer binding state.
+         @deprecated use RenderOperation */
+        virtual void setVertexBufferBinding(VertexBufferBinding* binding) {}
 
         /** Sets whether or not normals are to be automatically normalised.
         @remarks
@@ -1281,22 +1287,24 @@ namespace Ogre
         /** Tell the rendersystem to perform any prep tasks it needs to directly
         before other threads which might access the rendering API are registered.
         @remarks
-        Call this from your main thread before starting your other threads
-        (which themselves should call registerThread()). Note that if you
-        start your own threads, there is a specific startup sequence which 
+        Call this from your main thread before starting your other threads.
+        @note
+        If you start your own threads, there is a specific startup sequence which
         must be respected and requires synchronisation between the threads:
-        <ol>
-        <li>[Main thread]Call preExtraThreadsStarted</li>
-        <li>[Main thread]Start other thread, wait</li>
-        <li>[Other thread]Call registerThread, notify main thread & continue</li>
-        <li>[Main thread]Wake up & call postExtraThreadsStarted</li>
-        </ol>
+
+        @note
+        1. [Main thread] Call preExtraThreadsStarted()
+        2. [Main thread] Start other thread, wait
+        3. [Other thread] Call registerThread(), notify main thread & continue
+        4. [Main thread] Wake up & call postExtraThreadsStarted()
+
+        @note
         Once this init sequence is completed the threads are independent but
         this startup sequence must be respected.
         */
         virtual void preExtraThreadsStarted() = 0;
 
-        /* Tell the rendersystem to perform any tasks it needs to directly
+        /** Tell the rendersystem to perform any tasks it needs to directly
         after other threads which might access the rendering API are registered.
         @see RenderSystem::preExtraThreadsStarted
         */

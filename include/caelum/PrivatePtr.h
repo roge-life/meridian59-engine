@@ -1,22 +1,6 @@
-/*
-This file is part of Caelum.
-See http://www.ogre3d.org/wiki/index.php/Caelum 
-
-Copyright (c) 2008 Caelum team. See Contributors.txt for details.
-
-Caelum is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published
-by the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Caelum is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with Caelum. If not, see <http://www.gnu.org/licenses/>.
-*/
+// This file is part of the Caelum project.
+// It is subject to the license terms in the LICENSE file found in the top-level directory
+// of this distribution.
 
 #ifndef CAELUM__PRIVATE_PTR_H
 #define CAELUM__PRIVATE_PTR_H
@@ -40,7 +24,7 @@ namespace Caelum
         typedef PointedT* InnerPointerType;
 
         /// Return an InnerPointerType repressenting a null value.
-        static inline const InnerPointerType getNullValue() {
+        static inline InnerPointerType getNullValue() {
             return 0;
         }
 
@@ -191,7 +175,7 @@ namespace Caelum
             if (inner) {
                 //Ogre::LogManager::getSingletonPtr ()->logMessage (
                 //        "PrivatePtr: Destroying scene node " + inner->getName ());
-                inner->getCreator ()->destroySceneNode (inner->getName ());
+                inner->getCreator ()->destroySceneNode (inner);
                 inner = 0;
             }
         }
@@ -226,18 +210,18 @@ namespace Caelum
         }
 
         static PointedT* getPointer (const InnerPointerType& inner) {
-            return inner.getPointer ();
+            return inner.get();
         }
 
         static void destroy (InnerPointerType& inner) {
-            if (!inner.isNull ()) {
+            if (inner) {
                 //Ogre::LogManager::getSingletonPtr ()->logMessage (
                 //        "PrivateResourcePtrTraits: Destroying owned resource"
                 //        " name=" + inner->getName () +
                 //        " handle=" + Ogre::StringConverter::toString (inner->getHandle ()) );
                 ManagerT::getSingletonPtr ()->remove (inner->getHandle ());
                 assert (inner.unique () && "Resource pointer not unique after destruction");
-                inner.setNull();
+                inner.reset();
             }
         }
     };

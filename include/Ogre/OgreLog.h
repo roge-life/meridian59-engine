@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -67,7 +67,8 @@ namespace Ogre {
     {
         LML_TRIVIAL = 1,
         LML_NORMAL = 2,
-        LML_CRITICAL = 3
+        LML_WARNING = 3,
+        LML_CRITICAL = 4
     };
 
     /** @remarks Pure Abstract class, derive this class and register to the Log to listen to log messages */
@@ -109,6 +110,7 @@ namespace Ogre {
         bool            mSuppressFile;
         bool            mTimeStamp;
         String          mLogName;
+        bool            mTermHasColours;
 
         typedef vector<LogListener*>::type mtLogListener;
         mtLogListener mListeners;

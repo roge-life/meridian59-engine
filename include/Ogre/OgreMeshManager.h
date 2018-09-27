@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,7 @@ THE SOFTWARE.
 #include "OgreSingleton.h"
 #include "OgreVector3.h"
 #include "OgreHardwareBuffer.h"
+#include "OgreHardwareVertexBuffer.h"
 #include "OgrePatchSurface.h"
 #include "OgreHeaderPrefix.h"
 
@@ -66,12 +67,7 @@ namespace Ogre {
 
         /// Get a resource by name
         /// @see ResourceManager::getResourceByName
-        MeshPtr
-#if OGRE_RESOURCEMANAGER_STRICT
-        getByName(const String& name, const String& groupName);
-#else
-        getByName(const String& name, const String& groupName = ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
-#endif
+        MeshPtr getByName(const String& name, const String& groupName OGRE_RESOURCE_GROUP_INIT);
 
         /// Create a new mesh
         /// @see ResourceManager::createResource
@@ -392,6 +388,22 @@ namespace Ogre {
         /// @copydoc Singleton::getSingleton()
         static MeshManager* getSingletonPtr(void);
 
+        /** Gets the base element type used for blend weights in vertex buffers.
+        @remarks
+        See the remarks below for SetBlendWeightsBaseElementType().
+        */
+        VertexElementType getBlendWeightsBaseElementType() const;
+
+        /** sets the base element type used for blend weights in vertex buffers.
+        @remarks
+        This takes effect when meshes are loaded.  Default is VET_FLOAT1.
+        Valid values are:
+        VET_UBYTE4_NORM:   8-bit blend weights.  Lowest memory cost but may have precision issues.  Requires SM2.0+ vertex shader.  No software skinning.
+        VET_USHORT2_NORM:  16-bit blend weights.  Requires SM2.0+ vertex shader.  No software skinning.
+        VET_FLOAT1:        32-bit blend weights.  Highest memory cost.  Supports hardware and software skinning.
+        */
+        void setBlendWeightsBaseElementType( VertexElementType vet );
+
         /** Gets the factor by which the bounding box of an entity is padded.
             Default is 0.01
         */
@@ -468,6 +480,9 @@ namespace Ogre {
         void loadManualCurvedPlane(Mesh* pMesh, MeshBuildParams& params);
         /** Utility method for manual loading a curved illusion plane */
         void loadManualCurvedIllusionPlane(Mesh* pMesh, MeshBuildParams& params);
+
+        // element type for blend weights in vertex buffer (VET_UBYTE4, VET_USHORT1, or VET_FLOAT1)
+        VertexElementType mBlendWeightsBaseElementType;
 
         bool mPrepAllMeshesForShadowVolumes;
     

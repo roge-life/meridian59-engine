@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -367,7 +367,7 @@ namespace Ogre {
         /** Gets a pointer to a SubEntity, ie a part of an Entity.
          @deprecated use getSubEntities()
         */
-        SubEntity* getSubEntity(unsigned int index) const;
+        SubEntity* getSubEntity(size_t index) const;
 
         /** Gets a pointer to a SubEntity by name
         @remarks 
@@ -378,7 +378,7 @@ namespace Ogre {
         /** Retrieves the number of SubEntity objects making up this entity.
         * @deprecated use getSubEntities()
         */
-        unsigned int getNumSubEntities(void) const;
+        size_t getNumSubEntities(void) const;
 
         /** Retrieves SubEntity objects making up this entity.
         */

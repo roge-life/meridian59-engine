@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -197,7 +197,8 @@ namespace Ogre
         RSC_AUTOMIPMAP_COMPRESSED = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON_3, 0),
         /// Supports different texture bindings
         RSC_COMPLETE_TEXTURE_BINDING = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON_3, 1),
-
+        /// Supports compressed textures in the ASTC format
+        RSC_TEXTURE_COMPRESSION_ASTC = OGRE_CAPS_VALUE(CAPS_CATEGORY_COMMON_3, 2),
 
         // ***** DirectX specific caps *****
         /// Is DirectX feature "per stage constants" supported
@@ -234,8 +235,10 @@ namespace Ogre
         /// with Separate Shader Objects the gl_PerVertex interface block must be redeclared
         /// but some drivers misbehave and do not compile if we do so
         RSC_GLSL_SSO_REDECLARE = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 11),
-        /// Supports for debugging/ profiling events
-        RSC_DEBUG = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 12)
+        /// Supports debugging/ profiling events
+        RSC_DEBUG = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 12),
+        /// RS can map driver buffer storage directly instead of using a shadow buffer
+        RSC_MAPBUFFER = OGRE_CAPS_VALUE(CAPS_CATEGORY_GL, 13),
     };
 
     /// DriverVersion is used by RenderSystemCapabilities and both GL and D3D9
@@ -283,19 +286,19 @@ namespace Ogre
         GPU_NVIDIA = 1,
         GPU_AMD = 2,
         GPU_INTEL = 3,
-        GPU_S3 = 4,
-        GPU_MATROX = 5,
-        GPU_3DLABS = 6,
-        GPU_SIS = 7,
+        GPU_S3 = 4,  //!< @deprecated
+        GPU_MATROX = 5, //!< @deprecated
+        GPU_3DLABS = 6, //!< @deprecated
+        GPU_SIS = 7, //!< @deprecated
         GPU_IMAGINATION_TECHNOLOGIES = 8,
-        GPU_APPLE = 9,  // Apple Software Renderer
+        GPU_APPLE = 9,  //!< Apple Software Renderer
         GPU_NOKIA = 10,
-        GPU_MS_SOFTWARE = 11, // Microsoft software device
-        GPU_MS_WARP = 12, // Microsoft WARP (Windows Advanced Rasterization Platform) software device - http://msdn.microsoft.com/en-us/library/dd285359.aspx
-        GPU_ARM = 13, // For the Mali chipsets
+        GPU_MS_SOFTWARE = 11, //!< Microsoft software device
+        GPU_MS_WARP = 12, //!< Microsoft WARP (Windows Advanced Rasterization Platform) software device - http://msdn.microsoft.com/en-us/library/dd285359.aspx
+        GPU_ARM = 13, //!< For the Mali chipsets
         GPU_QUALCOMM = 14,
-        GPU_MOZILLA = 15, // WebGL on Mozilla/Firefox based browser
-        GPU_WEBKIT = 16, // WebGL on WebKit/Chrome base browser
+        GPU_MOZILLA = 15, //!<  WebGL on Mozilla/Firefox based browser
+        GPU_WEBKIT = 16, //!< WebGL on WebKit/Chrome base browser
         /// placeholder
         GPU_VENDOR_COUNT = 17
     };
@@ -395,14 +398,13 @@ namespace Ogre
         /// The number of boolean constants compute programs support
         ushort mComputeProgramConstantBoolCount;
 
-
-
+        /// The number of vertex attributes available
+        ushort mNumVertexAttributes;
     public: 
         RenderSystemCapabilities ();
-        virtual ~RenderSystemCapabilities () {}
 
         /// @deprecated
-        OGRE_DEPRECATED virtual size_t calculateSize() const {return 0;}
+        OGRE_DEPRECATED size_t calculateSize() const {return 0;}
 
         /** Set the driver version. */
         void setDriverVersion(const DriverVersion& version)
@@ -463,6 +465,7 @@ namespace Ogre
             return false;
         }
 
+        /// @deprecated do not use
         void setNumWorldMatrices(ushort num)
         {
             mNumWorldMatrices = num;
@@ -489,9 +492,20 @@ namespace Ogre
             mNumMultiRenderTargets = num;
         }
 
+        /// @deprecated do not use
         ushort getNumWorldMatrices(void) const
         { 
             return mNumWorldMatrices;
+        }
+
+        void setNumVertexAttributes(ushort num)
+        {
+            mNumVertexAttributes = num;
+        }
+
+        ushort getNumVertexAttributes(void) const
+        {
+            return mNumVertexAttributes;
         }
 
         /** Returns the number of texture units the current output hardware

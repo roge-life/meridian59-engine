@@ -1,22 +1,6 @@
-/*
-This file is part of Caelum.
-See http://www.ogre3d.org/wiki/index.php/Caelum 
-
-Copyright (c) 2006-2008 Caelum team. See Contributors.txt for details.
-
-Caelum is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published
-by the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Caelum is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with Caelum. If not, see <http://www.gnu.org/licenses/>.
-*/
+// This file is part of the Caelum project.
+// It is subject to the license terms in the LICENSE file found in the top-level directory
+// of this distribution.
 
 #ifndef CAELUM__CAELUM_SYSTEM_H
 #define CAELUM__CAELUM_SYSTEM_H
@@ -640,7 +624,7 @@ namespace Caelum
          *  @param jday Julian day
          *  @return the phase of the moon; ranging from 0(full moon) to 1(again full moon).
          */
-		const Ogre::Real getMoonPhase (LongReal jday);
+		Ogre::Real getMoonPhase (LongReal jday);
 
 		/** Get the ecliptic's north pole direction at a certain time.
 		 *  Useful as Moon's north polar axis points within 1.5 degrees of the north ecliptic pole.

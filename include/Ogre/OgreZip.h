@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -71,7 +71,7 @@ namespace Ogre {
         ZipArchive(const String& name, const String& archType, zzip_plugin_io_handlers* pluginIo = NULL);
         ~ZipArchive();
         /// @copydoc Archive::isCaseSensitive
-        bool isCaseSensitive(void) const { return OGRE_RESOURCEMANAGER_STRICT; }
+        bool isCaseSensitive(void) const { return OGRE_RESOURCEMANAGER_STRICT != 0; }
 
         /// @copydoc Archive::load
         void load();

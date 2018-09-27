@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -131,7 +131,6 @@ namespace Ogre {
 
         String mTarget;
         String mEntryPoint;
-        String mPreprocessorDefines;
         bool mColumnMajorMatrices;
         bool mBackwardsCompatibility;
 
@@ -180,10 +179,6 @@ namespace Ogre {
         void setTarget(const String& target);
         /** Gets the shader target to compile down to, e.g. 'vs_1_1'. */
         const String& getTarget(void) const { return mTarget; }
-        /** Sets the preprocessor defines use to compile the program. */
-        void setPreprocessorDefines(const String& defines) { mPreprocessorDefines = defines; }
-        /** Sets the preprocessor defines use to compile the program. */
-        const String& getPreprocessorDefines(void) const { return mPreprocessorDefines; }
         /** Sets whether matrix packing in column-major order. */ 
         void setColumnMajorMatrices(bool columnMajor) { mColumnMajorMatrices = columnMajor; }
         /** Gets whether matrix packed in column-major order. */

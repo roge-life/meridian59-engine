@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -194,7 +194,7 @@ namespace Ogre {
         typedef vector<RenderablePass>::type RenderablePassList;
         typedef vector<Renderable*>::type RenderableList;
         /** Map of pass to renderable lists, this is a grouping by pass. */
-        typedef map<Pass*, RenderableList*, PassGroupLess>::type PassGroupRenderableMap;
+        typedef map<Pass*, RenderableList, PassGroupLess>::type PassGroupRenderableMap;
 
         /// Functor for accessing sort value 1 for radix sort (Pass)
         struct RadixSortFunctorPass
@@ -246,7 +246,6 @@ namespace Ogre {
 
     public:
         QueuedRenderableCollection();
-        ~QueuedRenderableCollection();
 
         /// Empty the collection
         void clear(void);

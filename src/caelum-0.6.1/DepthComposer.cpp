@@ -1,22 +1,6 @@
-/*
-This file is part of Caelum.
-See http://www.ogre3d.org/wiki/index.php/Caelum 
-
-Copyright (c) 2008 Caelum team. See Contributors.txt for details.
-
-Caelum is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published
-by the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Caelum is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with Caelum. If not, see <http://www.gnu.org/licenses/>.
-*/
+// This file is part of the Caelum project.
+// It is subject to the license terms in the LICENSE file found in the top-level directory
+// of this distribution.
 
 #include "CaelumPrecompiled.h"
 #include "CaelumExceptions.h"
@@ -299,11 +283,7 @@ namespace Caelum
 		Ogre::String uniqueId = Ogre::StringConverter::toString ((size_t)this);
 
         // Not cloned!
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
         mDepthRenderMaterial = MaterialManager::getSingleton ().getByName ("Caelum/DepthRender");
-#else
-        mDepthRenderMaterial = MaterialManager::getSingleton ().getByName ("Caelum/DepthRender").staticCast<Ogre::Material>();
-#endif
         mDepthRenderMaterial->load();
         if (!mDepthRenderMaterial->getBestTechnique ()) {
             CAELUM_THROW_UNSUPPORTED_EXCEPTION (

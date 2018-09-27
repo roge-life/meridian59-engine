@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -441,28 +441,23 @@ namespace Ogre {
         */
         TextureType getTextureType(void) const;
 
-        /** Sets the desired pixel format when load the texture.
-        */
+        /// @copydoc Texture::setFormat
         void setDesiredFormat(PixelFormat desiredFormat);
 
-        /** Gets the desired pixel format when load the texture.
-        */
+        /// @copydoc Texture::getDesiredFormat
         PixelFormat getDesiredFormat(void) const;
 
-        /** Sets how many mipmaps have been requested for the texture.
-        */
+        /// @copydoc Texture::setNumMipmaps
         void setNumMipmaps(int numMipmaps);
 
         /** Gets how many mipmaps have been requested for the texture.
         */
         int getNumMipmaps(void) const;
 
-        /** Sets whether this texture is requested to be loaded as alpha if single channel
-        */
+        /// @copydoc Texture::setTreatLuminanceAsAlpha
         void setIsAlpha(bool isAlpha);
 
-        /** Gets whether this texture is requested to be loaded as alpha if single channel
-        */
+        /// @copydoc Texture::getTreatLuminanceAsAlpha
         bool getIsAlpha(void) const;
 
         /// @copydoc Texture::getGamma

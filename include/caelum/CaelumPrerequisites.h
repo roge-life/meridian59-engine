@@ -1,22 +1,6 @@
-/*
-This file is part of Caelum.
-See http://www.ogre3d.org/wiki/index.php/Caelum 
-
-Copyright (c) 2006-2008 Caelum team. See Contributors.txt for details.
-
-Caelum is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published
-by the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Caelum is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with Caelum. If not, see <http://www.gnu.org/licenses/>.
-*/
+// This file is part of the Caelum project.
+// It is subject to the license terms in the LICENSE file found in the top-level directory
+// of this distribution.
 
 #ifndef CAELUM__CAELUM_PREREQUISITES_H
 #define CAELUM__CAELUM_PREREQUISITES_H
@@ -71,29 +55,11 @@ along with Caelum. If not, see <http://www.gnu.org/licenses/>.
     #if !(OGRE_VERSION > 0x00010600)
         #error "Caelum script support requires Ogre 1.6."
     #endif
-    #if !(OGRE_USE_NEW_COMPILERS)
-        #error "Caelum script support requires Ogre 1.6 with OGRE_USE_NEW_COMPILERS."
-    #endif
     #if !(CAELUM_TYPE_DESCRIPTORS)
         #error "Caelum script support also requires type descriptors."
     #endif
 #endif
 
-/// @file
-
-/** @mainpage
- *
- *  %Caelum is an Ogre add-on for atmospheric rendering. It is composed of a
- *  number of small mostly self-contained components and a big
- *  Caelum::CaelumSystem class which ties them all together in an easy-to-use
- *  way.
- *
- *  More information is available on the wiki page:
- *  http://www.ogre3d.org/wiki/index.php/Caelum
- *
- *  You can discuss and report issues in the forum:
- *  http://www.ogre3d.org/addonforums/viewforum.php?f=21
- */
 
 /** Caelum namespace
  *

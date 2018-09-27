@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -73,7 +73,9 @@ namespace Ogre {
         /// Named constructor
         SimpleRenderable(const String& name);
 
-        virtual void setMaterial( const String& matName );
+        /// @deprecated use setMaterial(const MaterialPtr&)
+        OGRE_DEPRECATED virtual void setMaterial( const String& matName );
+        virtual void setMaterial(const MaterialPtr& mat);
         virtual const MaterialPtr& getMaterial(void) const;
 
         virtual void setRenderOperation( const RenderOperation& rend );

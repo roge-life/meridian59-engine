@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -180,7 +180,7 @@ namespace Ogre {
         size_t getMemoryBudget(void) const;
 
         /** Gets the current memory usage, in bytes. */
-        size_t getMemoryUsage(void) const { return mMemoryUsage.get(); }
+        size_t getMemoryUsage(void) const { return mMemoryUsage.load(); }
 
         /** Unloads a single resource by name.
         @remarks
@@ -188,12 +188,7 @@ namespace Ogre {
             as much as they can and wait to be reloaded.
             @see ResourceGroupManager for unloading of resource groups.
         */
-        void
-#if OGRE_RESOURCEMANAGER_STRICT
-        unload(const String& name, const String& group);
-#else
-        unload(const String& name, const String& group = ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
-#endif
+        void  unload(const String& name, const String& group OGRE_RESOURCE_GROUP_INIT);
         
         /** Unloads a single resource by handle.
         @remarks
@@ -307,13 +302,7 @@ namespace Ogre {
         void remove(const ResourcePtr& r);
 
         /// @overload
-        void
-#if OGRE_RESOURCEMANAGER_STRICT
-        remove(const String& name, const String& group);
-
-#else
-        remove(const String& name, const String& group = ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
-#endif
+        void remove(const String& name, const String& group OGRE_RESOURCE_GROUP_INIT);
         
         /// @overload
         void remove(ResourceHandle handle);
@@ -351,30 +340,21 @@ namespace Ogre {
 
         /** Retrieves a pointer to a resource by name, or null if the resource does not exist.
         */
-        virtual ResourcePtr
-#if OGRE_RESOURCEMANAGER_STRICT
-        getResourceByName(const String& name, const String& groupName);
-#else
-        getResourceByName(const String& name, const String& groupName = ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME);
-#endif
+        virtual ResourcePtr getResourceByName(const String& name, const String& groupName OGRE_RESOURCE_GROUP_INIT);
+
         /** Retrieves a pointer to a resource by handle, or null if the resource does not exist.
         */
         virtual ResourcePtr getByHandle(ResourceHandle handle);
         
         /// Returns whether the named resource exists in this manager
-        bool
-#if OGRE_RESOURCEMANAGER_STRICT
-        resourceExists(const String& name, const String& group)
-#else
-        resourceExists(const String& name, const String& group = ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME)
-#endif
+        bool resourceExists(const String& name, const String& group OGRE_RESOURCE_GROUP_INIT)
         {
-            return (bool)getResourceByName(name, group);
+            return getResourceByName(name, group).get() != 0;
         }
         /// Returns whether a resource with the given handle exists in this manager
         bool resourceExists(ResourceHandle handle)
         {
-            return (bool)getByHandle(handle);
+            return getByHandle(handle).get() != 0;
         }
 
         /** Notify this manager that a resource which it manages has been 

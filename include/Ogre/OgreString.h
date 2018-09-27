@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -74,6 +74,14 @@ namespace __gnu_cxx
 #   define strtod_l(ptr, end, l) strtod(ptr, end)
 #   define strtoul_l(ptr, end, base, l) strtoul(ptr, end, base)
 #   define strtol_l(ptr, end, base, l) strtol(ptr, end, base)
+#endif
+
+// If compiling with make on macOS, these headers need to be included to get
+// definitions of locale_t, strtod_l, etc...
+// See: http://www.unix.com/man-page/osx/3/strtod_l/
+#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE
+#   include <stdlib.h>
+#   include <xlocale.h>
 #endif
 
 namespace Ogre {
@@ -216,7 +224,9 @@ namespace Ogre {
     };
 
 
-#if OGRE_COMPILER == OGRE_COMPILER_GNUC && OGRE_COMP_VER >= 310 && !defined(STLPORT)
+#if OGRE_USE_STD11
+    typedef ::std::hash< _StringBase > _StringHash;
+#elif OGRE_COMPILER == OGRE_COMPILER_GNUC && OGRE_COMP_VER >= 310 && !defined(STLPORT)
 #   if OGRE_COMP_VER < 430
     typedef ::__gnu_cxx::hash< _StringBase > _StringHash;
 #   else
@@ -229,7 +239,7 @@ namespace Ogre {
     typedef ::std::tr1::hash< _StringBase > _StringHash;
 #   endif
 #elif OGRE_COMPILER == OGRE_COMPILER_MSVC && OGRE_COMP_VER >= 1600 && !defined(STLPORT) // VC++ 10.0
-    typedef ::std::tr1::hash< _StringBase > _StringHash;
+    typedef ::std::hash< _StringBase > _StringHash;
 #elif !defined( _STLP_HASH_FUN_H )
     typedef stdext::hash_compare< _StringBase, std::less< _StringBase > > _StringHash;
 #else

@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -457,11 +457,11 @@ namespace Ogre {
         //-----------------------------------------------------------------------
         {"PF_DEPTH",
             /* Bytes per element */
-            4,
+            2,
             /* Flags */
-            PFF_DEPTH,
+            PFF_LUMINANCE | PFF_DEPTH,
             /* Component type and count */
-            PCT_FLOAT16, 1, // ?
+            PCT_SHORT, 1,
             /* rbits, gbits, bbits, abits */
             16, 0, 0, 0,
             /* Masks and shifts */
@@ -760,7 +760,7 @@ namespace Ogre {
             /* rbits, gbits, bbits, abits */
             16, 16, 16, 0,
             /* Masks and shifts */
-            0xFFFF00000000, 0x0000FFFF0000, 0x00000000FFFF, 0,
+            0xFFFF00000000ULL, 0x0000FFFF0000ULL, 0x00000000FFFFULL, 0,
             32, 16, 0, 0
         },
         //-----------------------------------------------------------------------
@@ -774,7 +774,7 @@ namespace Ogre {
             /* rbits, gbits, bbits, abits */
             16, 16, 16, 16,
             /* Masks and shifts */
-            0xFFFF000000000000, 0x0000FFFF00000000, 0x00000000FFFF0000, 0x000000000000FFFF,
+            0xFFFF000000000000ULL, 0x0000FFFF00000000ULL, 0x00000000FFFF0000ULL, 0x000000000000FFFFULL,
             48, 32, 16, 0
         },
         //-----------------------------------------------------------------------
@@ -802,7 +802,7 @@ namespace Ogre {
             /* rbits, gbits, bbits, abits */
             32, 32, 0, 0,
             /* Masks and shifts */
-            0xFFFFFFFF00000000, 0xFFFFFFFF, 0, 0,
+            0xFFFFFFFF00000000ULL, 0xFFFFFFFFULL, 0, 0,
             32, 0, 0, 0
         },
         //-----------------------------------------------------------------------
@@ -928,7 +928,7 @@ namespace Ogre {
             /* rbits, gbits, bbits, abits */
             16, 16, 16, 0,
             /* Masks and shifts */
-            0xFFFF00000000, 0x0000FFFF0000, 0x00000000FFFF, 0,
+            0xFFFF00000000ULL, 0x0000FFFF0000ULL, 0x00000000FFFFULL, 0,
             32, 16, 0, 0
         },
         //-----------------------------------------------------------------------
@@ -942,7 +942,7 @@ namespace Ogre {
             /* rbits, gbits, bbits, abits */
             16, 16, 16, 16,
             /* Masks and shifts */
-            0xFFFF000000000000, 0x0000FFFF00000000, 0x00000000FFFF0000, 0x000000000000FFFF,
+            0xFFFF000000000000ULL, 0x0000FFFF00000000ULL, 0x00000000FFFF0000ULL, 0x000000000000FFFFULL,
             48, 32, 16, 0
         },
         //-----------------------------------------------------------------------
@@ -970,7 +970,7 @@ namespace Ogre {
             /* rbits, gbits, bbits, abits */
             32, 32, 0, 0,
             /* Masks and shifts */
-            0xFFFFFFFF00000000, 0xFFFFFFFF, 0, 0,
+            0xFFFFFFFF00000000ULL, 0xFFFFFFFFULL, 0, 0,
             32, 0, 0, 0
         },
         //-----------------------------------------------------------------------
@@ -1242,7 +1242,7 @@ namespace Ogre {
             /* rbits, gbits, bbits, abits */
             16, 16, 16, 0,
             /* Masks and shifts */
-            0xFFFF00000000, 0x0000FFFF0000, 0x00000000FFFF, 0,
+            0xFFFF00000000ULL, 0x0000FFFF0000ULL, 0x00000000FFFFULL, 0,
             32, 16, 0, 0
         },
         //-----------------------------------------------------------------------
@@ -1256,7 +1256,7 @@ namespace Ogre {
             /* rbits, gbits, bbits, abits */
             16, 16, 16, 16,
             /* Masks and shifts */
-            0xFFFF000000000000, 0x0000FFFF00000000, 0x00000000FFFF0000, 0x000000000000FFFF,
+            0xFFFF000000000000ULL, 0x0000FFFF00000000ULL, 0x00000000FFFF0000ULL, 0x000000000000FFFFULL,
             48, 32, 16, 0
         },
         
@@ -1340,6 +1340,188 @@ namespace Ogre {
         },
         //-----------------------------------------------------------------------
         {"PF_ATC_RGBA_INTERPOLATED_ALPHA",
+            /* Bytes per element */
+            0,
+            /* Flags */
+            PFF_COMPRESSED | PFF_HASALPHA,
+            /* Component type and count */
+            PCT_BYTE, 4,
+            /* rbits, gbits, bbits, abits */
+            0, 0, 0, 0,
+            /* Masks and shifts */
+            0, 0, 0, 0, 0, 0, 0, 0
+        },
+        //-----------------------------------------------------------------------
+        {"PF_ASTC_RGBA_4X4_LDR",
+            /* Bytes per element */
+            0,
+            /* Flags */
+            PFF_COMPRESSED | PFF_HASALPHA,
+            /* Component type and count */
+            PCT_BYTE, 4,
+            /* rbits, gbits, bbits, abits */
+            0, 0, 0, 0,
+            /* Masks and shifts */
+            0, 0, 0, 0, 0, 0, 0, 0
+        },
+        //-----------------------------------------------------------------------
+        {"PF_ASTC_RGBA_5X4_LDR",
+            /* Bytes per element */
+            0,
+            /* Flags */
+            PFF_COMPRESSED | PFF_HASALPHA,
+            /* Component type and count */
+            PCT_BYTE, 4,
+            /* rbits, gbits, bbits, abits */
+            0, 0, 0, 0,
+            /* Masks and shifts */
+            0, 0, 0, 0, 0, 0, 0, 0
+        },
+        //-----------------------------------------------------------------------
+        {"PF_ASTC_RGBA_5X5_LDR",
+            /* Bytes per element */
+            0,
+            /* Flags */
+            PFF_COMPRESSED | PFF_HASALPHA,
+            /* Component type and count */
+            PCT_BYTE, 4,
+            /* rbits, gbits, bbits, abits */
+            0, 0, 0, 0,
+            /* Masks and shifts */
+            0, 0, 0, 0, 0, 0, 0, 0
+        },
+        //-----------------------------------------------------------------------
+        {"PF_ASTC_RGBA_6X5_LDR",
+            /* Bytes per element */
+            0,
+            /* Flags */
+            PFF_COMPRESSED | PFF_HASALPHA,
+            /* Component type and count */
+            PCT_BYTE, 4,
+            /* rbits, gbits, bbits, abits */
+            0, 0, 0, 0,
+            /* Masks and shifts */
+            0, 0, 0, 0, 0, 0, 0, 0
+        },
+        //-----------------------------------------------------------------------
+        {"PF_ASTC_RGBA_6X6_LDR",
+            /* Bytes per element */
+            0,
+            /* Flags */
+            PFF_COMPRESSED | PFF_HASALPHA,
+            /* Component type and count */
+            PCT_BYTE, 4,
+            /* rbits, gbits, bbits, abits */
+            0, 0, 0, 0,
+            /* Masks and shifts */
+            0, 0, 0, 0, 0, 0, 0, 0
+        },
+        //-----------------------------------------------------------------------
+        {"PF_ASTC_RGBA_8X5_LDR",
+            /* Bytes per element */
+            0,
+            /* Flags */
+            PFF_COMPRESSED | PFF_HASALPHA,
+            /* Component type and count */
+            PCT_BYTE, 4,
+            /* rbits, gbits, bbits, abits */
+            0, 0, 0, 0,
+            /* Masks and shifts */
+            0, 0, 0, 0, 0, 0, 0, 0
+        },
+        //-----------------------------------------------------------------------
+        {"PF_ASTC_RGBA_8X6_LDR",
+            /* Bytes per element */
+            0,
+            /* Flags */
+            PFF_COMPRESSED | PFF_HASALPHA,
+            /* Component type and count */
+            PCT_BYTE, 4,
+            /* rbits, gbits, bbits, abits */
+            0, 0, 0, 0,
+            /* Masks and shifts */
+            0, 0, 0, 0, 0, 0, 0, 0
+        },
+        //-----------------------------------------------------------------------
+        {"PF_ASTC_RGBA_8X8_LDR",
+            /* Bytes per element */
+            0,
+            /* Flags */
+            PFF_COMPRESSED | PFF_HASALPHA,
+            /* Component type and count */
+            PCT_BYTE, 4,
+            /* rbits, gbits, bbits, abits */
+            0, 0, 0, 0,
+            /* Masks and shifts */
+            0, 0, 0, 0, 0, 0, 0, 0
+        },
+        //-----------------------------------------------------------------------
+        {"PF_ASTC_RGBA_10X5_LDR",
+            /* Bytes per element */
+            0,
+            /* Flags */
+            PFF_COMPRESSED | PFF_HASALPHA,
+            /* Component type and count */
+            PCT_BYTE, 4,
+            /* rbits, gbits, bbits, abits */
+            0, 0, 0, 0,
+            /* Masks and shifts */
+            0, 0, 0, 0, 0, 0, 0, 0
+        },
+        //-----------------------------------------------------------------------
+        {"PF_ASTC_RGBA_10X6_LDR",
+            /* Bytes per element */
+            0,
+            /* Flags */
+            PFF_COMPRESSED | PFF_HASALPHA,
+            /* Component type and count */
+            PCT_BYTE, 4,
+            /* rbits, gbits, bbits, abits */
+            0, 0, 0, 0,
+            /* Masks and shifts */
+            0, 0, 0, 0, 0, 0, 0, 0
+        },
+        //-----------------------------------------------------------------------
+        {"PF_ASTC_RGBA_10X8_LDR",
+            /* Bytes per element */
+            0,
+            /* Flags */
+            PFF_COMPRESSED | PFF_HASALPHA,
+            /* Component type and count */
+            PCT_BYTE, 4,
+            /* rbits, gbits, bbits, abits */
+            0, 0, 0, 0,
+            /* Masks and shifts */
+            0, 0, 0, 0, 0, 0, 0, 0
+        },
+        //-----------------------------------------------------------------------
+        {"PF_ASTC_RGBA_10X10_LDR",
+            /* Bytes per element */
+            0,
+            /* Flags */
+            PFF_COMPRESSED | PFF_HASALPHA,
+            /* Component type and count */
+            PCT_BYTE, 4,
+            /* rbits, gbits, bbits, abits */
+            0, 0, 0, 0,
+            /* Masks and shifts */
+            0, 0, 0, 0, 0, 0, 0, 0
+        },
+        //-----------------------------------------------------------------------
+        {"PF_ASTC_RGBA_12X10_LDR",
+            /* Bytes per element */
+            0,
+            /* Flags */
+            PFF_COMPRESSED | PFF_HASALPHA,
+            /* Component type and count */
+            PCT_BYTE, 4,
+            /* rbits, gbits, bbits, abits */
+            0, 0, 0, 0,
+            /* Masks and shifts */
+            0, 0, 0, 0, 0, 0, 0, 0
+        },
+        //-----------------------------------------------------------------------
+        {"PF_ASTC_RGBA_12X12_LDR",
             /* Bytes per element */
             0,
             /* Flags */

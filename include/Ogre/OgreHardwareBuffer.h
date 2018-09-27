@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -111,13 +111,13 @@ namespace Ogre {
                 /** Combination of HBU_STATIC and HBU_WRITE_ONLY
                 This is the optimal buffer usage setting.
                 */
-                HBU_STATIC_WRITE_ONLY = 5,
+                HBU_STATIC_WRITE_ONLY = HBU_STATIC | HBU_WRITE_ONLY,
                 /** Combination of HBU_DYNAMIC and HBU_WRITE_ONLY. If you use
                 this, strongly consider using HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE
                 instead if you update the entire contents of the buffer very
                 regularly.
                 */
-                HBU_DYNAMIC_WRITE_ONLY = 6,
+                HBU_DYNAMIC_WRITE_ONLY = HBU_DYNAMIC | HBU_WRITE_ONLY,
                 /** Combination of HBU_DYNAMIC, HBU_WRITE_ONLY and HBU_DISCARDABLE
                  This means that you expect to replace the entire contents of the buffer on an
                  extremely regular basis, most likely every frame. By selecting this option, you
@@ -128,7 +128,7 @@ namespace Ogre {
                  update regularly. Note that if you create a buffer this way, you should use the
                  HBL_DISCARD flag when locking the contents of it for writing.
                  */
-                HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE = 14
+                HBU_DYNAMIC_WRITE_ONLY_DISCARDABLE = HBU_DYNAMIC_WRITE_ONLY | HBU_DISCARDABLE
 
             };
             /// Locking options
@@ -173,6 +173,7 @@ namespace Ogre {
             /// Device load options
             /// The following enum is used to controls how data is loaded to devices in a multi device environment
             /// This enum only works with the Direct3D 9 render system (5/2013).
+            /// @deprecated do not use
             enum UploadOptions 
             {
                 /* Normal mode, 
@@ -356,12 +357,12 @@ namespace Ogre {
                     // Do this manually to avoid locking problems
                     const void *srcData = mShadowBuffer->lockImpl(
                         mLockStart, mLockSize, HBL_READ_ONLY);
-                    // Lock with discard if the whole buffer was locked, otherwise normal
+                    // Lock with discard if the whole buffer was locked, otherwise w/o
                     LockOptions lockOpt;
                     if (mLockStart == 0 && mLockSize == mSizeInBytes)
                         lockOpt = HBL_DISCARD;
                     else
-                        lockOpt = HBL_NORMAL;
+                        lockOpt = HBL_WRITE_ONLY;
                     
                     void *destData = this->lockImpl(
                         mLockStart, mLockSize, lockOpt);

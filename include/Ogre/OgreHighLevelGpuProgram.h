@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -70,6 +70,8 @@ namespace Ogre {
         GpuProgramPtr mAssemblerProgram;
         /// Have we built the name->index parameter map yet?
         mutable bool mConstantDefsBuilt;
+        /// Preprocessor options
+        String mPreprocessorDefines;
 
         /// Internal load high-level portion if not loaded
         virtual void loadHighLevel(void);
@@ -124,9 +126,10 @@ namespace Ogre {
 
         virtual size_t calculateSize(void) const;
 
-
-
-
+        /** Sets the preprocessor defines used to compile the program. */
+        void setPreprocessorDefines(const String& defines) { mPreprocessorDefines = defines; }
+        /** Gets the preprocessor defines used to compile the program. */
+        const String& getPreprocessorDefines(void) const { return mPreprocessorDefines; }
     };
     /** @} */
     /** @} */

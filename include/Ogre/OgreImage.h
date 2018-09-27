@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -60,8 +60,10 @@ namespace Ogre {
     class _OgreExport Image : public ImageAlloc
     {
     public:
-        typedef Ogre::Box Box;
-        typedef Ogre::Rect Rect;
+        /// @deprecated use Ogre::Box
+        OGRE_DEPRECATED typedef Ogre::Box Box;
+        /// @deprecated use Ogre::Rect
+        OGRE_DEPRECATED typedef Ogre::Rect Rect;
     public:
         /** Standard constructor.
         */
@@ -166,13 +168,8 @@ namespace Ogre {
                              PixelFormat format, bool autoDelete = false, 
                              size_t numFaces = 1, uint32 numMipMaps = 0);
         
-        /** @overload
-            @deprecated use the
-                Image::loadDynamicImage(data, width, height, depth, format, ...) to be compatible
-                with future Ogre versions.
-         */
-        OGRE_DEPRECATED Image& loadDynamicImage( uchar* data, uint32 width,
-                                 uint32 height, PixelFormat format)
+        /// @overload
+        Image& loadDynamicImage(uchar* data, uint32 width, uint32 height, PixelFormat format)
         {
             return loadDynamicImage(data, width, height, 1, format);
         }
@@ -200,15 +197,9 @@ namespace Ogre {
             uint32 width, uint32 height, uint32 depth,
             PixelFormat format,
             size_t numFaces = 1, uint32 numMipMaps = 0);
-        /** @overload
-            @deprecated use the
-                Image::loadRawData(stream, width, height, depth, format, ...) to be compatible
-                with future Ogre versions.
-        */
-        OGRE_DEPRECATED Image & loadRawData(
-            DataStreamPtr& stream, 
-            uint32 width, uint32 height,
-            PixelFormat format )
+        /// @overload
+        Image& loadRawData(DataStreamPtr& stream, uint32 width, uint32 height,
+                           PixelFormat format)
         {
             return loadRawData(stream, width, height, 1, format);
         }

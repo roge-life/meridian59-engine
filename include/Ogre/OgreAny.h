@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2016 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -110,7 +110,7 @@ namespace Ogre
         }
 
         /// @deprecated use has_value() instead
-        bool isEmpty() const { return !has_value(); }
+        OGRE_DEPRECATED bool isEmpty() const { return !has_value(); }
 
         const std::type_info& type() const
         {
@@ -135,7 +135,7 @@ namespace Ogre
         }
 
         /// @deprecated use reset() instead
-        void destroy() { reset(); }
+        OGRE_DEPRECATED void destroy() { reset(); }
 
     protected: // types
 
