@@ -371,7 +371,6 @@
     <ClCompile Include="LFPQuantizer.cpp" />
     <ClCompile Include="MemoryIO.cpp" />
     <ClCompile Include="PixelAccess.cpp" />
-    <ClCompile Include="J2KHelper.cpp" />
     <ClCompile Include="MNGHelper.cpp" />
     <ClCompile Include="Plugin.cpp" />
     <ClCompile Include="PluginBMP.cpp" />
@@ -380,9 +379,7 @@
     <ClCompile Include="PluginGIF.cpp" />
     <ClCompile Include="PluginHDR.cpp" />
     <ClCompile Include="PluginICO.cpp" />
-    <ClCompile Include="PluginJ2K.cpp" />
     <ClCompile Include="PluginJNG.cpp" />
-    <ClCompile Include="PluginJP2.cpp" />
     <ClCompile Include="PluginJPEG.cpp" />
     <ClCompile Include="PluginMNG.cpp" />
     <ClCompile Include="PluginPFM.cpp" />
