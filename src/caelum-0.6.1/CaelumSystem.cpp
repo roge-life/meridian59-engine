@@ -64,8 +64,6 @@ namespace Caelum
         setSun (0);
         setPointStarfield (0);
         setCloudSystem (0);
-        setDepthComposer (0);
-        setGroundFog (0);
         setMoon (0);   
         mSkyGradientsImage.reset ();
         mSunColoursImage.reset ();
@@ -181,14 +179,6 @@ namespace Caelum
                         "Caelum: Failed to initialize starfield: " + ex.getFullDescription());
             }
         }
-        if (componentsToCreate & CAELUM_COMPONENT_GROUND_FOG) {
-            try {
-               this->setGroundFog (new GroundFog (mSceneMgr, getCaelumCameraNode ()));
-            } catch (Caelum::UnsupportedException& ex) {
-                LogManager::getSingleton ().logMessage (
-                        "Caelum: Failed to initialize ground fog: " + ex.getFullDescription());
-            }
-        }
         if (componentsToCreate & CAELUM_COMPONENT_CLOUDS) {
             try {
 			    this->setCloudSystem (new CloudSystem (mSceneMgr, getCaelumGroundNode ()));
@@ -197,14 +187,6 @@ namespace Caelum
             } catch (Caelum::UnsupportedException& ex) {
                 LogManager::getSingleton ().logMessage (
                         "Caelum: Failed to initialize clouds: " + ex.getFullDescription());
-            }
-        }
-        if (componentsToCreate & CAELUM_COMPONENT_SCREEN_SPACE_FOG) {
-            try {
-                this->setDepthComposer (new DepthComposer (mSceneMgr));
-            } catch (Caelum::UnsupportedException& ex) {
-                LogManager::getSingleton ().logMessage (
-                        "Caelum: Failed to initialize precipitation: " + ex.getFullDescription());
             }
         }
 
@@ -232,11 +214,6 @@ namespace Caelum
                 "CaelumSystem: Attached to"
                 " viewport " + StringConverter::toString ((long)vp) +
                 " render target " + vp->getTarget ()->getName ());
-        if (getAutoAttachViewportsToComponents ()) {
-            if (getDepthComposer ()) {
-                getDepthComposer ()->createViewportInstance (vp);
-            }
-        }
     }
 
     void CaelumSystem::detachViewportImpl (Ogre::Viewport* vp)
@@ -245,11 +222,6 @@ namespace Caelum
                 "CaelumSystem: Detached from "
                 " viewport " + StringConverter::toString ((long)vp) +
                 " render target " + vp->getTarget ()->getName ());
-        if (getAutoAttachViewportsToComponents ()) {
-            if (getDepthComposer ()) {
-                getDepthComposer ()->destroyViewportInstance (vp);
-            }
-        }
     }
     
     void CaelumSystem::attachViewport (Ogre::Viewport* vp)
@@ -299,23 +271,8 @@ namespace Caelum
         mPointStarfield.reset (obj);
     }
 
-    void CaelumSystem::setGroundFog (GroundFog* obj) {
-        mGroundFog.reset (obj);
-    }
-
     void CaelumSystem::setCloudSystem (CloudSystem* obj) {
         mCloudSystem.reset (obj);
-    }
-
-    void CaelumSystem::setDepthComposer (DepthComposer* ptr) {
-        mDepthComposer.reset(ptr);
-        if (getAutoAttachViewportsToComponents() && getDepthComposer ()) {
-            std::for_each (
-                    mAttachedViewports.begin(), mAttachedViewports.end(),
-                    std::bind1st (
-                            std::mem_fun (&DepthComposer::createViewportInstance),
-                            getDepthComposer ()));
-        }
     }
 
     void CaelumSystem::preViewportUpdate (const Ogre::RenderTargetViewportEvent &e) {
@@ -352,10 +309,6 @@ namespace Caelum
 
         if (getPointStarfield ()) {
             getPointStarfield ()->notifyCameraChanged (cam);
-        }
-        
-        if (getGroundFog ()) {
-            getGroundFog ()->notifyCameraChanged (cam);
         }
     }
                     
@@ -425,12 +378,6 @@ namespace Caelum
 					mManageSceneFogToDistance);
         }
 
-        // Update ground fog.
-        if (getGroundFog ()) {
-            getGroundFog ()->setColour (fogColour * mGroundFogColourMultiplier);
-            getGroundFog ()->setDensity (fogDensity * mGroundFogDensityMultiplier);
-        }
-
         // Choose between sun and moon (should be done before updating)
         if (getSun() && getMoon ()) {
             Ogre::Real moonBrightness = moonLightColour.r + moonLightColour.g + moonLightColour.b + moonLightColour.a;
@@ -466,15 +413,6 @@ namespace Caelum
         if (getCloudSystem ()) {
             getCloudSystem ()->update (
                     secondDiff, sunDir, sunLightColour, fogColour, sunSphereColour);
-        }
-
-        // Update screen space fog
-        if (getDepthComposer ()) {
-            getDepthComposer ()->update ();
-            getDepthComposer ()->setSunDirection (sunDir);
-            getDepthComposer ()->setHazeColour (fogColour);
-            getDepthComposer ()->setGroundFogColour (fogColour * mGroundFogColourMultiplier);
-            getDepthComposer ()->setGroundFogDensity (fogDensity * mGroundFogDensityMultiplier);
         }
 
         // Update ambient lighting.
@@ -709,7 +647,6 @@ namespace Caelum
         if (getSun ()) getSun ()->setQueryFlags (flags);
         if (getMoon ()) getMoon ()->setQueryFlags (flags);
         if (getPointStarfield ()) getPointStarfield ()->setQueryFlags (flags);        
-        if (getGroundFog ()) getGroundFog ()->setQueryFlags (flags);
         if (getCloudSystem ()) getCloudSystem ()->forceLayerQueryFlags (flags);
     }
 
@@ -719,7 +656,6 @@ namespace Caelum
         if (getSun ()) getSun ()->setVisibilityFlags (flags);
         if (getMoon ()) getMoon ()->setVisibilityFlags (flags);
         if (getPointStarfield ()) getPointStarfield ()->setVisibilityFlags (flags);        
-        if (getGroundFog ()) getGroundFog ()->setVisibilityFlags (flags);
         if (getCloudSystem ()) getCloudSystem ()->forceLayerVisibilityFlags (flags);
     }
 }

@@ -224,10 +224,8 @@
     <ClCompile Include="CaelumSystem.cpp" />
     <ClCompile Include="CameraBoundElement.cpp" />
     <ClCompile Include="CloudSystem.cpp" />
-    <ClCompile Include="DepthComposer.cpp" />
     <ClCompile Include="FastGpuParamRef.cpp" />
     <ClCompile Include="FlatCloudLayer.cpp" />
-    <ClCompile Include="GroundFog.cpp" />
     <ClCompile Include="InternalUtilities.cpp" />
     <ClCompile Include="Moon.cpp" />
     <ClCompile Include="PointStarfield.cpp" />
@@ -247,10 +245,8 @@
     <ClInclude Include="..\..\include\caelum\CaelumSystem.h" />
     <ClInclude Include="..\..\include\caelum\CameraBoundElement.h" />
     <ClInclude Include="..\..\include\caelum\CloudSystem.h" />
-    <ClInclude Include="..\..\include\caelum\DepthComposer.h" />
     <ClInclude Include="..\..\include\caelum\FastGpuParamRef.h" />
     <ClInclude Include="..\..\include\caelum\FlatCloudLayer.h" />
-    <ClInclude Include="..\..\include\caelum\GroundFog.h" />
     <ClInclude Include="..\..\include\caelum\InternalUtilities.h" />
     <ClInclude Include="..\..\include\caelum\Moon.h" />
     <ClInclude Include="..\..\include\caelum\PointStarfield.h" />

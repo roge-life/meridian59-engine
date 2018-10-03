@@ -13,8 +13,6 @@
 #include "Moon.h"
 #include "CloudSystem.h"
 #include "SkyDome.h"
-#include "DepthComposer.h"
-#include "GroundFog.h"
 #include "PrivatePtr.h"
 
 namespace Caelum
@@ -171,9 +169,7 @@ namespace Caelum
         std::auto_ptr<BaseSkyLight> mSun;
         std::auto_ptr<Moon> mMoon;
         std::auto_ptr<PointStarfield> mPointStarfield;
-        std::auto_ptr<GroundFog> mGroundFog;
         std::auto_ptr<CloudSystem> mCloudSystem;
-		std::auto_ptr<DepthComposer> mDepthComposer;
 
     public:
         typedef std::set<Ogre::Viewport*> AttachedViewportSet;
@@ -417,20 +413,10 @@ namespace Caelum
 		/// Set image starfield, or null to disable.
         void setPointStarfield (PointStarfield* obj);
 
-		/// Get ground fog; if enabled.
-        inline GroundFog* getGroundFog () { return mGroundFog.get (); }
-		/// Sets ground fog system, or null to disable.
-        void setGroundFog (GroundFog *obj);
-
         /// Get cloud system; or null if disabled.
         inline CloudSystem* getCloudSystem () { return mCloudSystem.get (); }
         /// Set cloud system; or null to disable.
         void setCloudSystem (CloudSystem *obj);
- 
-        /// Get depth composer; or null if disabled.
-		inline DepthComposer* getDepthComposer () { return mDepthComposer.get (); }
-        /// Set depth composer; or null to disable.
-		void setDepthComposer (DepthComposer *obj);
  
 		/** Enables/disables Caelum managing standard Ogre::Scene fog.
             This makes CaelumSystem control standard Ogre::Scene fogging. It

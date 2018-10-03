@@ -20,7 +20,5 @@
 #include "CloudSystem.h"
 #include "FlatCloudLayer.h"
 #include "PointStarfield.h"
-#include "GroundFog.h"
-#include "DepthComposer.h"
 
 #endif // CAELUM_H
