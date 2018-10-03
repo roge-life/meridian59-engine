@@ -57,7 +57,7 @@ class RenderTarget;
 #if (CEGUI_OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
 class TexturePtr;
 #else
-template<typename T> class SharedPtr;
+template<typename T> using SharedPtr = std::shared_ptr<T>;
 class Texture;
 typedef SharedPtr<Texture> TexturePtr;
 #endif

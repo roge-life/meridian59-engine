@@ -1,0 +1,13 @@
+diff --git "a/C:\\Users\\CLINT~1.BAN\\AppData\\Local\\Temp\\TortoiseGit\\Renderer-48f3700.000.h" "b/F:\\meridian59-dotnet\\Engine\\include\\cegui\\CEGUI\\RendererModules\\Ogre\\Renderer.h"
+index 094962a..0210f67 100644
+--- "a/C:\\Users\\CLINT~1.BAN\\AppData\\Local\\Temp\\TortoiseGit\\Renderer-48f3700.000.h"
++++ "b/F:\\meridian59-dotnet\\Engine\\include\\cegui\\CEGUI\\RendererModules\\Ogre\\Renderer.h"
+@@ -57,7 +57,7 @@ class RenderTarget;
+ #if (CEGUI_OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
+ class TexturePtr;
+ #else
+-template<typename T> class SharedPtr;
++template<typename T> using SharedPtr = std::shared_ptr<T>;
+ class Texture;
+ typedef SharedPtr<Texture> TexturePtr;
+ #endif
