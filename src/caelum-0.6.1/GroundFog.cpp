@@ -80,7 +80,7 @@ namespace Caelum
 		while (matIt.hasMoreElements()) {
 
 #if OGRE_VERSION >= 0x00010900
-			Ogre::MaterialPtr mat = matIt.getNext().staticCast<Ogre::Material>();
+			Ogre::MaterialPtr mat = Ogre::static_pointer_cast<Ogre::Material>(matIt.getNext());
 #else
         		Ogre::MaterialPtr mat = matIt.getNext();
 #endif

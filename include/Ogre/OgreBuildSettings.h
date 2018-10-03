@@ -94,7 +94,7 @@
 
 #define OGRE_BITES_HAVE_SDL 0
 
-#define OGRE_USE_STD11 0
+#define OGRE_USE_STD11 1
 
 #define OGRE_NODE_STORAGE_LEGACY 0
 
