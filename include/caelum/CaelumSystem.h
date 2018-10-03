@@ -7,16 +7,12 @@
 
 #include "CaelumPrerequisites.h"
 #include "UniversalClock.h"
-#include "ImageStarfield.h"
 #include "PointStarfield.h"
 #include "SkyLight.h"
 #include "Sun.h"
 #include "Moon.h"
 #include "CloudSystem.h"
 #include "SkyDome.h"
-#include "DepthComposer.h"
-#include "PrecipitationController.h"
-#include "GroundFog.h"
 #include "PrivatePtr.h"
 
 namespace Caelum
@@ -172,12 +168,8 @@ namespace Caelum
         std::auto_ptr<SkyDome> mSkyDome;
         std::auto_ptr<BaseSkyLight> mSun;
         std::auto_ptr<Moon> mMoon;
-        std::auto_ptr<ImageStarfield> mImageStarfield;
         std::auto_ptr<PointStarfield> mPointStarfield;
-        std::auto_ptr<GroundFog> mGroundFog;
         std::auto_ptr<CloudSystem> mCloudSystem;
-		std::auto_ptr<PrecipitationController> mPrecipitationController;
-		std::auto_ptr<DepthComposer> mDepthComposer;
 
     public:
         typedef std::set<Ogre::Viewport*> AttachedViewportSet;
@@ -416,35 +408,15 @@ namespace Caelum
 		/// Set the moon, or null to disable.
 		void setMoon (Moon* obj);
 
-		/// Gets the current image starfield, or null if disabled.
-        inline ImageStarfield* getImageStarfield () const { return mImageStarfield.get (); }
-		/// Set image starfield, or null to disable.
-        void setImageStarfield (ImageStarfield* obj);
-
 		/// Gets the current point starfield, or null if disabled.
         inline PointStarfield* getPointStarfield () const { return mPointStarfield.get (); }
 		/// Set image starfield, or null to disable.
         void setPointStarfield (PointStarfield* obj);
 
-		/// Get ground fog; if enabled.
-        inline GroundFog* getGroundFog () { return mGroundFog.get (); }
-		/// Sets ground fog system, or null to disable.
-        void setGroundFog (GroundFog *obj);
-
         /// Get cloud system; or null if disabled.
         inline CloudSystem* getCloudSystem () { return mCloudSystem.get (); }
         /// Set cloud system; or null to disable.
         void setCloudSystem (CloudSystem *obj);
-
-        /// Get precipitation controller; or null if disabled.
-		inline PrecipitationController* getPrecipitationController () { return mPrecipitationController.get (); }
-        /// Set precipitation controller; or null to disable.
-		void setPrecipitationController (PrecipitationController *obj);
- 
-        /// Get depth composer; or null if disabled.
-		inline DepthComposer* getDepthComposer () { return mDepthComposer.get (); }
-        /// Set depth composer; or null to disable.
-		void setDepthComposer (DepthComposer *obj);
  
 		/** Enables/disables Caelum managing standard Ogre::Scene fog.
             This makes CaelumSystem control standard Ogre::Scene fogging. It

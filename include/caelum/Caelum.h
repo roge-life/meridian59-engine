@@ -18,11 +18,7 @@
 #include "UniversalClock.h"
 #include "Astronomy.h"
 #include "CloudSystem.h"
-#include "PrecipitationController.h"
 #include "FlatCloudLayer.h"
-#include "ImageStarfield.h"
 #include "PointStarfield.h"
-#include "GroundFog.h"
-#include "DepthComposer.h"
 
 #endif // CAELUM_H
