@@ -228,11 +228,9 @@
     <ClCompile Include="FastGpuParamRef.cpp" />
     <ClCompile Include="FlatCloudLayer.cpp" />
     <ClCompile Include="GroundFog.cpp" />
-    <ClCompile Include="ImageStarfield.cpp" />
     <ClCompile Include="InternalUtilities.cpp" />
     <ClCompile Include="Moon.cpp" />
     <ClCompile Include="PointStarfield.cpp" />
-    <ClCompile Include="PrecipitationController.cpp" />
     <ClCompile Include="SkyDome.cpp" />
     <ClCompile Include="SkyLight.cpp" />
     <ClCompile Include="Sun.cpp" />
@@ -253,11 +251,9 @@
     <ClInclude Include="..\..\include\caelum\FastGpuParamRef.h" />
     <ClInclude Include="..\..\include\caelum\FlatCloudLayer.h" />
     <ClInclude Include="..\..\include\caelum\GroundFog.h" />
-    <ClInclude Include="..\..\include\caelum\ImageStarfield.h" />
     <ClInclude Include="..\..\include\caelum\InternalUtilities.h" />
     <ClInclude Include="..\..\include\caelum\Moon.h" />
     <ClInclude Include="..\..\include\caelum\PointStarfield.h" />
-    <ClInclude Include="..\..\include\caelum\PrecipitationController.h" />
     <ClInclude Include="..\..\include\caelum\PrivatePtr.h" />
     <ClInclude Include="..\..\include\caelum\SkyDome.h" />
     <ClInclude Include="..\..\include\caelum\SkyLight.h" />

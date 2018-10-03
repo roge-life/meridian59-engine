@@ -62,10 +62,8 @@ namespace Caelum
         // Destroy sub-components
         setSkyDome (0);
         setSun (0);
-        setImageStarfield (0);
         setPointStarfield (0);
         setCloudSystem (0);
-        setPrecipitationController (0);
         setDepthComposer (0);
         setGroundFog (0);
         setMoon (0);   
@@ -175,14 +173,6 @@ namespace Caelum
                         "Caelum: Failed to initialize moon: " + ex.getFullDescription());
             }
         }
-        if (componentsToCreate & CAELUM_COMPONENT_IMAGE_STARFIELD) {
-            try {
-                this->setImageStarfield (new ImageStarfield (mSceneMgr, getCaelumCameraNode ()));
-            } catch (Caelum::UnsupportedException& ex) {
-                LogManager::getSingleton ().logMessage (
-                        "Caelum: Failed to initialize the old image starfield: " + ex.getFullDescription());
-            }
-        }
         if (componentsToCreate & CAELUM_COMPONENT_POINT_STARFIELD) {
             try {
                 this->setPointStarfield (new PointStarfield (mSceneMgr, getCaelumCameraNode ()));
@@ -207,14 +197,6 @@ namespace Caelum
             } catch (Caelum::UnsupportedException& ex) {
                 LogManager::getSingleton ().logMessage (
                         "Caelum: Failed to initialize clouds: " + ex.getFullDescription());
-            }
-        }
-        if (componentsToCreate & CAELUM_COMPONENT_PRECIPITATION) {
-            try {
-                this->setPrecipitationController (new PrecipitationController (mSceneMgr));
-            } catch (Caelum::UnsupportedException& ex) {
-                LogManager::getSingleton ().logMessage (
-                        "Caelum: Failed to initialize precipitation: " + ex.getFullDescription());
             }
         }
         if (componentsToCreate & CAELUM_COMPONENT_SCREEN_SPACE_FOG) {
@@ -251,9 +233,6 @@ namespace Caelum
                 " viewport " + StringConverter::toString ((long)vp) +
                 " render target " + vp->getTarget ()->getName ());
         if (getAutoAttachViewportsToComponents ()) {
-            if (getPrecipitationController ()) {
-                getPrecipitationController ()->createViewportInstance (vp);
-            }
             if (getDepthComposer ()) {
                 getDepthComposer ()->createViewportInstance (vp);
             }
@@ -267,9 +246,6 @@ namespace Caelum
                 " viewport " + StringConverter::toString ((long)vp) +
                 " render target " + vp->getTarget ()->getName ());
         if (getAutoAttachViewportsToComponents ()) {
-            if (getPrecipitationController ()) {
-                getPrecipitationController ()->destroyViewportInstance (vp);
-            }
             if (getDepthComposer ()) {
                 getDepthComposer ()->destroyViewportInstance (vp);
             }
@@ -319,10 +295,6 @@ namespace Caelum
         mMoon.reset (obj);
     }
 
-    void CaelumSystem::setImageStarfield (ImageStarfield* obj) {
-        mImageStarfield.reset (obj);
-    }
-
     void CaelumSystem::setPointStarfield (PointStarfield* obj) {
         mPointStarfield.reset (obj);
     }
@@ -333,24 +305,6 @@ namespace Caelum
 
     void CaelumSystem::setCloudSystem (CloudSystem* obj) {
         mCloudSystem.reset (obj);
-    }
-
-    void CaelumSystem::setPrecipitationController (PrecipitationController* newptr) {
-        PrecipitationController* oldptr = getPrecipitationController ();
-        if (oldptr == newptr) {
-            return;
-        }
-        // Detach old
-        if (getAutoAttachViewportsToComponents() && oldptr) {
-            std::for_each (mAttachedViewports.begin(), mAttachedViewports.end(),
-                    std::bind1st (std::mem_fun (&PrecipitationController::destroyViewportInstance), oldptr));
-        }
-        // Attach new.
-        if (getAutoAttachViewportsToComponents() && newptr) {
-            std::for_each (mAttachedViewports.begin(), mAttachedViewports.end(),
-                    std::bind1st (std::mem_fun (&PrecipitationController::createViewportInstance), newptr));
-        }
-        mPrecipitationController.reset(newptr);
     }
 
     void CaelumSystem::setDepthComposer (DepthComposer* ptr) {
@@ -394,10 +348,6 @@ namespace Caelum
 
         if (getMoon ()) {
             getMoon ()->notifyCameraChanged (cam);
-        }
-
-        if (getImageStarfield ()) {
-            getImageStarfield ()->notifyCameraChanged (cam);
         }
 
         if (getPointStarfield ()) {
@@ -452,12 +402,6 @@ namespace Caelum
 
         fogDensity *= mGlobalFogDensityMultiplier;
         fogColour = fogColour * mGlobalFogColourMultiplier;
-
-        // Update image starfield
-        if (getImageStarfield ()) {
-            getImageStarfield ()->update (relDayTime);
-            getImageStarfield ()->setInclination (-getObserverLatitude ());
-        }
 
         // Update point starfield
         if (getPointStarfield ()) {
@@ -522,11 +466,6 @@ namespace Caelum
         if (getCloudSystem ()) {
             getCloudSystem ()->update (
                     secondDiff, sunDir, sunLightColour, fogColour, sunSphereColour);
-        }
-
-        // Update precipitation
-        if (getPrecipitationController ()) {
-            getPrecipitationController ()->update (secondDiff, fogColour);
         }
 
         // Update screen space fog
@@ -769,7 +708,6 @@ namespace Caelum
         if (getSkyDome ()) getSkyDome ()->setQueryFlags (flags);
         if (getSun ()) getSun ()->setQueryFlags (flags);
         if (getMoon ()) getMoon ()->setQueryFlags (flags);
-        if (getImageStarfield ()) getImageStarfield ()->setQueryFlags (flags);
         if (getPointStarfield ()) getPointStarfield ()->setQueryFlags (flags);        
         if (getGroundFog ()) getGroundFog ()->setQueryFlags (flags);
         if (getCloudSystem ()) getCloudSystem ()->forceLayerQueryFlags (flags);
@@ -780,7 +718,6 @@ namespace Caelum
         if (getSkyDome ()) getSkyDome ()->setVisibilityFlags (flags);
         if (getSun ()) getSun ()->setVisibilityFlags (flags);
         if (getMoon ()) getMoon ()->setVisibilityFlags (flags);
-        if (getImageStarfield ()) getImageStarfield ()->setVisibilityFlags (flags);
         if (getPointStarfield ()) getPointStarfield ()->setVisibilityFlags (flags);        
         if (getGroundFog ()) getGroundFog ()->setVisibilityFlags (flags);
         if (getCloudSystem ()) getCloudSystem ()->forceLayerVisibilityFlags (flags);
