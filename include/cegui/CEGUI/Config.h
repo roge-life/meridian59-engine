@@ -118,7 +118,7 @@ setting CMake options and regenerating, rather than editing directly.
 #   define CEGUI_OGRE_VERSION_MINOR 10
 #endif
 #ifndef CEGUI_OGRE_VERSION_PATCH
-#   define CEGUI_OGRE_VERSION_PATCH 5
+#   define CEGUI_OGRE_VERSION_PATCH 12
 #endif
 #ifndef CEGUI_OGRE_VERSION
 #   define CEGUI_OGRE_VERSION ((CEGUI_OGRE_VERSION_MAJOR << 16) | (CEGUI_OGRE_VERSION_MINOR << 8) | CEGUI_OGRE_VERSION_PATCH)
