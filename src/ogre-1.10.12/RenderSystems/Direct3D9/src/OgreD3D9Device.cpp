@@ -1018,7 +1018,7 @@ namespace Ogre
         }
         else
         {
-            hr = renderWindowResources->swapChain->Present(NULL, NULL, NULL, NULL, 0);          
+            hr = renderWindowResources->swapChain->Present(NULL, NULL, NULL, NULL, D3DPRESENT_DONOTWAIT);
         }
 
 

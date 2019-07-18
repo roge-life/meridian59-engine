@@ -1,0 +1,12 @@
+index 6c79f88..23dceed 100644
+--- OgreD3D9Device.cpp	(revision 105)
++++ OgreD3D9Device.cpp	(working copy)
+@@ -1018,7 +1018,7 @@ namespace Ogre
+         }
+         else
+         {
+-            hr = renderWindowResources->swapChain->Present(NULL, NULL, NULL, NULL, 0);          
++            hr = renderWindowResources->swapChain->Present(NULL, NULL, NULL, NULL, D3DPRESENT_DONOTWAIT);
+         }
+ 
+ 
