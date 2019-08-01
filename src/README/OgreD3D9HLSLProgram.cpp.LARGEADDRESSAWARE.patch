@@ -1,0 +1,33 @@
+index 6c79f88..23dceed 100644
+--- OgreD3D9HLSLProgram.cpp	(revision 105)
++++ OgreD3D9HLSLProgram.cpp	(working copy)
+@@ -265,7 +265,7 @@ namespace Ogre {
+             compileFlags,
+             &mMicroCode,
+             &errors,
+-            &pConstTable);
++            NULL);
+ 
+         if (FAILED(hr))
+         {
+@@ -282,10 +282,19 @@ namespace Ogre {
+         }
+         else
+         {
++            HRESULT hr = D3DXGetShaderConstantTableEx((DWORD*)mMicroCode->GetBufferPointer(),
++                D3DXCONSTTABLE_LARGEADDRESSAWARE, &pConstTable);
++
++            if (FAILED(hr))
++            {
++               OGRE_EXCEPT(Exception::ERR_INTERNAL_ERROR,
++                  "Cannot retrieve constant shader table from HLSL program.",
++                  "D3D9HLSLProgram::buildParameterNameMap");
++            }
+ 
+             // Get contents of the constant table
+             D3DXCONSTANTTABLE_DESC desc;
+-            HRESULT hr = pConstTable->GetDesc(&desc);
++            hr = pConstTable->GetDesc(&desc);
+ 
+             createParameterMappingStructures(true);
+ 
